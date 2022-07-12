@@ -17,15 +17,44 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        font-size: inherit;
+        color: inherit;
       }
       html,
       body,
       #root {
         width: 100%;
         height: 100%;
+        position: fixed;
+        overflow: hidden;
+        inset: 0;
       }
-      body {
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      p {
+        margin-bottom: 0.5em;
+      }
+      html {
+        font-size: 20px;
+        font-family: system-ui, sans-serif;
+        text-rendering: geometricPrecision;
         background-color: #333333;
+        color: #eeeeee;
+      }
+      main {
+        padding: 1em;
+        height: 100%;
+        overflow: auto;
+        -webkit-overflow-scrolling: auto;
+      }
+      h1 {
+        font-size: 2em;
+      }
+      ul {
+        padding-left: 1em;
       }
     </style>
   </head>
