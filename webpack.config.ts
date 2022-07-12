@@ -15,7 +15,7 @@ const PUBLIC_PATH = process.env.PUBLIC_PATH ?? "/";
 
 const config = {
   cache: {
-    type: "filesystem"
+    type: "filesystem",
   },
   mode: DEV_MODE ? "development" : "production",
   target: DEV_MODE ? "web" : "browserslist",
@@ -24,7 +24,7 @@ const config = {
   entry: path.join(SRC_DIR, "index.tsx"),
   devServer: {
     historyApiFallback: true,
-    hot: true
+    hot: true,
   },
   module: {
     rules: [
@@ -40,7 +40,7 @@ const config = {
               presets: [
                 "@babel/preset-typescript",
                 "@babel/preset-react",
-                "@babel/preset-env"
+                "@babel/preset-env",
               ],
               plugins: [
                 "@babel/plugin-transform-runtime",
@@ -52,23 +52,27 @@ const config = {
                     fileName: false,
                     displayName: DEV_MODE,
                     minify: !DEV_MODE,
-                    pure: !DEV_MODE
-                  }
+                    pure: !DEV_MODE,
+                  },
                 ],
-                ...(DEV_MODE ? ["react-refresh/babel"] : [])
-              ]
-            }
-          }
-        ]
-      }
-    ]
+                ...(DEV_MODE ? ["react-refresh/babel"] : []),
+              ],
+            },
+          },
+        ],
+      },
+      {
+        test: /\.glsl$/,
+        use: ["raw-loader", "glslify-loader"],
+      },
+    ],
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: path.join(PUBLIC_DIR, "index.html"),
       filename: "index.html",
-      inject: "body"
+      inject: "body",
     }),
     new CopyPlugin({
       patterns: [
@@ -76,24 +80,24 @@ const config = {
           from: PUBLIC_DIR,
           to: BUILD_DIR,
           globOptions: {
-            ignore: [path.join(PUBLIC_DIR, "index.html")]
-          }
-        }
-      ]
+            ignore: [path.join(PUBLIC_DIR, "index.html")],
+          },
+        },
+      ],
     }),
-    new ReactRefreshWebpackPlugin()
+    new ReactRefreshWebpackPlugin(),
   ],
   resolve: {
     plugins: [new TsconfigPathsPlugin({})],
-    extensions: [".tsx", ".ts", ".js"]
+    extensions: [".tsx", ".ts", ".js"],
   },
   output: {
     filename: "[name].[contenthash:8].js",
     chunkFilename: "[name].[contenthash:8].chunk.js",
     path: BUILD_DIR,
     clean: true,
-    publicPath: PUBLIC_PATH
-  }
+    publicPath: PUBLIC_PATH,
+  },
 };
 
 export default () => {
