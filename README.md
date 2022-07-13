@@ -17,6 +17,7 @@ Build UIs with React that work in VR, AR and web contexts.
 - [ ] borders (radius, color, width, image)
 - [ ] automatic children sizing
 - [ ] typography
+- [ ] flexbox
 
 ### Contributing
 
