@@ -25,6 +25,8 @@ type Props = {
   position?: [x: number, y: number, z: number];
 };
 
+const DEFAULT_POSITION: Props["position"] = [0, 0, 0];
+
 export default function Surface({
   children,
   width = 1,
@@ -33,7 +35,7 @@ export default function Surface({
   backgroundImage,
   backgroundSize,
   zIndex = 0,
-  position,
+  position = DEFAULT_POSITION,
   flexDirection = "row",
   alignItems = "start",
   justifyContent = "start",
@@ -122,24 +124,29 @@ export default function Surface({
   const key = useRenderKey([texture]);
 
   return (
-    <group key={key} position={position}>
-      <mesh renderOrder={renderOrder + zIndex}>
-        <planeBufferGeometry args={[size.width, size.height]} />
-        <meshBasicMaterial
-          color={backgroundColor}
-          transparent={true}
-          depthWrite={false}
-        />
-      </mesh>
-      <mesh visible={texture !== undefined} renderOrder={renderOrder + zIndex}>
-        <planeBufferGeometry args={[textureSize.width, textureSize.height]} />
-        <meshBasicMaterial
-          map={texture}
-          transparent={true}
-          depthWrite={false}
-          clippingPlanes={textureClippingPlanes}
-        />
-      </mesh>
+    <group key={key}>
+      <group position={position}>
+        <mesh renderOrder={renderOrder + zIndex}>
+          <planeBufferGeometry args={[size.width, size.height]} />
+          <meshBasicMaterial
+            color={backgroundColor}
+            transparent={true}
+            depthWrite={false}
+          />
+        </mesh>
+        <mesh
+          visible={texture !== undefined}
+          renderOrder={renderOrder + zIndex}
+        >
+          <planeBufferGeometry args={[textureSize.width, textureSize.height]} />
+          <meshBasicMaterial
+            map={texture}
+            transparent={true}
+            depthWrite={false}
+            clippingPlanes={textureClippingPlanes}
+          />
+        </mesh>
+      </group>
       {children}
     </group>
   );

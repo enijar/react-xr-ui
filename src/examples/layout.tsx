@@ -15,13 +15,7 @@ export default function Layout() {
 
       <Surface backgroundColor="crimson" width={3} height={3}>
         <Surface
-          width={1}
-          height={1}
-          backgroundSize="cover"
-          backgroundColor="green"
-          backgroundImage="./assets/images/robot.png"
-        />
-        <Surface
+          position={[-0.5, 0, 0]}
           width={1}
           height={1}
           backgroundSize="cover"
