@@ -123,19 +123,20 @@ export default function Surface({
   const renderOrder = useRenderOrder();
   const key = useRenderKey([texture]);
 
-  const textureMeshRef = React.useRef<THREE.Mesh>(null);
+  const groupRef = React.useRef<THREE.Group>(null);
 
   React.useEffect(() => {
-    const textureMesh = textureMeshRef.current;
-    if (textureMesh === null) return;
+    const group = groupRef.current;
+    if (group === null) return;
+    group.updateMatrixWorld(true);
     planes.forEach((plane) => {
-      plane.applyMatrix4(textureMesh.matrixWorld);
+      plane.applyMatrix4(group.matrixWorld);
     });
   }, [position, planes]);
 
   return (
     <group key={key}>
-      <group position={position}>
+      <group ref={groupRef} position={position}>
         <mesh renderOrder={renderOrder + zIndex}>
           <planeBufferGeometry args={[size.width, size.height]} />
           <meshBasicMaterial
@@ -145,7 +146,6 @@ export default function Surface({
           />
         </mesh>
         <mesh
-          ref={textureMeshRef}
           renderOrder={renderOrder + zIndex}
           visible={texture !== undefined}
         >
@@ -155,6 +155,7 @@ export default function Surface({
             transparent={true}
             depthWrite={false}
             clippingPlanes={textureClippingPlanes}
+            clipIntersection={true}
           />
         </mesh>
       </group>
