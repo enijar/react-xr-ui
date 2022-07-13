@@ -1,0 +1,149 @@
+import React from "react";
+import * as THREE from "three";
+import useRenderOrder from "@/lib/hooks/use-render-order";
+import useRenderKey from "@/lib/hooks/use-render-key";
+
+enum Orientation {
+  landscape = "landscape",
+  portrait = "portrait",
+}
+
+type Props = {
+  children?: React.ReactNode;
+  width?: number;
+  height?: number;
+  backgroundColor?: THREE.ColorRepresentation;
+  backgroundImage?: string;
+  backgroundSize?: "cover" | "contain";
+  tint?: THREE.ColorRepresentation;
+  zIndex?: number;
+};
+
+export default function Surface({
+  children,
+  width = 1,
+  height = 1,
+  backgroundColor = "black",
+  backgroundImage,
+  backgroundSize,
+  tint,
+  zIndex = 0,
+}: Props) {
+  // Set geometry size from `width` and `height` props
+  const size = React.useMemo(() => {
+    return { width, height };
+  }, [width, height]);
+
+  // Set material texture from `backgroundImage` prop
+  const [texture, setTexture] = React.useState<THREE.Texture>(undefined);
+  React.useMemo(() => {
+    if (backgroundImage === undefined) return;
+    new THREE.TextureLoader().loadAsync(backgroundImage).then(setTexture);
+  }, [backgroundImage]);
+
+  const [imageRatioX, imageRatioY, surfaceRatioX, surfaceRatioY] =
+    React.useMemo(() => {
+      const surfaceRatioX = size.width / size.height;
+      const surfaceRatioY = size.height / size.width;
+      if (texture === undefined) {
+        return [surfaceRatioX, surfaceRatioY, surfaceRatioX, surfaceRatioY];
+      }
+      const imageRatioX = texture.image.width / texture.image.height;
+      const imageRatioY = texture.image.height / texture.image.width;
+      return [imageRatioX, imageRatioY, surfaceRatioX, surfaceRatioY];
+    }, [texture, size]);
+
+  const surfaceOrientation = React.useMemo<Orientation>(() => {
+    if (size.width >= size.height) {
+      return Orientation.landscape;
+    } else {
+      return Orientation.portrait;
+    }
+  }, [size]);
+
+  const textureOrientation = React.useMemo<Orientation>(() => {
+    if (texture === undefined) return surfaceOrientation;
+    if (texture.image.width >= texture.image.height) {
+      return Orientation.landscape;
+    } else {
+      return Orientation.portrait;
+    }
+  }, [texture, surfaceOrientation]);
+
+  const planes = React.useMemo(() => {
+    const plane = new THREE.Plane(new THREE.Vector3(), 1);
+    return [plane.clone(), plane.clone(), plane.clone(), plane.clone()];
+  }, []);
+
+  const [textureSize, textureClippingPlanes] = React.useMemo(() => {
+    if (texture === undefined) return [size, planes];
+
+    const newSize = { ...size };
+
+    // @todo find a way to simplify this
+
+    if (backgroundSize === "contain") {
+      if (imageRatioX >= surfaceRatioX) {
+        newSize.width = size.width;
+        newSize.height = newSize.width * imageRatioY;
+      } else {
+        newSize.height = size.height;
+        newSize.width = newSize.height * imageRatioX;
+      }
+    }
+
+    if (backgroundSize === "cover") {
+      if (imageRatioX >= surfaceRatioX) {
+        newSize.height = size.height;
+        newSize.width = newSize.height * imageRatioX;
+      } else {
+        newSize.width = size.width;
+        newSize.height = newSize.width * imageRatioY;
+      }
+    }
+
+    planes[0].set(new THREE.Vector3(0, -1, 0), size.height * 0.5);
+    planes[1].set(new THREE.Vector3(1, 0, 0), size.width * 0.5);
+    planes[2].set(new THREE.Vector3(0, 1, 0), size.height * 0.5);
+    planes[3].set(new THREE.Vector3(-1, 0, 0), size.width * 0.5);
+
+    return [newSize, planes];
+  }, [
+    planes,
+    surfaceOrientation,
+    textureOrientation,
+    texture,
+    size,
+    backgroundSize,
+    imageRatioX,
+    imageRatioY,
+    surfaceRatioX,
+    surfaceRatioY,
+  ]);
+
+  const renderOrder = useRenderOrder();
+  const key = useRenderKey([texture, tint]);
+
+  return (
+    <group key={key}>
+      <mesh renderOrder={renderOrder + zIndex}>
+        <planeBufferGeometry args={[size.width, size.height]} />
+        <meshBasicMaterial
+          color={backgroundColor}
+          transparent={true}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh visible={texture !== undefined} renderOrder={renderOrder + zIndex}>
+        <planeBufferGeometry args={[textureSize.width, textureSize.height]} />
+        <meshBasicMaterial
+          map={texture}
+          transparent={true}
+          depthWrite={false}
+          clippingPlanes={textureClippingPlanes}
+        />
+      </mesh>
+      {children}
+    </group>
+  );
+}
