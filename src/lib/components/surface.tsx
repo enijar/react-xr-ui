@@ -123,6 +123,16 @@ export default function Surface({
   const renderOrder = useRenderOrder();
   const key = useRenderKey([texture]);
 
+  const textureMeshRef = React.useRef<THREE.Mesh>(null);
+
+  React.useEffect(() => {
+    const textureMesh = textureMeshRef.current;
+    if (textureMesh === null) return;
+    planes.forEach((plane) => {
+      plane.applyMatrix4(textureMesh.matrixWorld);
+    });
+  }, [position, planes]);
+
   return (
     <group key={key}>
       <group position={position}>
@@ -135,8 +145,9 @@ export default function Surface({
           />
         </mesh>
         <mesh
-          visible={texture !== undefined}
+          ref={textureMeshRef}
           renderOrder={renderOrder + zIndex}
+          visible={texture !== undefined}
         >
           <planeBufferGeometry args={[textureSize.width, textureSize.height]} />
           <meshBasicMaterial
