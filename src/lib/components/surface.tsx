@@ -11,7 +11,18 @@ type Props = {
   backgroundColor?: THREE.ColorRepresentation;
   backgroundImage?: string;
   backgroundSize?: "cover" | "contain";
+  flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
+  alignItems?: "start" | "center" | "end";
+  justifyContent?:
+    | "start"
+    | "center"
+    | "end"
+    | "space-between"
+    | "space-evenly"
+    | "space-around";
+  gap?: number;
   zIndex?: number;
+  position?: [x: number, y: number, z: number];
 };
 
 export default function Surface({
@@ -22,6 +33,11 @@ export default function Surface({
   backgroundImage,
   backgroundSize,
   zIndex = 0,
+  position,
+  flexDirection = "row",
+  alignItems = "start",
+  justifyContent = "start",
+  gap = 0,
 }: Props) {
   const gl = useThree((state) => state.gl);
 
@@ -106,7 +122,7 @@ export default function Surface({
   const key = useRenderKey([texture]);
 
   return (
-    <group key={key}>
+    <group key={key} position={position}>
       <mesh renderOrder={renderOrder + zIndex}>
         <planeBufferGeometry args={[size.width, size.height]} />
         <meshBasicMaterial
