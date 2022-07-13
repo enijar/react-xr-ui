@@ -41,17 +41,15 @@ export default function Surface({
     new THREE.TextureLoader().loadAsync(backgroundImage).then(setTexture);
   }, [backgroundImage]);
 
-  const [imageRatioX, imageRatioY, surfaceRatioX, surfaceRatioY] =
-    React.useMemo(() => {
-      const surfaceRatioX = size.width / size.height;
-      const surfaceRatioY = size.height / size.width;
-      if (texture === undefined) {
-        return [surfaceRatioX, surfaceRatioY, surfaceRatioX, surfaceRatioY];
-      }
-      const imageRatioX = texture.image.width / texture.image.height;
-      const imageRatioY = texture.image.height / texture.image.width;
-      return [imageRatioX, imageRatioY, surfaceRatioX, surfaceRatioY];
-    }, [texture, size]);
+  const [surfaceRatio, imageRatioX, imageRatioY] = React.useMemo(() => {
+    const surfaceRatio = size.width / size.height;
+    if (texture === undefined) {
+      return [surfaceRatio, surfaceRatio, surfaceRatio];
+    }
+    const imageRatioX = texture.image.width / texture.image.height;
+    const imageRatioY = texture.image.height / texture.image.width;
+    return [surfaceRatio, imageRatioX, imageRatioY];
+  }, [texture, size]);
 
   const planes = React.useMemo(() => {
     const plane = new THREE.Plane(new THREE.Vector3(), 1);
@@ -66,7 +64,7 @@ export default function Surface({
     // @todo find a way to simplify this
 
     if (backgroundSize === "contain") {
-      if (imageRatioX >= surfaceRatioX) {
+      if (imageRatioX >= surfaceRatio) {
         newSize.width = size.width;
         newSize.height = newSize.width * imageRatioY;
       } else {
@@ -76,7 +74,7 @@ export default function Surface({
     }
 
     if (backgroundSize === "cover") {
-      if (imageRatioX >= surfaceRatioX) {
+      if (imageRatioX >= surfaceRatio) {
         newSize.height = size.height;
         newSize.width = newSize.height * imageRatioX;
       } else {
@@ -98,8 +96,7 @@ export default function Surface({
     backgroundSize,
     imageRatioX,
     imageRatioY,
-    surfaceRatioX,
-    surfaceRatioY,
+    surfaceRatio,
   ]);
 
   const renderOrder = useRenderOrder();
