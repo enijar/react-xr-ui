@@ -53,23 +53,6 @@ export default function Surface({
       return [imageRatioX, imageRatioY, surfaceRatioX, surfaceRatioY];
     }, [texture, size]);
 
-  const surfaceOrientation = React.useMemo<Orientation>(() => {
-    if (size.width >= size.height) {
-      return Orientation.landscape;
-    } else {
-      return Orientation.portrait;
-    }
-  }, [size]);
-
-  const textureOrientation = React.useMemo<Orientation>(() => {
-    if (texture === undefined) return surfaceOrientation;
-    if (texture.image.width >= texture.image.height) {
-      return Orientation.landscape;
-    } else {
-      return Orientation.portrait;
-    }
-  }, [texture, surfaceOrientation]);
-
   const planes = React.useMemo(() => {
     const plane = new THREE.Plane(new THREE.Vector3(), 1);
     return [plane.clone(), plane.clone(), plane.clone(), plane.clone()];
@@ -110,8 +93,6 @@ export default function Surface({
     return [newSize, planes];
   }, [
     planes,
-    surfaceOrientation,
-    textureOrientation,
     texture,
     size,
     backgroundSize,
