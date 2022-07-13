@@ -4,11 +4,6 @@ import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
 import { useThree } from "@react-three/fiber";
 
-enum Orientation {
-  landscape = "landscape",
-  portrait = "portrait",
-}
-
 type Props = {
   children?: React.ReactNode;
   width?: number;
@@ -16,7 +11,6 @@ type Props = {
   backgroundColor?: THREE.ColorRepresentation;
   backgroundImage?: string;
   backgroundSize?: "cover" | "contain";
-  tint?: THREE.ColorRepresentation;
   zIndex?: number;
 };
 
@@ -27,7 +21,6 @@ export default function Surface({
   backgroundColor = "black",
   backgroundImage,
   backgroundSize,
-  tint,
   zIndex = 0,
 }: Props) {
   const gl = useThree((state) => state.gl);
@@ -110,7 +103,7 @@ export default function Surface({
   ]);
 
   const renderOrder = useRenderOrder();
-  const key = useRenderKey([texture, tint]);
+  const key = useRenderKey([texture]);
 
   return (
     <group key={key}>
