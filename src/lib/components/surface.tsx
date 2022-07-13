@@ -2,6 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
+import { useThree } from "@react-three/fiber";
 
 enum Orientation {
   landscape = "landscape",
@@ -29,6 +30,8 @@ export default function Surface({
   tint,
   zIndex = 0,
 }: Props) {
+  const gl = useThree((state) => state.gl);
+
   // Set geometry size from `width` and `height` props
   const size = React.useMemo(() => {
     return { width, height };
@@ -40,6 +43,13 @@ export default function Surface({
     if (backgroundImage === undefined) return;
     new THREE.TextureLoader().loadAsync(backgroundImage).then(setTexture);
   }, [backgroundImage]);
+
+  // Set texture `anisotropy` to max available (prevents blurriness)
+  // when viewing at an angle
+  React.useMemo(() => {
+    if (texture === undefined) return;
+    texture.anisotropy = gl.capabilities.getMaxAnisotropy();
+  }, [texture, gl]);
 
   const [surfaceRatio, imageRatioX, imageRatioY] = React.useMemo(() => {
     const surfaceRatio = size.width / size.height;
