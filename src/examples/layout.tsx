@@ -20,8 +20,8 @@ export default function Layout() {
         width={3}
         height={3}
         position={[0, 0, 0]}
-        justifyContent="start"
-        alignItems="start"
+        justifyContent="space-between"
+        alignItems="center"
       >
         <Surface
           width={CHILD_SIZE}
@@ -43,6 +43,13 @@ export default function Layout() {
           backgroundSize="cover"
           backgroundColor="green"
           backgroundImage="./assets/images/portrait.png"
+        />
+        <Surface
+          width={CHILD_SIZE}
+          height={CHILD_SIZE}
+          backgroundSize="cover"
+          backgroundColor="green"
+          backgroundImage="./assets/images/robot.png"
         />
       </Surface>
     </Canvas>

@@ -198,20 +198,19 @@ function Surface(
         if (width >= size.width) {
           x = width * -0.5;
           x += nodes.reduce((width, node, currentIndex) => {
-            if (currentIndex === index) return node.props.width * 0.5;
+            if (currentIndex === 0) return node.props.width * 0.5;
+            if (currentIndex > index) return width;
             return width + node.props.width;
           }, 0);
         } else {
-          // ?
-          const spacing = (size.width - width) / nodes.length;
+          let spacing =
+            nodes.length <= 1 ? 0 : (size.width - width) / (nodes.length - 1);
           x = size.width * -0.5;
           x += nodes.reduce((width, node, currentIndex) => {
-            if (currentIndex === index) return node.props.width * 0.5;
-            return width + node.props.width;
+            if (currentIndex === 0) return node.props.width * 0.5;
+            if (currentIndex > index) return width;
+            return width + node.props.width + spacing;
           }, 0);
-          if (index > 0) {
-            // x += spacing;
-          }
         }
       }
 
