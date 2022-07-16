@@ -157,17 +157,73 @@ function Surface(
   const getChildPosition = React.useCallback(
     // @todo fix types
     (child: any, index: number): Props["position"] => {
-      const node = nodes[index];
+      // @todo simplify this
       const width = nodes.reduce((width, node) => width + node.props.width, 0);
+      const height = nodes.reduce(
+        (height, node) => height + node.props.height,
+        0
+      );
+
       let x = 0;
       let y = 0;
-      if (flexDirection === "row" && alignItems === "start") {
-        x = size.width * 0.5;
-        for (let i = 0, length = nodes.length; i < length; i++) {
-          if (child.props.position !== undefined) continue;
-          x += nodes[i].props.width;
-          if (i === index) break;
+
+      /**
+       * row -> justifyContent
+       */
+      if (flexDirection === "row" && justifyContent === "start") {
+        x = size.width * -0.5;
+        x += nodes.reduce((width, node, currentIndex) => {
+          if (currentIndex === index) return node.props.width * 0.5;
+          return width + node.props.width;
+        }, 0);
+      }
+      if (flexDirection === "row" && justifyContent === "center") {
+        x = width * -0.5;
+        x += nodes.reduce((width, node, currentIndex) => {
+          if (currentIndex === index) return node.props.width * 0.5;
+          return width + node.props.width;
+        }, 0);
+      }
+      if (flexDirection === "row" && justifyContent === "end") {
+        x = size.width * -0.5;
+        x += nodes.reduce((width, node, currentIndex) => {
+          if (currentIndex === index) return node.props.width * 0.5;
+          return width + node.props.width;
+        }, 0);
+        x += size.width - width;
+      }
+      if (flexDirection === "row" && justifyContent === "space-between") {
+        if (width >= size.width) {
+          x = width * -0.5;
+          x += nodes.reduce((width, node, currentIndex) => {
+            if (currentIndex === index) return node.props.width * 0.5;
+            return width + node.props.width;
+          }, 0);
+        } else {
+          // ?
+          const spacing = (size.width - width) / nodes.length;
+          x = size.width * -0.5;
+          x += nodes.reduce((width, node, currentIndex) => {
+            if (currentIndex === index) return node.props.width * 0.5;
+            return width + node.props.width;
+          }, 0);
+          if (index > 0) {
+            // x += spacing;
+          }
         }
+      }
+
+      /**
+       * row -> alignItems
+       */
+      if (flexDirection === "row" && alignItems === "start") {
+        y = size.height * 0.5 - child.props.height * 0.5;
+      }
+      if (flexDirection === "row" && alignItems === "center") {
+        // @todo test if calculation needs to be made for this
+      }
+      if (flexDirection === "row" && alignItems === "end") {
+        y = size.height * -0.5 + child.props.height * 0.5;
       }
       return [x, y, 0];
     },
