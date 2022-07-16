@@ -1,4 +1,5 @@
 import React from "react";
+import { mergeRefs } from "react-merge-refs";
 import * as THREE from "three";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
@@ -25,22 +26,23 @@ type Props = {
   position?: [x: number, y: number, z: number];
 };
 
-const DEFAULT_POSITION: Props["position"] = [0, 0, 0];
-
-export default function Surface({
-  children,
-  width = 1,
-  height = 1,
-  backgroundColor = "black",
-  backgroundImage,
-  backgroundSize,
-  zIndex = 0,
-  position = DEFAULT_POSITION,
-  flexDirection = "row",
-  alignItems = "start",
-  justifyContent = "start",
-  gap = 0,
-}: Props) {
+function Surface(
+  {
+    children,
+    width = 1,
+    height = 1,
+    backgroundColor = "black",
+    backgroundImage,
+    backgroundSize,
+    zIndex = 0,
+    position,
+    flexDirection = "row",
+    alignItems = "start",
+    justifyContent = "start",
+    gap = 0,
+  }: Props,
+  forwardedRef: React.ForwardedRef<THREE.Group>
+) {
   const gl = useThree((state) => state.gl);
 
   // Set geometry size from `width` and `height` props
@@ -126,9 +128,6 @@ export default function Surface({
     surfaceRatio,
   ]);
 
-  const renderOrder = useRenderOrder();
-  const key = useRenderKey([texture]);
-
   const groupRef = React.useRef<THREE.Group>(null);
 
   React.useEffect(() => {
@@ -140,31 +139,35 @@ export default function Surface({
     });
   }, [position, clippingPlanes]);
 
+  const renderOrder = useRenderOrder();
+  const key = useRenderKey([texture, position, children, textureSize, clippingPlanes]);
+
   return (
-    <group key={key}>
-      <group ref={groupRef} position={position}>
-        <mesh renderOrder={renderOrder + zIndex}>
-          <planeBufferGeometry args={[size.width, size.height]} />
-          <meshBasicMaterial
-            color={backgroundColor}
-            transparent={true}
-            depthWrite={false}
-          />
-        </mesh>
-        <mesh
-          renderOrder={renderOrder + zIndex}
-          visible={texture !== undefined}
-        >
-          <planeBufferGeometry args={[textureSize.width, textureSize.height]} />
-          <meshBasicMaterial
-            map={texture}
-            transparent={true}
-            depthWrite={false}
-            clippingPlanes={clippingPlanes}
-          />
-        </mesh>
-      </group>
+    <group
+      ref={mergeRefs([groupRef, forwardedRef])}
+      key={key}
+      position={position}
+    >
+      <mesh renderOrder={renderOrder + zIndex}>
+        <planeBufferGeometry args={[size.width, size.height]} />
+        <meshBasicMaterial
+          color={backgroundColor}
+          transparent={true}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh renderOrder={renderOrder + zIndex} visible={texture !== undefined}>
+        <planeBufferGeometry args={[textureSize.width, textureSize.height]} />
+        <meshBasicMaterial
+          map={texture}
+          transparent={true}
+          depthWrite={false}
+          clippingPlanes={clippingPlanes}
+        />
+      </mesh>
       {children}
     </group>
   );
 }
+
+export default React.forwardRef(Surface);

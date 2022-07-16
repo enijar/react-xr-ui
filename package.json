@@ -43,6 +43,7 @@
     "@react-three/fiber": "^8.1.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-merge-refs": "^2.0.1",
     "react-router-dom": "^6.3.0",
     "three": "^0.142.0"
   }

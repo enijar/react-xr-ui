@@ -13,30 +13,13 @@ export default function Layout() {
 
       {/** Example */}
 
-      <Surface backgroundColor="crimson" width={3} height={3}>
+      <Surface
+        backgroundColor="crimson"
+        width={3}
+        height={3}
+        position={[0, 0, 0]}
+      >
         <Surface
-          position={[-1, 1, 0]}
-          width={1}
-          height={1}
-          backgroundSize="cover"
-          backgroundColor="purple"
-        />
-        <Surface
-          position={[0, 1, 0]}
-          width={1}
-          height={1}
-          backgroundSize="cover"
-          backgroundColor="grey"
-        />
-        <Surface
-          position={[0, 1, 0]}
-          width={1}
-          height={1}
-          backgroundSize="cover"
-          backgroundColor="pink"
-        />
-        <Surface
-          position={[-1, 0, 0]}
           width={1}
           height={1}
           backgroundSize="cover"
@@ -44,12 +27,18 @@ export default function Layout() {
           backgroundImage="./assets/images/landscape.png"
         />
         <Surface
-          position={[1, 0, 0]}
           width={1}
           height={1}
           backgroundSize="cover"
           backgroundColor="green"
           backgroundImage="./assets/images/robot.png"
+        />
+        <Surface
+          width={1}
+          height={1}
+          backgroundSize="cover"
+          backgroundColor="green"
+          backgroundImage="./assets/images/portrait.png"
         />
       </Surface>
     </Canvas>
