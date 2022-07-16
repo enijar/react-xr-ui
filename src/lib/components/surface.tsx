@@ -1,9 +1,9 @@
 import React from "react";
 import { mergeRefs } from "react-merge-refs";
 import * as THREE from "three";
+import { useThree } from "@react-three/fiber";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
-import { useThree } from "@react-three/fiber";
 
 type Props = {
   children?: React.ReactNode;
@@ -140,7 +140,13 @@ function Surface(
   }, [position, clippingPlanes]);
 
   const renderOrder = useRenderOrder();
-  const key = useRenderKey([texture, position, children, textureSize, clippingPlanes]);
+  const key = useRenderKey([
+    texture,
+    position,
+    children,
+    textureSize,
+    clippingPlanes,
+  ]);
 
   return (
     <group
