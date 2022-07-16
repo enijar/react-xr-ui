@@ -2,6 +2,7 @@ import React from "react";
 import { mergeRefs } from "react-merge-refs";
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
+import { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
 
@@ -24,6 +25,19 @@ type Props = {
   gap?: number;
   zIndex?: number;
   position?: [x: number, y: number, z: number];
+  onClick?: (event: ThreeEvent<MouseEvent>) => void;
+  onContextMenu?: (event: ThreeEvent<MouseEvent>) => void;
+  onDoubleClick?: (event: ThreeEvent<MouseEvent>) => void;
+  onPointerUp?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerDown?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerOver?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerOut?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerEnter?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerLeave?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerMove?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerMissed?: (event: MouseEvent) => void;
+  onPointerCancel?: (event: ThreeEvent<PointerEvent>) => void;
+  onWheel?: (event: ThreeEvent<WheelEvent>) => void;
 };
 
 function Surface(
@@ -40,6 +54,19 @@ function Surface(
     alignItems = "start",
     justifyContent = "start",
     gap = 0,
+    onClick,
+    onContextMenu,
+    onDoubleClick,
+    onPointerUp,
+    onPointerDown,
+    onPointerOver,
+    onPointerOut,
+    onPointerEnter,
+    onPointerLeave,
+    onPointerMove,
+    onPointerMissed,
+    onPointerCancel,
+    onWheel,
   }: Props,
   forwardedRef: React.ForwardedRef<THREE.Group>
 ) {
@@ -236,6 +263,19 @@ function Surface(
       ref={mergeRefs([groupRef, forwardedRef])}
       key={key}
       position={position}
+      onClick={onClick}
+      onContextMenu={onContextMenu}
+      onDoubleClick={onDoubleClick}
+      onPointerUp={onPointerUp}
+      onPointerDown={onPointerDown}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+      onPointerMove={onPointerMove}
+      onPointerMissed={onPointerMissed}
+      onPointerCancel={onPointerCancel}
+      onWheel={onWheel}
     >
       <mesh renderOrder={renderOrder + zIndex}>
         <planeBufferGeometry args={[size.width, size.height]} />
