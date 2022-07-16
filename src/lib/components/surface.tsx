@@ -148,6 +148,32 @@ function Surface(
     clippingPlanes,
   ]);
 
+  const nodes = React.useMemo(() => {
+    if (children === undefined) return [];
+    if (!Array.isArray(children)) return [children];
+    return children;
+  }, [children]);
+
+  const getChildPosition = React.useCallback(
+    // @todo fix types
+    (child: any, index: number): Props["position"] => {
+      const node = nodes[index];
+      const width = nodes.reduce((width, node) => width + node.props.width, 0);
+      let x = 0;
+      let y = 0;
+      if (flexDirection === "row" && alignItems === "start") {
+        x = size.width * 0.5;
+        for (let i = 0, length = nodes.length; i < length; i++) {
+          if (child.props.position !== undefined) continue;
+          x += nodes[i].props.width;
+          if (i === index) break;
+        }
+      }
+      return [x, y, 0];
+    },
+    [nodes, size, flexDirection, alignItems, justifyContent]
+  );
+
   return (
     <group
       ref={mergeRefs([groupRef, forwardedRef])}
@@ -171,7 +197,13 @@ function Surface(
           clippingPlanes={clippingPlanes}
         />
       </mesh>
-      {children}
+      {React.Children.map(children, (child, index) => {
+        return (
+          <group key={index} position={getChildPosition(child, index)}>
+            {child}
+          </group>
+        );
+      })}
     </group>
   );
 }
