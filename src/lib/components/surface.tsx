@@ -173,24 +173,26 @@ function Surface(
       if (flexDirection === "row" && justifyContent === "start") {
         x = size.width * -0.5;
         x += nodes.reduce((width, node, currentIndex) => {
-          if (currentIndex === index) return node.props.width * 0.5;
+          if (currentIndex === 0) return node.props.width * 0.5;
+          if (currentIndex > index) return width;
           return width + node.props.width;
         }, 0);
       }
       if (flexDirection === "row" && justifyContent === "center") {
         x = width * -0.5;
         x += nodes.reduce((width, node, currentIndex) => {
-          if (currentIndex === index) return node.props.width * 0.5;
+          if (currentIndex === 0) return node.props.width * 0.5;
+          if (currentIndex > index) return width;
           return width + node.props.width;
         }, 0);
       }
       if (flexDirection === "row" && justifyContent === "end") {
-        x = size.width * -0.5;
+        x = size.width * 0.5 - width;
         x += nodes.reduce((width, node, currentIndex) => {
-          if (currentIndex === index) return node.props.width * 0.5;
+          if (currentIndex === 0) return node.props.width * 0.5;
+          if (currentIndex > index) return width;
           return width + node.props.width;
         }, 0);
-        x += size.width - width;
       }
       if (flexDirection === "row" && justifyContent === "space-between") {
         if (width >= size.width) {
