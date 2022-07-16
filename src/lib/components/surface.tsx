@@ -72,17 +72,21 @@ export default function Surface({
     return [surfaceRatio, imageRatioX, imageRatioY];
   }, [texture, size]);
 
-  const planes = React.useMemo(() => {
-    const plane = new THREE.Plane(new THREE.Vector3(), 1);
-    return [plane.clone(), plane.clone(), plane.clone(), plane.clone()];
-  }, []);
+  const [clippingPlanes, setClippingPlanes] = React.useState<THREE.Plane[]>(
+    () => {
+      const plane = new THREE.Plane(new THREE.Vector3(), 1);
+      return [plane.clone(), plane.clone(), plane.clone(), plane.clone()];
+    }
+  );
 
-  const [textureSize, textureClippingPlanes] = React.useMemo(() => {
-    if (texture === undefined) return [size, planes];
+  const [textureSize, setTextureSize] = React.useState(() => {
+    return { ...size };
+  });
+
+  React.useEffect(() => {
+    if (texture === undefined) return;
 
     const newSize = { ...size };
-
-    // @todo find a way to simplify this
 
     if (backgroundSize === "contain") {
       if (imageRatioX >= surfaceRatio) {
@@ -104,14 +108,16 @@ export default function Surface({
       }
     }
 
-    planes[0].set(new THREE.Vector3(0, -1, 0), size.height * 0.5);
-    planes[1].set(new THREE.Vector3(1, 0, 0), size.width * 0.5);
-    planes[2].set(new THREE.Vector3(0, 1, 0), size.height * 0.5);
-    planes[3].set(new THREE.Vector3(-1, 0, 0), size.width * 0.5);
-
-    return [newSize, planes];
+    setTextureSize(newSize);
+    setClippingPlanes((planes) => {
+      planes[0].set(new THREE.Vector3(0, -1, 0), size.height * 0.5);
+      planes[1].set(new THREE.Vector3(1, 0, 0), size.width * 0.5);
+      planes[2].set(new THREE.Vector3(0, 1, 0), size.height * 0.5);
+      planes[3].set(new THREE.Vector3(-1, 0, 0), size.width * 0.5);
+      return [...planes];
+    });
   }, [
-    planes,
+    position,
     texture,
     size,
     backgroundSize,
@@ -129,10 +135,10 @@ export default function Surface({
     const group = groupRef.current;
     if (group === null) return;
     group.updateMatrixWorld(true);
-    planes.forEach((plane) => {
+    clippingPlanes.forEach((plane) => {
       plane.applyMatrix4(group.matrixWorld);
     });
-  }, [position, planes]);
+  }, [position, clippingPlanes]);
 
   return (
     <group key={key}>
@@ -154,8 +160,7 @@ export default function Surface({
             map={texture}
             transparent={true}
             depthWrite={false}
-            clippingPlanes={textureClippingPlanes}
-            clipIntersection={true}
+            clippingPlanes={clippingPlanes}
           />
         </mesh>
       </group>
