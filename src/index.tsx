@@ -5,7 +5,7 @@ import { HashRouter as Router, Route, Routes } from "react-router-dom";
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
 const Index = React.lazy(() => import("./examples/index"));
-const Layout = React.lazy(() => import("./examples/layout"));
+const Flexbox = React.lazy(() => import("./examples/flexbox"));
 
 root.render(
   <Router>
@@ -13,7 +13,7 @@ root.render(
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/examples">
-          <Route path="layout" element={<Layout />} />
+          <Route path="flexbox" element={<Flexbox />} />
         </Route>
       </Routes>
     </React.Suspense>

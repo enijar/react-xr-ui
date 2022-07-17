@@ -7,7 +7,7 @@ export default function Index() {
       <h1>Examples</h1>
       <ul>
         <li>
-          <Link to="/examples/layout">Layout</Link>
+          <Link to="/examples/flexbox">Flexbox</Link>
         </li>
       </ul>
     </main>

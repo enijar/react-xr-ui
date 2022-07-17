@@ -24,6 +24,7 @@ type Props = {
   gap?: number;
   zIndex?: number;
   position?: [x: number, y: number, z: number];
+  rotation?: [x: number, y: number, z: number];
   onClick?: (event: ThreeEvent<MouseEvent>) => void;
   onContextMenu?: (event: ThreeEvent<MouseEvent>) => void;
   onDoubleClick?: (event: ThreeEvent<MouseEvent>) => void;
@@ -49,6 +50,7 @@ function Surface(
     backgroundSize,
     zIndex = 0,
     position,
+    rotation,
     flexDirection = "row",
     alignItems = "start",
     justifyContent = "start",
@@ -304,6 +306,7 @@ function Surface(
       return [...planes];
     });
   }, [
+    rotation,
     position,
     childPositions,
     texture,
@@ -323,12 +326,13 @@ function Surface(
     clippingPlanes.forEach((plane) => {
       plane.applyMatrix4(group.matrixWorld);
     });
-  }, [position, childPositions, clippingPlanes]);
+  }, [rotation, position, childPositions, clippingPlanes]);
 
   const renderOrder = useRenderOrder();
   const key = useRenderKey([
     childPositions,
     texture,
+    rotation,
     position,
     children,
     textureSize,
@@ -339,6 +343,7 @@ function Surface(
     <group
       ref={mergeRefs([groupRef, forwardedRef])}
       key={key}
+      rotation={rotation}
       position={position}
       onClick={onClick}
       onContextMenu={onContextMenu}
