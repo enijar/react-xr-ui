@@ -7,6 +7,9 @@ import { suspend } from "suspend-react";
 import { mergeRefs } from "react-merge-refs";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
+import Surface from "@/lib/components/surface";
+import surfaces from "@/lib/state/surfaces";
+import { SurfaceContext } from "@/lib/context/surface-context";
 
 type Props = JSX.IntrinsicElements["mesh"] & {
   children: React.ReactNode;
@@ -84,17 +87,22 @@ function Text(
   const key = useRenderKey([children]);
 
   React.useMemo(() => {
-    troikaMesh.renderOrder = renderOrder;
+    troikaMesh.renderOrder = renderOrder + 2;
     const material = troikaMesh.material as THREE.MeshBasicMaterial;
     material.side = THREE.FrontSide;
     material.depthWrite = false;
     material.needsUpdate = true;
   }, [troikaMesh, renderOrder]);
 
+  const [size, setSize] = React.useState({ width: 0, height: 0 });
+
   React.useLayoutEffect(
     () =>
       void troikaMesh.sync(() => {
         invalidate();
+        const width = troikaMesh.geometry.boundingBox.max.x * 2;
+        const height = troikaMesh.geometry.boundingBox.max.y * 2;
+        setSize({ width, height });
         if (onSync) onSync(troikaMesh);
       })
   );
@@ -103,8 +111,28 @@ function Text(
     return () => troikaMesh.dispose();
   }, [troikaMesh]);
 
+  const id = React.useId();
+
+  const { parentId } = React.useContext(SurfaceContext);
+
+  React.useEffect(() => {
+    const group = groupRef.current;
+    if (group === null) return;
+    if (parentId === undefined) return;
+    if (!surfaces.hasOwnProperty(parentId)) {
+      surfaces[parentId] = [];
+    }
+    surfaces[parentId].push({ ...size, id });
+  }, [parentId, size, id]);
+
   return (
-    <group ref={groupRef} key={key}>
+    <Surface
+      width={size.width}
+      height={size.height}
+      backgroundColor="crimson"
+      ref={groupRef}
+      key={key}
+    >
       <primitive
         object={troikaMesh}
         ref={mergeRefs([groupRef, forwardedRef])}
@@ -116,8 +144,12 @@ function Text(
       >
         {nodes}
       </primitive>
-    </group>
+    </Surface>
   );
 }
 
-export default React.forwardRef(Text);
+const Component = React.forwardRef(Text);
+
+Component.displayName = "ui-text";
+
+export default Component;

@@ -15,8 +15,13 @@ export default function Typography() {
         alignItems="center"
         gap={0.05}
       >
-        <Surface width={0.5} height={0.5} backgroundColor="#555555">
-          <Text fontSize={0.1} color="green" textAlign="center">
+        <Surface
+          width={0.5}
+          height={0.5}
+          backgroundColor="#555555"
+          alignItems="start"
+        >
+          <Text fontSize={0.1} color="white" textAlign="center">
             {`Some\nText`}
           </Text>
         </Surface>

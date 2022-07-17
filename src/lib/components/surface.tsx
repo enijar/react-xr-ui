@@ -5,6 +5,8 @@ import { useThree } from "@react-three/fiber";
 import { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
+import surfaces from "@/lib/state/surfaces";
+import { SurfaceContext } from "@/lib/context/surface-context";
 
 type Props = {
   children?: React.ReactNode;
@@ -123,10 +125,15 @@ function Surface(
     return new THREE.Vector2(0, 0);
   }, []);
 
+  const { parentId } = React.useContext(SurfaceContext);
+
   const getChildPosition = React.useCallback(
     // @todo fix types
     (index: number): Props["position"] => {
-      if (nodes[index].type.displayName !== "surface") return [0, 0, 0];
+      console.log(surfaces);
+
+      const displayName = nodes[index].type.displayName ?? "";
+      if (!["ui-surface"].includes(displayName)) return [0, 0, 0];
       // @todo simplify this
       const width = nodes.reduce((width, node) => width + node.props.width, 0);
       const height = nodes.reduce(
@@ -260,7 +267,7 @@ function Surface(
 
       return [vec.x, vec.y, 0];
     },
-    [nodes, size, flexDirection, alignItems, justifyContent, gap, vec]
+    [nodes, size, flexDirection, alignItems, justifyContent, gap, vec, parentId]
   );
 
   const [childPositions, setChildPositions] = React.useState<
@@ -340,6 +347,18 @@ function Surface(
     clippingPlanes,
   ]);
 
+  const id = React.useId();
+
+  React.useEffect(() => {
+    const group = groupRef.current;
+    if (group === null) return;
+    if (parentId === undefined) return;
+    if (!surfaces.hasOwnProperty(parentId)) {
+      surfaces[parentId] = [];
+    }
+    surfaces[parentId].push({ ...size, id });
+  }, [size, parentId, id]);
+
   return (
     <group
       ref={mergeRefs([groupRef, forwardedRef])}
@@ -377,19 +396,21 @@ function Surface(
           clippingPlanes={clippingPlanes}
         />
       </mesh>
-      {React.Children.map(children, (child, index) => {
-        return (
-          <group key={index} position={childPositions[index]}>
-            {child}
-          </group>
-        );
-      })}
+      <SurfaceContext.Provider value={{ parentId: id }}>
+        {React.Children.map(children, (child: any, index) => {
+          return (
+            <group key={index} position={childPositions[index]}>
+              {child}
+            </group>
+          );
+        })}
+      </SurfaceContext.Provider>
     </group>
   );
 }
 
 const Component = React.forwardRef(Surface);
 
-Component.displayName = "surface";
+Component.displayName = "ui-surface";
 
 export default Component;
