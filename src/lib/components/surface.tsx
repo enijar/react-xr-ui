@@ -126,6 +126,7 @@ function Surface(
   const getChildPosition = React.useCallback(
     // @todo fix types
     (index: number): Props["position"] => {
+      if (nodes[index].displayName !== "surface") return [0, 0, 0];
       // @todo simplify this
       const width = nodes.reduce((width, node) => width + node.props.width, 0);
       const height = nodes.reduce(
@@ -387,4 +388,8 @@ function Surface(
   );
 }
 
-export default React.forwardRef(Surface);
+const Component = React.forwardRef(Surface);
+
+Component.displayName = "surface";
+
+export default Component;
