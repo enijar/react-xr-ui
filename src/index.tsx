@@ -1,21 +1,27 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import Examples from "@/components/examples";
+import examples from "@/config/examples";
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
-
-const Index = React.lazy(() => import("./examples/index"));
-const Flexbox = React.lazy(() => import("./examples/flexbox"));
-const Typography = React.lazy(() => import("./examples/typography"));
 
 root.render(
   <Router>
     <React.Suspense fallback={null}>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Examples />} />
         <Route path="/examples">
-          <Route path="flexbox" element={<Flexbox />} />
-          <Route path="typography" element={<Typography />} />
+          {examples.map((example, index) => {
+            const Component = example.component;
+            return (
+              <Route
+                key={index}
+                path={example.pathname}
+                element={<Component />}
+              />
+            );
+          })}
         </Route>
       </Routes>
     </React.Suspense>

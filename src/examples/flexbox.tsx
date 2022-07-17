@@ -1,5 +1,5 @@
 import React from "react";
-import Example from "@/examples/example";
+import Example from "@/components/example";
 import Surface from "@/lib/components/surface";
 
 export default function Flexbox() {
