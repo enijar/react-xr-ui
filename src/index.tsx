@@ -6,6 +6,7 @@ const root = ReactDOM.createRoot(document.querySelector("#root"));
 
 const Index = React.lazy(() => import("./examples/index"));
 const Flexbox = React.lazy(() => import("./examples/flexbox"));
+const Typography = React.lazy(() => import("./examples/typography"));
 
 root.render(
   <Router>
@@ -14,6 +15,7 @@ root.render(
         <Route path="/" element={<Index />} />
         <Route path="/examples">
           <Route path="flexbox" element={<Flexbox />} />
+          <Route path="typography" element={<Typography />} />
         </Route>
       </Routes>
     </React.Suspense>

@@ -9,6 +9,9 @@ export default function Index() {
         <li>
           <Link to="/examples/flexbox">Flexbox</Link>
         </li>
+        <li>
+          <Link to="/examples/typography">Typography</Link>
+        </li>
       </ul>
     </main>
   );
