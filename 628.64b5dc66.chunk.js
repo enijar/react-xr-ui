@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_app_client=self.webpackChunk_app_client||[]).push([[628],{628:function(e,l,n){n.r(l),n.d(l,{default:function(){return a}});var t=n(294),u=n(711);function a(){return t.createElement("main",null,t.createElement("h1",null,"Examples"),t.createElement("ul",null,t.createElement("li",null,t.createElement(u.rU,{to:"/examples/flexbox"},"Flexbox"))))}}}]);
+//# sourceMappingURL=628.64b5dc66.chunk.js.map
