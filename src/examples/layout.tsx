@@ -20,7 +20,7 @@ export default function Layout() {
         width={3}
         height={3}
         position={[0, 0, 0]}
-        justifyContent="center"
+        justifyContent="space-between"
         flexDirection="row"
         alignItems="center"
       >

@@ -5,7 +5,6 @@ import { useThree } from "@react-three/fiber";
 import { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
-import { Euler } from "three";
 
 type Props = {
   children?: React.ReactNode;
@@ -209,25 +208,35 @@ function Surface(
         contentSize = height;
       }
 
+      if (
+        nodes.length > 0 &&
+        !["space-between", "space-around"].includes(justifyContent)
+      ) {
+        contentSize += gap * (nodes.length - 1);
+      }
+
       /**
-       * row -> justifyContent
+       * justifyContent
        */
       if (justifyContent === "start") {
         vec.x = size[axis] * 0.5 + nodes[0].props[axis] * 0.5 - size[axis];
         for (let i = 1; i <= index; i++) {
-          vec.x += nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5;
+          vec.x +=
+            nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5 + gap;
         }
       }
       if (justifyContent === "center") {
         vec.x = nodes[0].props[axis] * 0.5 - contentSize * 0.5;
         for (let i = 1; i <= index; i++) {
-          vec.x += nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5;
+          vec.x +=
+            nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5 + gap;
         }
       }
       if (justifyContent === "end") {
         vec.x = size[axis] * 0.5 + nodes[0].props[axis] * 0.5 - contentSize;
         for (let i = 1; i <= index; i++) {
-          vec.x += nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5;
+          vec.x +=
+            nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5 + gap;
         }
       }
       if (justifyContent === "space-between") {
@@ -279,7 +288,7 @@ function Surface(
       }
 
       /**
-       * row -> alignItems
+       * alignItems
        */
       if (alignItems === "start") {
         if (flexDirection === "row") {
@@ -307,7 +316,7 @@ function Surface(
 
       return [vec.x, vec.y, 0];
     },
-    [nodes, size, flexDirection, alignItems, justifyContent, vec]
+    [nodes, size, flexDirection, alignItems, justifyContent, gap, vec]
   );
 
   return (
