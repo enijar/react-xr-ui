@@ -5,6 +5,7 @@ import { useThree } from "@react-three/fiber";
 import { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import useRenderKey from "@/lib/hooks/use-render-key";
+import { Euler } from "three";
 
 type Props = {
   children?: React.ReactNode;
@@ -20,7 +21,6 @@ type Props = {
     | "center"
     | "end"
     | "space-between"
-    | "space-evenly"
     | "space-around";
   gap?: number;
   zIndex?: number;
@@ -181,6 +181,10 @@ function Surface(
     return children;
   }, [children]);
 
+  const vec = React.useMemo(() => {
+    return new THREE.Vector2(0, 0);
+  }, []);
+
   const getChildPosition = React.useCallback(
     // @todo fix types
     (child: any, index: number): Props["position"] => {
@@ -191,71 +195,119 @@ function Surface(
         0
       );
 
-      let x = 0;
-      let y = 0;
+      vec.set(0, 0);
+
+      let contentSize = width;
+
+      type Axis = "width" | "height";
+
+      let axis: Axis = "width";
+      let axisInverted: Axis = "height";
+      if (flexDirection === "column") {
+        axis = "height";
+        axisInverted = "width";
+        contentSize = height;
+      }
 
       /**
        * row -> justifyContent
        */
-      if (flexDirection === "row" && justifyContent === "start") {
-        x = size.width * -0.5;
-        x += nodes.reduce((width, node, currentIndex) => {
-          if (currentIndex === 0) return node.props.width * 0.5;
-          if (currentIndex > index) return width;
-          return width + node.props.width;
-        }, 0);
+      if (justifyContent === "start") {
+        vec.x = size[axis] * 0.5 + nodes[0].props[axis] * 0.5 - size[axis];
+        for (let i = 1; i <= index; i++) {
+          vec.x += nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5;
+        }
       }
-      if (flexDirection === "row" && justifyContent === "center") {
-        x = width * -0.5;
-        x += nodes.reduce((width, node, currentIndex) => {
-          if (currentIndex === 0) return node.props.width * 0.5;
-          if (currentIndex > index) return width;
-          return width + node.props.width;
-        }, 0);
+      if (justifyContent === "center") {
+        vec.x = nodes[0].props[axis] * 0.5 - contentSize * 0.5;
+        for (let i = 1; i <= index; i++) {
+          vec.x += nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5;
+        }
       }
-      if (flexDirection === "row" && justifyContent === "end") {
-        x = size.width * 0.5 - width;
-        x += nodes.reduce((width, node, currentIndex) => {
-          if (currentIndex === 0) return node.props.width * 0.5;
-          if (currentIndex > index) return width;
-          return width + node.props.width;
-        }, 0);
+      if (justifyContent === "end") {
+        vec.x = size[axis] * 0.5 + nodes[0].props[axis] * 0.5 - contentSize;
+        for (let i = 1; i <= index; i++) {
+          vec.x += nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5;
+        }
       }
-      if (flexDirection === "row" && justifyContent === "space-between") {
-        if (width >= size.width) {
-          x = width * -0.5;
-          x += nodes.reduce((width, node, currentIndex) => {
-            if (currentIndex === 0) return node.props.width * 0.5;
-            if (currentIndex > index) return width;
-            return width + node.props.width;
-          }, 0);
+      if (justifyContent === "space-between") {
+        if (contentSize >= size[axis]) {
+          vec.x = size[axis] * 0.5 + nodes[0].props[axis] * 0.5 - size[axis];
+          for (let i = 1; i <= index; i++) {
+            vec.x +=
+              nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5;
+          }
         } else {
-          let spacing =
-            nodes.length <= 1 ? 0 : (size.width - width) / (nodes.length - 1);
-          x = size.width * -0.5;
-          x += nodes.reduce((width, node, currentIndex) => {
-            if (currentIndex === 0) return node.props.width * 0.5;
-            if (currentIndex > index) return width;
-            return width + node.props.width + spacing;
-          }, 0);
+          let spacing = Math.max(0, size[axis] - contentSize);
+          if (nodes.length === 0) {
+            spacing = 0;
+          } else if (spacing > 0) {
+            spacing /= nodes.length - 1;
+          }
+          vec.x = size[axis] * 0.5 + nodes[0].props[axis] * 0.5 - size[axis];
+          for (let i = 1; i <= index; i++) {
+            vec.x +=
+              nodes[i - 1].props[axis] * 0.5 +
+              nodes[i].props[axis] * 0.5 +
+              spacing;
+          }
+        }
+      }
+      if (justifyContent === "space-around") {
+        if (contentSize >= size[axis]) {
+          vec.x = size[axis] * 0.5 + nodes[0].props[axis] * 0.5 - size[axis];
+          for (let i = 1; i <= index; i++) {
+            vec.x +=
+              nodes[i - 1].props[axis] * 0.5 + nodes[i].props[axis] * 0.5;
+          }
+        } else {
+          let spacing = Math.max(0, size[axis] - contentSize);
+          if (nodes.length === 0) {
+            spacing = 0;
+          } else if (spacing > 0) {
+            spacing /= nodes.length + 1;
+          }
+          vec.x = size[axis] * 0.5 + nodes[0].props[axis] * 0.5 - size[axis];
+          vec.x += spacing;
+          for (let i = 1; i <= index; i++) {
+            vec.x +=
+              nodes[i - 1].props[axis] * 0.5 +
+              nodes[i].props[axis] * 0.5 +
+              spacing;
+          }
         }
       }
 
       /**
        * row -> alignItems
        */
-      if (flexDirection === "row" && alignItems === "start") {
-        y = size.height * 0.5 - child.props.height * 0.5;
+      if (alignItems === "start") {
+        if (flexDirection === "row") {
+          vec.y = size[axisInverted] * 0.5 - child.props[axisInverted] * 0.5;
+        }
+        if (flexDirection === "column") {
+          vec.y = size[axisInverted] * -0.5 + child.props[axisInverted] * 0.5;
+        }
       }
-      if (flexDirection === "row" && alignItems === "center") {
-        // @todo test if calculation needs to be made for this
+      if (alignItems === "center") {
+        // No calculation needed
       }
-      if (flexDirection === "row" && alignItems === "end") {
-        y = size.height * -0.5 + child.props.height * 0.5;
+      if (alignItems === "end") {
+        if (flexDirection === "row") {
+          vec.y = size[axisInverted] * -0.5 + child.props[axisInverted] * 0.5;
+        }
+        if (flexDirection === "column") {
+          vec.y = size[axisInverted] * 0.5 - child.props[axisInverted] * 0.5;
+        }
       }
-      return [x, y, 0];
+
+      if (flexDirection === "column") {
+        return [vec.y, vec.x, 0];
+      }
+
+      return [vec.x, vec.y, 0];
     },
-    [nodes, size, flexDirection, alignItems, justifyContent]
+    [nodes, size, flexDirection, alignItems, justifyContent, vec]
   );
 
   return (

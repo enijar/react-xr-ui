@@ -20,11 +20,12 @@ export default function Layout() {
         width={3}
         height={3}
         position={[0, 0, 0]}
-        justifyContent="space-between"
+        justifyContent="center"
+        flexDirection="row"
         alignItems="center"
       >
         <Surface
-          width={CHILD_SIZE}
+          width={CHILD_SIZE * 2}
           height={CHILD_SIZE}
           backgroundSize="cover"
           backgroundColor="green"
@@ -39,7 +40,7 @@ export default function Layout() {
         />
         <Surface
           width={CHILD_SIZE}
-          height={CHILD_SIZE}
+          height={CHILD_SIZE * 2}
           backgroundSize="cover"
           backgroundColor="green"
           backgroundImage="./assets/images/portrait.png"
