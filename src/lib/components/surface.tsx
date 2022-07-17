@@ -111,69 +111,6 @@ function Surface(
     return { ...size };
   });
 
-  React.useEffect(() => {
-    if (texture === undefined) return;
-
-    const newSize = { ...size };
-
-    if (backgroundSize === "contain") {
-      if (imageRatioX >= surfaceRatio) {
-        newSize.width = size.width;
-        newSize.height = newSize.width * imageRatioY;
-      } else {
-        newSize.height = size.height;
-        newSize.width = newSize.height * imageRatioX;
-      }
-    }
-
-    if (backgroundSize === "cover") {
-      if (imageRatioX >= surfaceRatio) {
-        newSize.height = size.height;
-        newSize.width = newSize.height * imageRatioX;
-      } else {
-        newSize.width = size.width;
-        newSize.height = newSize.width * imageRatioY;
-      }
-    }
-
-    setTextureSize(newSize);
-    setClippingPlanes((planes) => {
-      planes[0].set(new THREE.Vector3(0, -1, 0), size.height * 0.5);
-      planes[1].set(new THREE.Vector3(1, 0, 0), size.width * 0.5);
-      planes[2].set(new THREE.Vector3(0, 1, 0), size.height * 0.5);
-      planes[3].set(new THREE.Vector3(-1, 0, 0), size.width * 0.5);
-      return [...planes];
-    });
-  }, [
-    position,
-    texture,
-    size,
-    backgroundSize,
-    imageRatioX,
-    imageRatioY,
-    surfaceRatio,
-  ]);
-
-  const groupRef = React.useRef<THREE.Group>(null);
-
-  React.useEffect(() => {
-    const group = groupRef.current;
-    if (group === null) return;
-    group.updateMatrixWorld(true);
-    clippingPlanes.forEach((plane) => {
-      plane.applyMatrix4(group.matrixWorld);
-    });
-  }, [position, clippingPlanes]);
-
-  const renderOrder = useRenderOrder();
-  const key = useRenderKey([
-    texture,
-    position,
-    children,
-    textureSize,
-    clippingPlanes,
-  ]);
-
   const nodes = React.useMemo(() => {
     if (children === undefined) return [];
     if (!Array.isArray(children)) return [children];
@@ -186,7 +123,7 @@ function Surface(
 
   const getChildPosition = React.useCallback(
     // @todo fix types
-    (child: any, index: number): Props["position"] => {
+    (index: number): Props["position"] => {
       // @todo simplify this
       const width = nodes.reduce((width, node) => width + node.props.width, 0);
       const height = nodes.reduce(
@@ -292,10 +229,12 @@ function Surface(
        */
       if (alignItems === "start") {
         if (flexDirection === "row") {
-          vec.y = size[axisInverted] * 0.5 - child.props[axisInverted] * 0.5;
+          vec.y =
+            size[axisInverted] * 0.5 - nodes[index].props[axisInverted] * 0.5;
         }
         if (flexDirection === "column") {
-          vec.y = size[axisInverted] * -0.5 + child.props[axisInverted] * 0.5;
+          vec.y =
+            size[axisInverted] * -0.5 + nodes[index].props[axisInverted] * 0.5;
         }
       }
       if (alignItems === "center") {
@@ -303,10 +242,12 @@ function Surface(
       }
       if (alignItems === "end") {
         if (flexDirection === "row") {
-          vec.y = size[axisInverted] * -0.5 + child.props[axisInverted] * 0.5;
+          vec.y =
+            size[axisInverted] * -0.5 + nodes[index].props[axisInverted] * 0.5;
         }
         if (flexDirection === "column") {
-          vec.y = size[axisInverted] * 0.5 - child.props[axisInverted] * 0.5;
+          vec.y =
+            size[axisInverted] * 0.5 - nodes[index].props[axisInverted] * 0.5;
         }
       }
 
@@ -318,6 +259,81 @@ function Surface(
     },
     [nodes, size, flexDirection, alignItems, justifyContent, gap, vec]
   );
+
+  const [childPositions, setChildPositions] = React.useState<
+    Props["position"][]
+  >(() => {
+    return nodes.map((node, index) => getChildPosition(index));
+  });
+
+  React.useEffect(() => {
+    setChildPositions(nodes.map((node, index) => getChildPosition(index)));
+  }, [nodes, getChildPosition]);
+
+  React.useEffect(() => {
+    if (texture === undefined) return;
+
+    const newSize = { ...size };
+
+    if (backgroundSize === "contain") {
+      if (imageRatioX >= surfaceRatio) {
+        newSize.width = size.width;
+        newSize.height = newSize.width * imageRatioY;
+      } else {
+        newSize.height = size.height;
+        newSize.width = newSize.height * imageRatioX;
+      }
+    }
+
+    if (backgroundSize === "cover") {
+      if (imageRatioX >= surfaceRatio) {
+        newSize.height = size.height;
+        newSize.width = newSize.height * imageRatioX;
+      } else {
+        newSize.width = size.width;
+        newSize.height = newSize.width * imageRatioY;
+      }
+    }
+
+    setTextureSize(newSize);
+    setClippingPlanes((planes) => {
+      planes[0].set(new THREE.Vector3(0, -1, 0), size.height * 0.5);
+      planes[1].set(new THREE.Vector3(1, 0, 0), size.width * 0.5);
+      planes[2].set(new THREE.Vector3(0, 1, 0), size.height * 0.5);
+      planes[3].set(new THREE.Vector3(-1, 0, 0), size.width * 0.5);
+      return [...planes];
+    });
+  }, [
+    position,
+    childPositions,
+    texture,
+    size,
+    backgroundSize,
+    imageRatioX,
+    imageRatioY,
+    surfaceRatio,
+  ]);
+
+  const groupRef = React.useRef<THREE.Group>(null);
+
+  React.useEffect(() => {
+    const group = groupRef.current;
+    if (group === null) return;
+    group.updateMatrixWorld(true);
+    clippingPlanes.forEach((plane) => {
+      plane.applyMatrix4(group.matrixWorld);
+    });
+  }, [position, childPositions, clippingPlanes]);
+
+  const renderOrder = useRenderOrder();
+  const key = useRenderKey([
+    childPositions,
+    texture,
+    position,
+    children,
+    textureSize,
+    clippingPlanes,
+  ]);
 
   return (
     <group
@@ -357,7 +373,7 @@ function Surface(
       </mesh>
       {React.Children.map(children, (child, index) => {
         return (
-          <group key={index} position={getChildPosition(child, index)}>
+          <group key={index} position={childPositions[index]}>
             {child}
           </group>
         );

@@ -14,12 +14,10 @@ export default function Layout() {
       <ambientLight />
 
       {/** Example */}
-
       <Surface
         backgroundColor="crimson"
         width={3}
         height={3}
-        position={[0, 0, 0]}
         justifyContent="space-between"
         flexDirection="row"
         alignItems="center"
