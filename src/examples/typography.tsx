@@ -20,9 +20,16 @@ export default function Typography() {
           height={0.5}
           backgroundColor="#555555"
           alignItems="start"
+          justifyContent="space-between"
+          flexDirection="column"
         >
-          <Text fontSize={0.1} color="white" textAlign="center">
-            {`Some Very Long\nText`}
+          <Text
+            fontSize={0.08}
+            color="white"
+            textAlign="center"
+            fontUrl="./assets/fonts/roboto.ttf"
+          >
+            {`Roboto Slab`}
           </Text>
         </Surface>
       </Surface>

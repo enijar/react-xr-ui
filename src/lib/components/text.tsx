@@ -20,7 +20,7 @@ type Props = JSX.IntrinsicElements["mesh"] & {
   lineHeight?: number;
   letterSpacing?: number;
   textAlign?: "left" | "right" | "center" | "justify";
-  font?: string;
+  fontUrl?: string;
   anchorX?: number | "left" | "center" | "right";
   anchorY?:
     | number
@@ -52,7 +52,7 @@ function Text(
   {
     anchorX = "center",
     anchorY = "middle",
-    font,
+    fontUrl,
     children,
     characters,
     onSync,
@@ -77,8 +77,8 @@ function Text(
   }, [children]);
 
   suspend(
-    () => new Promise((res) => preloadFont({ font, characters }, res)),
-    ["troika-text", font, characters]
+    () => new Promise((res) => preloadFont({ fontUrl, characters }, res)),
+    ["troika-text", fontUrl, characters]
   );
 
   const groupRef = React.useRef<THREE.Group>(null);
@@ -136,7 +136,7 @@ function Text(
       <primitive
         object={troikaMesh}
         ref={mergeRefs([groupRef, forwardedRef])}
-        font={font}
+        font={fontUrl}
         text={text}
         anchorX={anchorX}
         anchorY={anchorY}
