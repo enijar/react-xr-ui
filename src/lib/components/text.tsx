@@ -129,9 +129,9 @@ function Text(
     <Surface
       width={size.width}
       height={size.height}
-      backgroundColor="crimson"
       ref={groupRef}
       key={key}
+      backgroundOpacity={0}
     >
       <primitive
         object={troikaMesh}

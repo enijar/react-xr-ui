@@ -22,7 +22,7 @@ export default function Typography() {
           alignItems="start"
         >
           <Text fontSize={0.1} color="white" textAlign="center">
-            {`Some\nText`}
+            {`Some Very Long\nText`}
           </Text>
         </Surface>
       </Surface>

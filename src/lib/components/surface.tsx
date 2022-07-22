@@ -15,6 +15,7 @@ type Props = {
   backgroundColor?: THREE.ColorRepresentation;
   backgroundImage?: string;
   backgroundSize?: "cover" | "contain";
+  backgroundOpacity?: number;
   flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
   alignItems?: "start" | "center" | "end";
   justifyContent?:
@@ -50,6 +51,7 @@ function Surface(
     backgroundColor = "black",
     backgroundImage,
     backgroundSize,
+    backgroundOpacity = 1,
     zIndex = 0,
     position,
     rotation,
@@ -130,8 +132,6 @@ function Surface(
   const getChildPosition = React.useCallback(
     // @todo fix types
     (index: number): Props["position"] => {
-      console.log(surfaces);
-
       const displayName = nodes[index].type.displayName ?? "";
       if (!["ui-surface"].includes(displayName)) return [0, 0, 0];
       // @todo simplify this
@@ -383,6 +383,7 @@ function Surface(
         <planeBufferGeometry args={[size.width, size.height]} />
         <meshBasicMaterial
           color={backgroundColor}
+          opacity={backgroundOpacity}
           transparent={true}
           depthWrite={false}
         />
@@ -391,6 +392,7 @@ function Surface(
         <planeBufferGeometry args={[textureSize.width, textureSize.height]} />
         <meshBasicMaterial
           map={texture}
+          opacity={backgroundOpacity}
           transparent={true}
           depthWrite={false}
           clippingPlanes={clippingPlanes}
