@@ -27,9 +27,17 @@ export default function Typography() {
             fontSize={0.08}
             color="white"
             textAlign="center"
-            fontUrl="./assets/fonts/roboto.ttf"
+            fontUrl="./assets/fonts/roboto-slab.ttf"
           >
             {`Roboto Slab`}
+          </Text>
+          <Text
+            fontSize={0.08}
+            color="white"
+            textAlign="center"
+            fontUrl="./assets/fonts/oswald.ttf"
+          >
+            {`Oswald`}
           </Text>
         </Surface>
       </Surface>
