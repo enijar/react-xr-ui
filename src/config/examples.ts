@@ -8,14 +8,9 @@ type Example = {
 
 const examples: Example[] = [
   {
-    title: "Flexbox",
-    pathname: "flexbox",
-    component: React.lazy(() => import("@/examples/flexbox")),
-  },
-  {
-    title: "Typography",
-    pathname: "typography",
-    component: React.lazy(() => import("@/examples/typography")),
+    title: "Background",
+    pathname: "background",
+    component: React.lazy(() => import("@/examples/background")),
   },
 ];
 
