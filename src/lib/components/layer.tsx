@@ -42,6 +42,15 @@ type Props = GroupProps & {
   borderRadius?: number | BorderArray;
   borderWidth?: number;
   borderColor?: string;
+  flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
+  alignItems?: "start" | "center" | "end";
+  justifyContent?:
+    | "start"
+    | "center"
+    | "end"
+    | "space-between"
+    | "space-around";
+  gap?: number;
   childIndex?: number;
 };
 
@@ -61,6 +70,10 @@ export default function Layer({
   borderRadius = 0,
   borderWidth = 0,
   borderColor = "transparent",
+  flexDirection = "row",
+  alignItems = "start",
+  justifyContent = "start",
+  gap = 0,
   childIndex,
   children,
   ...props
@@ -232,13 +245,63 @@ export default function Layer({
     return currentChildren.map(() => React.createRef<THREE.Group>());
   }, [currentChildren]);
 
+  // Layout calculations
   React.useEffect(() => {
+    const { mapLinear } = THREE.MathUtils;
+    let lastX = 0;
+    let lastY = 0;
+    let lastWidth = 0;
+    let lastHeight = 0;
+    const childrenWidth = currentChildren.reduce((width, child) => {
+      return width + child.width;
+    }, 0);
+    const childrenHeight = currentChildren.reduce((height, child) => {
+      return height + child.height;
+    }, 0);
     childGroupRefs.forEach((childGroupRef, index) => {
       const child = currentChildren[index];
-      childGroupRef.current.position.x = child.width * index;
-      childGroupRef.current.position.y = child.height * -index;
+      // Always start layout calculations from top-left
+      const sx = width * -0.5 + child.width * 0.5;
+      const sy = height * 0.5 - child.height * 0.5;
+      let x = sx;
+      let y = sy;
+      switch (flexDirection) {
+        case "row":
+          if (index > 0) {
+            x = lastX + lastWidth + gap;
+          }
+          break;
+        case "column":
+          if (index > 0) {
+            y = lastY - lastHeight - gap;
+          }
+          break;
+      }
+      switch (justifyContent) {
+        case "center":
+          if (flexDirection === "row") {
+            const diff = Math.max(0, width - childrenWidth);
+            console.log(diff);
+          }
+          break;
+      }
+      childGroupRef.current.position.x = x;
+      childGroupRef.current.position.y = y;
+      lastX = x;
+      lastY = y;
+      lastWidth = child.width;
+      lastHeight = child.height;
     });
-  }, [childGroupRefs, currentChildren]);
+  }, [
+    childGroupRefs,
+    currentChildren,
+    width,
+    height,
+    flexDirection,
+    alignItems,
+    justifyContent,
+    gap,
+  ]);
 
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
