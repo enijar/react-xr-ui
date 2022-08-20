@@ -2,6 +2,25 @@ import React from "react";
 import * as THREE from "three";
 import { GroupProps, useFrame, useThree } from "@react-three/fiber";
 
+type Child = {
+  width: number;
+  height: number;
+  index: number;
+  uuid: string;
+};
+
+type LayerContextType = {
+  currentChildren: Child[];
+  addChild: (child: Child) => void;
+  removeChild: (uuid: Child["uuid"]) => void;
+};
+
+const LayerContext = React.createContext<LayerContextType>({
+  currentChildren: [],
+  addChild() {},
+  removeChild() {},
+});
+
 type BorderArray = [
   topLeft?: number,
   topRight?: number,
@@ -23,6 +42,7 @@ type Props = GroupProps & {
   borderRadius?: number | BorderArray;
   borderWidth?: number;
   borderColor?: string;
+  childIndex?: number;
 };
 
 const DEFAULT_BACKGROUND_POSITION: Props["backgroundPosition"] = [0, 0];
@@ -41,11 +61,27 @@ export default function Layer({
   borderRadius = 0,
   borderWidth = 0,
   borderColor = "transparent",
+  childIndex,
+  children,
   ...props
 }: Props) {
   const gl = useThree((state) => state.gl);
 
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
+
+  const layerContext = React.useContext(LayerContext);
+
+  const uuid = React.useMemo(() => {
+    return THREE.MathUtils.generateUUID();
+  }, []);
+
+  React.useEffect(() => {
+    if (childIndex === undefined) return;
+    layerContext.addChild({ width, height, index: childIndex, uuid });
+    return () => {
+      layerContext.removeChild(uuid);
+    };
+  }, [width, height, childIndex, uuid]);
 
   // Create 2d canvas context
   const ctx = React.useMemo<CanvasRenderingContext2D>(() => {
@@ -188,19 +224,78 @@ export default function Layer({
     }
   });
 
+  const [currentChildren, setCurrentChildren] = React.useState<
+    LayerContextType["currentChildren"]
+  >([]);
+
+  const childGroupRefs = React.useMemo(() => {
+    return currentChildren.map(() => React.createRef<THREE.Group>());
+  }, [currentChildren]);
+
+  React.useEffect(() => {
+    childGroupRefs.forEach((childGroupRef, index) => {
+      const child = currentChildren[index];
+      childGroupRef.current.position.x = child.width * index;
+      childGroupRef.current.position.y = child.height * -index;
+    });
+  }, [childGroupRefs, currentChildren]);
+
+  const layerProviderValue = React.useMemo<LayerContextType>(() => {
+    return {
+      currentChildren,
+      addChild(child) {
+        setCurrentChildren((currentChildren) => {
+          const index = currentChildren.findIndex((value) => {
+            return value.uuid === child.uuid;
+          });
+          if (index === -1) {
+            return [...currentChildren, child];
+          } else {
+            return currentChildren.map((value) => {
+              if (value.uuid === child.uuid) {
+                return { ...value, ...child };
+              }
+              return value;
+            });
+          }
+        });
+      },
+      removeChild(uuid) {
+        setCurrentChildren((currentChildren) => {
+          return currentChildren.filter((value) => value.uuid !== uuid);
+        });
+      },
+    };
+  }, [currentChildren, childIndex]);
+
   return (
-    <group {...props}>
-      <mesh renderOrder={zIndex} visible={visible}>
-        <planeBufferGeometry args={[width, height]} />
-        <meshBasicMaterial
-          ref={materialRef}
-          side={THREE.FrontSide}
-          opacity={opacity}
-          transparent={true}
-          depthWrite={false}
-          map={canvasTexture}
-        />
-      </mesh>
-    </group>
+    <LayerContext.Provider value={layerProviderValue}>
+      <group {...props}>
+        <mesh visible={visible} renderOrder={zIndex + (childIndex ?? 0)}>
+          <planeBufferGeometry args={[width, height]} />
+          <meshBasicMaterial
+            ref={materialRef}
+            side={THREE.FrontSide}
+            opacity={opacity}
+            transparent={true}
+            depthWrite={false}
+            depthTest={false}
+            map={canvasTexture}
+          />
+        </mesh>
+        <group renderOrder={zIndex + 1}>
+          {React.Children.map(children, (child, childIndex) => {
+            if (React.isValidElement(child)) {
+              return (
+                <group key={childIndex} ref={childGroupRefs[childIndex]}>
+                  {React.cloneElement(child, { ...child.props, childIndex })}
+                </group>
+              );
+            }
+            return child;
+          })}
+        </group>
+      </group>
+    </LayerContext.Provider>
   );
 }
