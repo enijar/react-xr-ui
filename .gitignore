@@ -1,6 +1,5 @@
 .idea/
 node_modules/
 build/
-.cache/
+lib/
 .DS_Store
-env.ts
