@@ -1,8 +1,8 @@
 {
   "name": "react-xr-ui",
-  "version": "0.0.2",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "version": "0.0.3",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "NODE_ENV=development webpack serve --mode development",
     "start-https": "HTTPS=true NODE_ENV=development webpack serve --mode development",
@@ -41,7 +41,7 @@
     "react-merge-refs": "^2.0.1",
     "react-refresh": "^0.13.0",
     "react-router-dom": "^6.3.0",
-    "react-xr-ui": "^0.0.1",
+    "react-xr-ui": "^0.0.2",
     "three": "^0.142.0",
     "ts-node": "^10.7.0",
     "tsconfig-paths-webpack-plugin": "^3.5.2",
