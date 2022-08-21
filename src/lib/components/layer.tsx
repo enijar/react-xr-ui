@@ -194,7 +194,7 @@ function Layer(
     // Typography
     if (textContent !== undefined) {
       canvasTxt.font = fontFamily;
-      canvasTxt.fontSize = fontSize * w;
+      canvasTxt.fontSize = fontSize * Math.min(w, h);
       canvasTxt.lineHeight = null;
       canvasTxt.align = textAlign;
       canvasTxt.vAlign = verticalAlign;
