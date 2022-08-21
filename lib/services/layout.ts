@@ -1,4 +1,4 @@
-import { Child, LayerProps, Size } from "@/lib/types";
+import { Child, LayerProps, Size } from "../types";
 
 type Axis = "width" | "height";
 

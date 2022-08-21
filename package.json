@@ -4,7 +4,7 @@
     "start": "NODE_ENV=development webpack serve --mode development",
     "start-https": "HTTPS=true NODE_ENV=development webpack serve --mode development",
     "build": "NODE_ENV=production webpack --mode production",
-    "package": "tsc -p tsconfig.lib.json"
+    "dist": "tsc -p tsconfig.lib.json"
   },
   "browserslist": [
     "defaults",

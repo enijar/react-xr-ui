@@ -2,9 +2,9 @@ import React from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import canvasTxt from "canvas-txt";
-import useRenderOrder from "@/lib/hooks/use-render-order";
-import layout from "@/lib/services/layout";
-import { BorderArray, LayerContextType, LayerProps } from "@/lib/types";
+import useRenderOrder from "../hooks/use-render-order";
+import layout from "../services/layout";
+import { BorderArray, LayerContextType, LayerProps } from "../types";
 
 const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,

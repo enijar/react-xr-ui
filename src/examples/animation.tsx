@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import Example from "@/components/example";
-import Layer from "@/lib/components/layer";
+import Layer from "../../lib/components/layer";
 
 function AnimatedBorders() {
   const layerRef = React.useRef<THREE.Group>(null);

@@ -1,7 +1,6 @@
 import React from "react";
-import { GroupProps } from "@react-three/fiber";
 import Example from "@/components/example";
-import Layer from "@/lib/components/layer";
+import Layer from "../../lib/components/layer";
 import Button from "@/components/button";
 
 export default function Basic() {

@@ -1,6 +1,6 @@
 import React from "react";
 import Example from "@/components/example";
-import Layer from "@/lib/components/layer";
+import Layer from "../../lib/components/layer";
 import Button from "@/components/button";
 
 // Arial (sans-serif)
