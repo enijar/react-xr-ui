@@ -28,6 +28,7 @@ export type BorderArray = [
 export type LayerProps = GroupProps & {
   zIndex?: number;
   visible?: boolean;
+  autoLayout?: boolean;
   resolution?: number;
   width?: number;
   height?: number;

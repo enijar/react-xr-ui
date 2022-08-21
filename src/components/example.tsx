@@ -13,7 +13,7 @@ export default function Example({ children }: Props) {
   }, []);
 
   return (
-    <Canvas legacy flat linear gl={{ localClippingEnabled: true }}>
+    <Canvas legacy flat linear>
       {/** Cameras, controls and lights */}
       <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
       <OrbitControls makeDefault target={[0, 1, -1.8]} />

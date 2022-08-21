@@ -14,11 +14,26 @@ export default function Layout() {
         backgroundColor="#444444"
         flexDirection="row"
         alignItems="center"
-        justifyContent="space-between"
+        justifyContent="space-around"
       >
-        <Layer width={0.25} height={0.25} backgroundColor="red" />
-        <Layer width={0.25} height={0.25} backgroundColor="green" />
-        <Layer width={0.25} height={0.25} backgroundColor="lightblue" />
+        <Layer width={0.25} height={0.25} backgroundColor="red">
+          <mesh position-z={0.075}>
+            <dodecahedronBufferGeometry args={[0.075, 0]} />
+            <meshBasicMaterial color="white" />
+          </mesh>
+        </Layer>
+        <Layer width={0.25} height={0.25} backgroundColor="green">
+          <mesh position-z={0.075}>
+            <boxBufferGeometry args={[0.15, 0.15, 0.15]} />
+            <meshBasicMaterial color="white" />
+          </mesh>
+        </Layer>
+        <Layer width={0.25} height={0.25} backgroundColor="lightblue">
+          <mesh position-z={0.075}>
+            <octahedronBufferGeometry args={[0.075, 0]} />
+            <meshBasicMaterial color="white" />
+          </mesh>
+        </Layer>
       </Layer>
     </Example>
   );

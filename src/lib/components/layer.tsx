@@ -17,6 +17,7 @@ export default function Layer({
   zIndex = 0,
   resolution = 2048,
   visible = true,
+  autoLayout = true,
   width = 1,
   height = 1,
   opacity = 1,
@@ -40,6 +41,7 @@ export default function Layer({
   const gl = useThree((state) => state.gl);
 
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
+  const childrenGroupRef = React.useRef<THREE.Group>(null);
 
   const layerContext = React.useContext(LayerContext);
 
@@ -209,7 +211,11 @@ export default function Layer({
     const size = { width, height };
     size.width -= borderWidth * 2;
     size.height -= borderWidth * 2;
-    childGroupRefs.forEach((childGroupRef, index) => {
+    let refs = [...childGroupRefs];
+    if (flexDirection === "column") {
+      refs.reverse();
+    }
+    refs.forEach((ref, index) => {
       const [x, y] = layout({
         currentChildren,
         index,
@@ -219,8 +225,8 @@ export default function Layer({
         gap,
         size,
       });
-      childGroupRef.current.position.x = x;
-      childGroupRef.current.position.y = y;
+      ref.current.position.x = x;
+      ref.current.position.y = y;
     });
   }, [
     childGroupRefs,
@@ -261,10 +267,25 @@ export default function Layer({
     };
   }, [currentChildren, childIndex]);
 
+  React.useEffect(() => {
+    const childrenGroup = childrenGroupRef.current;
+    if (childrenGroup === null) return;
+    childrenGroup.traverse((object) => {
+      if (
+        object instanceof THREE.Mesh &&
+        object.material instanceof THREE.Material
+      ) {
+        object.material.transparent = true;
+        object.material.opacity = opacity;
+        object.material.needsUpdate = true;
+      }
+    });
+  }, [opacity]);
+
   return (
     <LayerContext.Provider value={layerProviderValue}>
-      <group {...props}>
-        <mesh visible={visible} renderOrder={renderOrder + zIndex}>
+      <group {...props} visible={visible}>
+        <mesh renderOrder={renderOrder + zIndex}>
           <planeBufferGeometry args={[width, height]} />
           <meshBasicMaterial
             ref={materialRef}
@@ -272,11 +293,10 @@ export default function Layer({
             opacity={opacity}
             transparent={true}
             depthWrite={false}
-            depthTest={false}
             map={canvasTexture}
           />
         </mesh>
-        <group renderOrder={renderOrder + zIndex + 1}>
+        <group renderOrder={renderOrder + zIndex + 1} ref={childrenGroupRef}>
           {React.Children.map(children, (child, childIndex) => {
             if (React.isValidElement(child)) {
               return (
