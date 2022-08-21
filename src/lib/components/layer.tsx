@@ -195,11 +195,11 @@ function Layer(
     if (textContent !== undefined) {
       canvasTxt.font = fontFamily;
       canvasTxt.fontSize = fontSize * Math.min(w, h);
-      canvasTxt.lineHeight = null;
       canvasTxt.align = textAlign;
       canvasTxt.vAlign = verticalAlign;
       canvasTxt.justify = justifyText;
       canvasTxt.fontWeight = fontWeight;
+      ctx.textBaseline = "bottom";
       ctx.fillStyle = color;
       canvasTxt.drawText(ctx, textContent, ox, oy, w - ox * 2, h - oy * 2);
     }
