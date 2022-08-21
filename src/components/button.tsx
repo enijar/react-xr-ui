@@ -9,6 +9,7 @@ type Props = {
   fontSize: number;
   width: number;
   height: number;
+  fontFamily?: string;
 };
 
 export default function Button({
@@ -18,6 +19,7 @@ export default function Button({
   fontSize,
   width,
   height,
+  fontFamily = "system-ui, sans-serif",
 }: Props) {
   const [pointerOver, setPointerOver] = React.useState(false);
 
@@ -28,7 +30,7 @@ export default function Button({
       backgroundColor={pointerOver || selected ? "white" : "#111111"}
       color={pointerOver || selected ? "#111111" : "white"}
       textContent={textContent}
-      fontFamily="Arial"
+      fontFamily={fontFamily}
       fontSize={fontSize}
       textAlign="center"
       verticalAlign="middle"

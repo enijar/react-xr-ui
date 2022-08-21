@@ -63,10 +63,6 @@ const config = {
           },
         ],
       },
-      {
-        test: /\.glsl$/,
-        use: ["raw-loader", "glslify-loader"],
-      },
     ],
   },
   plugins: [
