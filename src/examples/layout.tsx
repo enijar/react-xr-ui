@@ -8,11 +8,13 @@ export default function Layout() {
       <Layer
         width={1}
         height={1}
+        borderWidth={0.025}
+        borderColor="#222222"
+        borderRadius={0.05}
         backgroundColor="#444444"
-        flexDirection="column"
-        alignItems="start"
-        justifyContent="start"
-        gap={0.05}
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
       >
         <Layer width={0.25} height={0.25} backgroundColor="red" />
         <Layer width={0.25} height={0.25} backgroundColor="green" />

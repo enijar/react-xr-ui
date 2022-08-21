@@ -207,6 +207,8 @@ export default function Layer({
   // Layout calculations
   React.useEffect(() => {
     const size = { width, height };
+    size.width -= borderWidth * 2;
+    size.height -= borderWidth * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
       const [x, y] = layout({
         currentChildren,
@@ -228,6 +230,7 @@ export default function Layer({
     flexDirection,
     alignItems,
     justifyContent,
+    borderWidth,
     gap,
   ]);
 
@@ -236,19 +239,18 @@ export default function Layer({
       currentChildren,
       addChild(child) {
         setCurrentChildren((currentChildren) => {
+          const nextCurrentChildren = [...currentChildren];
           const index = currentChildren.findIndex((value) => {
             return value.uuid === child.uuid;
           });
           if (index === -1) {
-            return [...currentChildren, child];
+            nextCurrentChildren.push({ ...child });
           } else {
-            return currentChildren.map((value) => {
-              if (value.uuid === child.uuid) {
-                return { ...value, ...child };
-              }
-              return value;
-            });
+            nextCurrentChildren[index] = { ...child };
           }
+          return nextCurrentChildren.sort((a, b) => {
+            return a.index - b.index;
+          });
         });
       },
       removeChild(uuid) {

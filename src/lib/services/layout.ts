@@ -48,6 +48,9 @@ export default function layout({
    */
   if (justifyContent === "start") {
     x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - size[axis];
+    if (flexDirection === "column") {
+      x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - contentSize;
+    }
     for (let i = 1; i <= index; i++) {
       x +=
         currentChildren[i - 1][axis] * 0.5 +
@@ -66,6 +69,9 @@ export default function layout({
   }
   if (justifyContent === "end") {
     x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - contentSize;
+    if (flexDirection === "column") {
+      x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - size[axis];
+    }
     for (let i = 1; i <= index; i++) {
       x +=
         currentChildren[i - 1][axis] * 0.5 +
