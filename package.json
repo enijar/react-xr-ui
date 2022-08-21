@@ -42,6 +42,7 @@
   "dependencies": {
     "@react-three/drei": "^9.17.1",
     "@react-three/fiber": "^8.1.0",
+    "@react-three/xr": "^4.1.5",
     "canvas-txt": "^3.0.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",

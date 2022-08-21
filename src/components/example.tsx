@@ -1,6 +1,6 @@
 import React from "react";
 import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
-import { Canvas } from "@react-three/fiber";
+import { VRCanvas as Canvas } from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 
 type Props = {
