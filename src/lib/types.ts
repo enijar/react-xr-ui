@@ -1,4 +1,5 @@
 import { GroupProps } from "@react-three/fiber";
+import { align, vAlign } from "canvas-txt";
 
 export type Child = {
   width: number;
@@ -49,5 +50,13 @@ export type LayerProps = GroupProps & {
     | "space-between"
     | "space-around";
   gap?: number;
+  textContent?: string;
+  textAlign?: typeof align;
+  justifyText?: boolean;
+  verticalAlign?: typeof vAlign;
+  color?: string;
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: string;
   childIndex?: number;
 };

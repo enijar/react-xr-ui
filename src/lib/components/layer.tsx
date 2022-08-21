@@ -1,6 +1,7 @@
 import React from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
+import canvasTxt from "canvas-txt";
 import useRenderOrder from "@/lib/hooks/use-render-order";
 import layout from "@/lib/services/layout";
 import { BorderArray, LayerContextType, LayerProps } from "@/lib/types";
@@ -32,6 +33,14 @@ export default function Layer({
   alignItems = "center",
   justifyContent = "center",
   gap = 0,
+  textContent,
+  textAlign = "left",
+  justifyText = false,
+  verticalAlign = "top",
+  color = "white",
+  fontFamily = "system-ui, sans-serif",
+  fontSize = 0.1,
+  fontWeight = "normal",
   childIndex,
   children,
   ...props
@@ -131,12 +140,13 @@ export default function Layer({
     ctx.lineWidth = borderWidth * res * 2;
     ctx.fill();
 
+    const ox = borderWidth * res;
+    const oy = borderWidth * res;
+
     // Background image
     if (backgroundImage !== undefined) {
       const x = backgroundPosition[0];
       const y = backgroundPosition[1];
-      const ox = borderWidth * res;
-      const oy = borderWidth * res;
       const sx = 0;
       const sy = 0;
       const sw = images.backgroundImage.width;
@@ -175,6 +185,18 @@ export default function Layer({
       ctx.clip();
       ctx.drawImage(images.backgroundImage, sx, sy, sw, sh, dx, dy, dw, dh);
       ctx.restore();
+    }
+
+    // Typography
+    if (textContent !== undefined) {
+      canvasTxt.font = fontFamily;
+      canvasTxt.fontSize = fontSize * w;
+      canvasTxt.lineHeight = fontSize * w;
+      canvasTxt.align = textAlign;
+      canvasTxt.vAlign = verticalAlign;
+      canvasTxt.justify = justifyText;
+      ctx.fillStyle = color;
+      canvasTxt.drawText(ctx, textContent, ox, oy, w - ox * 2, h - oy * 2);
     }
 
     // Fixes antialiasing issue

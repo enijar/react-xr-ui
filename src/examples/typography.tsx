@@ -12,9 +12,11 @@ export default function Typography() {
         borderColor="#222222"
         borderRadius={0.05}
         backgroundColor="#444444"
-      >
-        <Layer width={0.25} height={0.25} backgroundColor="red" />
-      </Layer>
+        textContent={`This is a test with some long text...`}
+        textAlign="center"
+        verticalAlign="middle"
+        color="crimson"
+      />
     </Example>
   );
 }
