@@ -8,6 +8,59 @@ Build UIs with React that work in VR, AR and web contexts.
 
 > Whilst this package is open, it's primary users are for devs at [Finer Vision](https://github.com/finer-vision). We're keen on opening this up to the wider open-source community, so open a PR or issue if you want us to add missing features to the package.
 
+### Install
+
+> Note: not currently an installable package from `npm`
+
+```shell
+npm add react-xr-ui
+```
+
+### Usage
+
+Here is a full basic setup. This renders everything inside a [@react-three/xr](https://github.com/pmndrs/react-xr) canvas.
+
+The 2D UI is a 1x1 meter red box, with a dark grey border, and a small border radius.
+
+```tsx
+import { DefaultXRControllers, VRCanvas as Canvas } from "@react-three/xr";
+
+function App() {
+  const room = React.useMemo(() => {
+    return new BoxLineGeometry(6, 6, 6, 10, 10, 10).translate(0, 3, 0);
+  }, []);
+
+  return (
+    <Canvas legacy flat linear gl={{ alpha: false }}>
+      {/** Background, cameras, controls and lights */}
+      <color args={["#333333"]} attach="background" />
+      <lineSegments geometry={room}>
+        <lineBasicMaterial color="#c0c0c0" />
+      </lineSegments>
+      <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
+      <OrbitControls makeDefault target={[0, 1, -1.8]} />
+      <ambientLight />
+      <DefaultXRControllers />
+
+      {/** 3D Stuff */}
+      <></>
+
+      {/** 2D UI */}
+      <group position={[0, 1, -1.88]}>
+        <Layer
+          width={1}
+          height={1}
+          backgroundColor="crimson"
+          borderRadius={0.1}
+          borderWidth={0.02}
+          borderColor="#222222"
+        />
+      </group>
+    </Canvas>
+  );
+}
+```
+
 ### Roadmap
 
 - [x] `backgroundColor`
@@ -18,6 +71,8 @@ Build UIs with React that work in VR, AR and web contexts.
 - [ ] automatic children sizing
 - [x] typography
 - [x] flexbox
+- [ ] publish NPM package
+- [ ] add interactive controls for VR
 
 ### Contributing
 

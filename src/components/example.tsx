@@ -14,16 +14,15 @@ export default function Example({ children }: Props) {
 
   return (
     <Canvas legacy flat linear gl={{ alpha: false }}>
+      {/** Background, cameras, controls and lights */}
       <color args={["#333333"]} attach="background" />
-      {/** Cameras, controls and lights */}
+      <lineSegments geometry={room}>
+        <lineBasicMaterial color="#c0c0c0" />
+      </lineSegments>
       <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
       <OrbitControls makeDefault target={[0, 1, -1.8]} />
       <ambientLight />
       <DefaultXRControllers />
-
-      <lineSegments geometry={room}>
-        <lineBasicMaterial color="#c0c0c0" />
-      </lineSegments>
 
       <group position={[0, 1, -1.88]}>{children}</group>
     </Canvas>
