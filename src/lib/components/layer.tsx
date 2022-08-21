@@ -1,19 +1,9 @@
 import React from "react";
 import * as THREE from "three";
-import { GroupProps, useFrame, useThree } from "@react-three/fiber";
-
-type Child = {
-  width: number;
-  height: number;
-  index: number;
-  uuid: string;
-};
-
-type LayerContextType = {
-  currentChildren: Child[];
-  addChild: (child: Child) => void;
-  removeChild: (uuid: Child["uuid"]) => void;
-};
+import { useFrame, useThree } from "@react-three/fiber";
+import useRenderOrder from "@/lib/hooks/use-render-order";
+import layout from "@/lib/services/layout";
+import { BorderArray, LayerContextType, LayerProps } from "@/lib/types";
 
 const LayerContext = React.createContext<LayerContextType>({
   currentChildren: [],
@@ -21,40 +11,7 @@ const LayerContext = React.createContext<LayerContextType>({
   removeChild() {},
 });
 
-type BorderArray = [
-  topLeft?: number,
-  topRight?: number,
-  bottomRight?: number,
-  bottomLeft?: number
-];
-
-type Props = GroupProps & {
-  zIndex?: number;
-  visible?: boolean;
-  resolution?: number;
-  width?: number;
-  height?: number;
-  opacity?: number;
-  backgroundColor?: string;
-  backgroundImage?: string;
-  backgroundSize?: "stretch" | "contain" | "cover";
-  backgroundPosition?: [left: number, top: number];
-  borderRadius?: number | BorderArray;
-  borderWidth?: number;
-  borderColor?: string;
-  flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
-  alignItems?: "start" | "center" | "end";
-  justifyContent?:
-    | "start"
-    | "center"
-    | "end"
-    | "space-between"
-    | "space-around";
-  gap?: number;
-  childIndex?: number;
-};
-
-const DEFAULT_BACKGROUND_POSITION: Props["backgroundPosition"] = [0, 0];
+const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 
 export default function Layer({
   zIndex = 0,
@@ -71,13 +28,15 @@ export default function Layer({
   borderWidth = 0,
   borderColor = "transparent",
   flexDirection = "row",
-  alignItems = "start",
-  justifyContent = "start",
+  alignItems = "center",
+  justifyContent = "center",
   gap = 0,
   childIndex,
   children,
   ...props
-}: Props) {
+}: LayerProps) {
+  const renderOrder = useRenderOrder();
+
   const gl = useThree((state) => state.gl);
 
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
@@ -247,50 +206,19 @@ export default function Layer({
 
   // Layout calculations
   React.useEffect(() => {
-    const { mapLinear } = THREE.MathUtils;
-    let lastX = 0;
-    let lastY = 0;
-    let lastWidth = 0;
-    let lastHeight = 0;
-    const childrenWidth = currentChildren.reduce((width, child) => {
-      return width + child.width;
-    }, 0);
-    const childrenHeight = currentChildren.reduce((height, child) => {
-      return height + child.height;
-    }, 0);
+    const size = { width, height };
     childGroupRefs.forEach((childGroupRef, index) => {
-      const child = currentChildren[index];
-      // Always start layout calculations from top-left
-      const sx = width * -0.5 + child.width * 0.5;
-      const sy = height * 0.5 - child.height * 0.5;
-      let x = sx;
-      let y = sy;
-      switch (flexDirection) {
-        case "row":
-          if (index > 0) {
-            x = lastX + lastWidth + gap;
-          }
-          break;
-        case "column":
-          if (index > 0) {
-            y = lastY - lastHeight - gap;
-          }
-          break;
-      }
-      switch (justifyContent) {
-        case "center":
-          if (flexDirection === "row") {
-            const diff = Math.max(0, width - childrenWidth);
-            console.log(diff);
-          }
-          break;
-      }
+      const [x, y] = layout({
+        currentChildren,
+        index,
+        flexDirection,
+        alignItems,
+        justifyContent,
+        gap,
+        size,
+      });
       childGroupRef.current.position.x = x;
       childGroupRef.current.position.y = y;
-      lastX = x;
-      lastY = y;
-      lastWidth = child.width;
-      lastHeight = child.height;
     });
   }, [
     childGroupRefs,
@@ -334,7 +262,7 @@ export default function Layer({
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group {...props}>
-        <mesh visible={visible} renderOrder={zIndex + (childIndex ?? 0)}>
+        <mesh visible={visible} renderOrder={renderOrder + zIndex}>
           <planeBufferGeometry args={[width, height]} />
           <meshBasicMaterial
             ref={materialRef}
@@ -346,7 +274,7 @@ export default function Layer({
             map={canvasTexture}
           />
         </mesh>
-        <group renderOrder={zIndex + 1}>
+        <group renderOrder={renderOrder + zIndex + 1}>
           {React.Children.map(children, (child, childIndex) => {
             if (React.isValidElement(child)) {
               return (

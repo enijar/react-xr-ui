@@ -9,10 +9,10 @@ export default function Layout() {
         width={1}
         height={1}
         backgroundColor="#444444"
-        flexDirection="row"
+        flexDirection="column"
         alignItems="start"
-        justifyContent="center"
-        gap={0}
+        justifyContent="start"
+        gap={0.05}
       >
         <Layer width={0.25} height={0.25} backgroundColor="red" />
         <Layer width={0.25} height={0.25} backgroundColor="green" />
