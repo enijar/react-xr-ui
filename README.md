@@ -24,6 +24,7 @@ The 2D UI is a 1x1 meter red box, with a dark grey border, and a small border ra
 
 ```tsx
 import { DefaultXRControllers, VRCanvas as Canvas } from "@react-three/xr";
+import { Layer } from "react-xr-ui";
 
 function App() {
   const room = React.useMemo(() => {
