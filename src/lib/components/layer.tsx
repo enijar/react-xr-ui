@@ -212,7 +212,7 @@ export default function Layer({
     size.width -= borderWidth * 2;
     size.height -= borderWidth * 2;
     let refs = [...childGroupRefs];
-    if (flexDirection === "column") {
+    if (["column", "row-reverse"].includes(flexDirection)) {
       refs.reverse();
     }
     refs.forEach((ref, index) => {

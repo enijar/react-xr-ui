@@ -1,10 +1,33 @@
 import React from "react";
 import Example from "@/components/example";
 import Layer from "@/lib/components/layer";
+import { LayerProps } from "@/lib/types";
 
 export default function Layout() {
+  const [flexDirection, setFlexDirection] =
+    React.useState<LayerProps["flexDirection"]>("row");
+
   return (
     <Example>
+      <Layer
+        width={0.25}
+        height={0.1}
+        position-y={0.6}
+        justifyContent="space-between"
+      >
+        <Layer
+          width={0.1}
+          height={0.1}
+          onClick={() => setFlexDirection("row")}
+          backgroundColor="white"
+        />
+        <Layer
+          width={0.1}
+          height={0.1}
+          onClick={() => setFlexDirection("column")}
+          backgroundColor="black"
+        />
+      </Layer>
       <Layer
         width={1}
         height={1}
@@ -12,28 +35,13 @@ export default function Layout() {
         borderColor="#222222"
         borderRadius={0.05}
         backgroundColor="#444444"
-        flexDirection="row"
+        flexDirection={flexDirection}
         alignItems="center"
         justifyContent="space-around"
       >
-        <Layer width={0.25} height={0.25} backgroundColor="red">
-          <mesh position-z={0.075}>
-            <dodecahedronBufferGeometry args={[0.075, 0]} />
-            <meshBasicMaterial color="white" />
-          </mesh>
-        </Layer>
-        <Layer width={0.25} height={0.25} backgroundColor="green">
-          <mesh position-z={0.075}>
-            <boxBufferGeometry args={[0.15, 0.15, 0.15]} />
-            <meshBasicMaterial color="white" />
-          </mesh>
-        </Layer>
-        <Layer width={0.25} height={0.25} backgroundColor="lightblue">
-          <mesh position-z={0.075}>
-            <octahedronBufferGeometry args={[0.075, 0]} />
-            <meshBasicMaterial color="white" />
-          </mesh>
-        </Layer>
+        <Layer width={0.25} height={0.25} backgroundColor="red" />
+        <Layer width={0.25} height={0.25} backgroundColor="green" />
+        <Layer width={0.25} height={0.25} backgroundColor="lightblue" />
       </Layer>
     </Example>
   );

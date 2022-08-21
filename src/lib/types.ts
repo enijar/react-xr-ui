@@ -40,7 +40,7 @@ export type LayerProps = GroupProps & {
   borderRadius?: number | BorderArray;
   borderWidth?: number;
   borderColor?: string;
-  flexDirection?: "row" | "column";
+  flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
   alignItems?: "start" | "center" | "end";
   justifyContent?:
     | "start"

@@ -32,7 +32,7 @@ export default function layout({
   let contentSize = childrenWidth;
   let axis: Axis = "width";
   let axisInverted: Axis = "height";
-  if (flexDirection === "column") {
+  if (["column", "column-reverse"].includes(flexDirection)) {
     axis = "height";
     axisInverted = "width";
     contentSize = childrenHeight;
@@ -130,10 +130,10 @@ export default function layout({
    * alignItems
    */
   if (alignItems === "start") {
-    if (flexDirection === "row") {
+    if (["row", "row-reverse"].includes(flexDirection)) {
       y = size[axisInverted] * 0.5 - currentChildren[index][axisInverted] * 0.5;
     }
-    if (flexDirection === "column") {
+    if (["column", "column-reverse"].includes(flexDirection)) {
       y =
         size[axisInverted] * -0.5 + currentChildren[index][axisInverted] * 0.5;
     }
@@ -142,15 +142,15 @@ export default function layout({
     // No calculation needed
   }
   if (alignItems === "end") {
-    if (flexDirection === "row") {
+    if (["row", "row-reverse"].includes(flexDirection)) {
       y =
         size[axisInverted] * -0.5 + currentChildren[index][axisInverted] * 0.5;
     }
-    if (flexDirection === "column") {
+    if (["column", "column-reverse"].includes(flexDirection)) {
       y = size[axisInverted] * 0.5 - currentChildren[index][axisInverted] * 0.5;
     }
   }
-  if (flexDirection === "column") {
+  if (["column", "column-reverse"].includes(flexDirection)) {
     return [y, x];
   }
 
