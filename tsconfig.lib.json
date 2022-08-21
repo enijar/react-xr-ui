@@ -1,16 +1,18 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "noImplicitAny": true,
-    "declaration": true,
-    "sourceMap": true,
-    "module": "CommonJS",
     "target": "ES6",
+    "module": "CommonJS",
+    "lib": ["ES6", "DOM"],
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "lib",
+    "strict": false,
     "jsx": "react-jsx",
-    "skipLibCheck": true,
-    "lib": ["DOM", "DOM.Iterable"],
-    "allowSyntheticDefaultImports": true
+    "esModuleInterop": true,
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
+    "skipLibCheck": true
   },
-  "include": ["lib"],
-  "exclude": ["src", "node_modules"]
+  "exclude": ["node_modules", "src", "public"],
+  "include": ["lib"]
 }
