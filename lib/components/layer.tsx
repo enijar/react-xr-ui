@@ -1,7 +1,7 @@
-import React from "react";
+import * as React from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
-import canvasTxt from "canvas-txt";
+import * as canvasTxt from "canvas-txt";
 import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import { BorderArray, LayerContextType, LayerProps } from "../types";
@@ -193,11 +193,17 @@ function Layer(
 
     // Typography
     if (textContent !== undefined) {
+      // @ts-ignore
       canvasTxt.font = fontFamily;
+      // @ts-ignore
       canvasTxt.fontSize = fontSize * Math.min(w, h);
+      // @ts-ignore
       canvasTxt.align = textAlign;
+      // @ts-ignore
       canvasTxt.vAlign = verticalAlign;
+      // @ts-ignore
       canvasTxt.justify = justifyText;
+      // @ts-ignore
       canvasTxt.fontWeight = fontWeight;
       ctx.textBaseline = "bottom";
       ctx.fillStyle = color;

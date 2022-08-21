@@ -1,18 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "CommonJS",
-    "lib": ["ES6", "DOM"],
-    "declaration": true,
     "outDir": "dist",
-    "rootDir": "lib",
-    "strict": false,
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "types": ["node"],
-    "typeRoots": ["node_modules/@types"],
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext", "dom"],
+    "moduleResolution": "node",
+    "jsx": "react",
+    "pretty": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "src", "public"],
-  "include": ["lib"]
+  "include": ["lib/**/*"]
 }
