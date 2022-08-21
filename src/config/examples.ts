@@ -27,6 +27,11 @@ const examples: Example[] = [
     pathname: "typography",
     component: React.lazy(() => import("@/examples/typography")),
   },
+  {
+    title: "Animation",
+    pathname: "animation",
+    component: React.lazy(() => import("@/examples/animation")),
+  },
 ];
 
 export default examples;
