@@ -15,7 +15,7 @@ const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 
 export default function Layer({
   zIndex = 0,
-  resolution = 512,
+  resolution = 2048,
   visible = true,
   width = 1,
   height = 1,
