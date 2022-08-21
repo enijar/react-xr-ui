@@ -23,8 +23,10 @@ Here is a full basic setup. This renders everything inside a [@react-three/xr](h
 The 2D UI is a 1x1 meter red box, with a dark grey border, and a small border radius.
 
 ```tsx
-import { DefaultXRControllers, VRCanvas as Canvas } from "@react-three/xr";
+import React from "react";
 import { Layer } from "react-xr-ui";
+import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 
 function App() {
   const room = React.useMemo(() => {

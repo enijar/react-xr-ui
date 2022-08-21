@@ -14,6 +14,9 @@
     "package": "tsc -p tsconfig.lib.json",
     "prepublishOnly": "npm run package"
   },
+  "files": [
+    "dist/*"
+  ],
   "browserslist": [
     "defaults",
     "not IE 11"
@@ -46,7 +49,6 @@
     "react-merge-refs": "^2.0.1",
     "react-refresh": "^0.13.0",
     "react-router-dom": "^6.3.0",
-    "react-xr-ui": "^0.0.7",
     "three": "^0.142.0",
     "ts-node": "^10.7.0",
     "tsconfig-paths-webpack-plugin": "^3.5.2",
