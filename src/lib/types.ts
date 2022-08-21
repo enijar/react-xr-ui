@@ -9,6 +9,7 @@ export type Child = {
 };
 
 export type LayerContextType = {
+  parentUuid: string;
   currentChildren: Child[];
   addChild: (child: Child) => void;
   removeChild: (uuid: Child["uuid"]) => void;

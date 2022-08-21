@@ -7,6 +7,7 @@ import layout from "@/lib/services/layout";
 import { BorderArray, LayerContextType, LayerProps } from "@/lib/types";
 
 const LayerContext = React.createContext<LayerContextType>({
+  parentUuid: null,
   currentChildren: [],
   addChild() {},
   removeChild() {},
@@ -14,37 +15,40 @@ const LayerContext = React.createContext<LayerContextType>({
 
 const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 
-export default function Layer({
-  zIndex = 0,
-  resolution = 2048,
-  visible = true,
-  autoLayout = true,
-  width = 1,
-  height = 1,
-  opacity = 1,
-  backgroundColor = "transparent",
-  backgroundImage,
-  backgroundSize,
-  backgroundPosition = DEFAULT_BACKGROUND_POSITION,
-  borderRadius = 0,
-  borderWidth = 0,
-  borderColor = "transparent",
-  flexDirection = "row",
-  alignItems = "center",
-  justifyContent = "center",
-  gap = 0,
-  textContent,
-  textAlign = "left",
-  justifyText = false,
-  verticalAlign = "top",
-  color = "white",
-  fontFamily = "system-ui, sans-serif",
-  fontSize = 0.1,
-  fontWeight = "normal",
-  childIndex,
-  children,
-  ...props
-}: LayerProps) {
+function Layer(
+  {
+    zIndex = 0,
+    resolution = 2048,
+    visible = true,
+    autoLayout = true,
+    width = 1,
+    height = 1,
+    opacity = 1,
+    backgroundColor = "transparent",
+    backgroundImage,
+    backgroundSize,
+    backgroundPosition = DEFAULT_BACKGROUND_POSITION,
+    borderRadius = 0,
+    borderWidth = 0,
+    borderColor = "transparent",
+    flexDirection = "row",
+    alignItems = "center",
+    justifyContent = "center",
+    gap = 0,
+    textContent,
+    textAlign = "left",
+    justifyText = false,
+    verticalAlign = "top",
+    color = "white",
+    fontFamily = "system-ui, sans-serif",
+    fontSize = 0.1,
+    fontWeight = "normal",
+    childIndex,
+    children,
+    ...props
+  }: LayerProps,
+  ref: React.ForwardedRef<THREE.Group>
+) {
   const renderOrder = useRenderOrder();
 
   const gl = useThree((state) => state.gl);
@@ -59,12 +63,12 @@ export default function Layer({
   }, []);
 
   React.useEffect(() => {
-    if (childIndex === undefined) return;
+    if (layerContext.parentUuid === null) return;
     layerContext.addChild({ width, height, index: childIndex, uuid });
     return () => {
       layerContext.removeChild(uuid);
     };
-  }, [width, height, childIndex, uuid]);
+  }, [width, height, childIndex, layerContext.parentUuid]);
 
   // Create 2d canvas context
   const ctx = React.useMemo<CanvasRenderingContext2D>(() => {
@@ -72,19 +76,19 @@ export default function Layer({
     return canvas.getContext("2d");
   }, []);
 
+  // Set canvas size
+  React.useMemo(() => {
+    ctx.canvas.width = Math.max(1, Math.floor(width * resolution));
+    ctx.canvas.height = Math.max(1, Math.floor(height * resolution));
+  }, [ctx.canvas, width, height, resolution]);
+
   // Create canvas texture with the newly created canvas;
   // this will be used as the texture for the plane
   const canvasTexture = React.useMemo(() => {
     const canvasTexture = new THREE.CanvasTexture(ctx.canvas);
     canvasTexture.anisotropy = gl.capabilities.getMaxAnisotropy();
     return canvasTexture;
-  }, [ctx.canvas, gl.capabilities]);
-
-  // Set canvas size
-  React.useMemo(() => {
-    ctx.canvas.width = Math.max(1, Math.floor(width * resolution));
-    ctx.canvas.height = Math.max(1, Math.floor(height * resolution));
-  }, [ctx.canvas, width, height, resolution]);
+  }, [ctx.canvas, gl.capabilities, width, height]);
 
   const images = React.useMemo(() => {
     const backgroundImage = new Image();
@@ -191,10 +195,11 @@ export default function Layer({
     if (textContent !== undefined) {
       canvasTxt.font = fontFamily;
       canvasTxt.fontSize = fontSize * w;
-      canvasTxt.lineHeight = fontSize * w;
+      canvasTxt.lineHeight = null;
       canvasTxt.align = textAlign;
       canvasTxt.vAlign = verticalAlign;
       canvasTxt.justify = justifyText;
+      canvasTxt.fontWeight = fontWeight;
       ctx.fillStyle = color;
       canvasTxt.drawText(ctx, textContent, ox, oy, w - ox * 2, h - oy * 2);
     }
@@ -213,11 +218,6 @@ export default function Layer({
 
     // Make sure canvas texture gets updated
     canvasTexture.needsUpdate = true;
-
-    const material = materialRef.current;
-    if (material !== null) {
-      material.needsUpdate = true;
-    }
   });
 
   const [currentChildren, setCurrentChildren] = React.useState<
@@ -265,6 +265,7 @@ export default function Layer({
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
       currentChildren,
+      parentUuid: uuid,
       addChild(child) {
         setCurrentChildren((currentChildren) => {
           const nextCurrentChildren = [...currentChildren];
@@ -287,7 +288,7 @@ export default function Layer({
         });
       },
     };
-  }, [currentChildren, childIndex]);
+  }, [currentChildren, uuid]);
 
   React.useEffect(() => {
     const childrenGroup = childrenGroupRef.current;
@@ -306,7 +307,7 @@ export default function Layer({
 
   return (
     <LayerContext.Provider value={layerProviderValue}>
-      <group {...props} visible={visible}>
+      <group ref={ref} {...props} visible={visible}>
         <mesh renderOrder={renderOrder + zIndex}>
           <planeBufferGeometry args={[width, height]} />
           <meshBasicMaterial
@@ -334,3 +335,7 @@ export default function Layer({
     </LayerContext.Provider>
   );
 }
+
+const ForwardedLayer = React.forwardRef(Layer);
+ForwardedLayer.displayName = "layer";
+export default ForwardedLayer;

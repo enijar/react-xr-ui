@@ -8,6 +8,11 @@ type Example = {
 
 const examples: Example[] = [
   {
+    title: "Basic",
+    pathname: "basic",
+    component: React.lazy(() => import("@/examples/basic")),
+  },
+  {
     title: "Background",
     pathname: "background",
     component: React.lazy(() => import("@/examples/background")),

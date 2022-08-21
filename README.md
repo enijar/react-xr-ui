@@ -14,9 +14,9 @@ Build UIs with React that work in VR, AR and web contexts.
 - [x] `backgroundImage`
 - [x] `backgroundSize`
 - [x] `zIndex`
-- [ ] borders (radius, color, width, image)
+- [x] borders (radius, color, width, image)
 - [ ] automatic children sizing
-- [ ] typography
+- [x] typography
 - [x] flexbox
 
 ### Contributing
