@@ -1,6 +1,6 @@
 import React from "react";
 import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
-import { VRCanvas as Canvas } from "@react-three/xr";
+import { DefaultXRControllers, VRCanvas as Canvas } from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 
 type Props = {
@@ -13,11 +13,13 @@ export default function Example({ children }: Props) {
   }, []);
 
   return (
-    <Canvas legacy flat linear>
+    <Canvas legacy flat linear gl={{ alpha: false }}>
+      <color args={["#333333"]} attach="background" />
       {/** Cameras, controls and lights */}
       <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
       <OrbitControls makeDefault target={[0, 1, -1.8]} />
       <ambientLight />
+      <DefaultXRControllers />
 
       <lineSegments geometry={room}>
         <lineBasicMaterial color="#c0c0c0" />
