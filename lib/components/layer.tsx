@@ -97,6 +97,7 @@ function Layer(
 
   // Set source for background image
   React.useMemo(() => {
+    if (!backgroundImage) return;
     images.backgroundImage.src = backgroundImage;
   }, [images.backgroundImage, backgroundImage]);
 
@@ -222,7 +223,7 @@ function Layer(
 
   const [currentChildren, setCurrentChildren] = React.useState<
     LayerContextType["currentChildren"]
-    >([]);
+  >([]);
 
   const childGroupRefs = React.useMemo(() => {
     return currentChildren.map(() => React.createRef<THREE.Group>());
