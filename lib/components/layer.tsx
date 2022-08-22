@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as THREE from "three";
-import * as canvasTxt from "canvas-txt";
+import canvasTxt from "canvas-txt";
 import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import { BorderArray, LayerContextType, LayerProps } from "../types";
