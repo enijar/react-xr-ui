@@ -5,10 +5,10 @@ type Axis = "width" | "height";
 type Args = {
   currentChildren: Child[];
   index: number;
-  flexDirection: LayerProps["flexDirection"];
-  alignItems: LayerProps["alignItems"];
-  justifyContent: LayerProps["justifyContent"];
-  gap: LayerProps["gap"];
+  flexDirection: "row" | "column" | "row-reverse" | "column-reverse";
+  alignItems: "start" | "center" | "end";
+  justifyContent: "start" | "center" | "end" | "space-between" | "space-around";
+  gap: number;
   size: Size;
 };
 
