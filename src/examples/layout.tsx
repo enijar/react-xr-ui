@@ -1,7 +1,6 @@
 import React from "react";
 import Example from "@/components/example";
-import Layer from "../../lib/components/layer";
-import { LayerProps } from "../../lib/types";
+import { Layer, LayerProps } from "../../lib";
 import Button from "@/components/button";
 
 export default function Layout() {

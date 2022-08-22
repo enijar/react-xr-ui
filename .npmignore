@@ -1,1 +1,9 @@
+.idea/
+.github/
+integration/
 public/
+src/
+.editorconfig
+.nvmrc
+tsconfig.json
+tsconfig.lib.json

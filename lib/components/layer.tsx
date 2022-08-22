@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
-import canvasTxt from "canvas-txt";
+import * as canvasTxt from "canvas-txt";
 import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import { BorderArray, LayerContextType, LayerProps } from "../types";
