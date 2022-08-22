@@ -5,22 +5,22 @@ type Axis = "width" | "height";
 type Args = {
   currentChildren: Child[];
   index: number;
-  flexDirection: "row" | "column" | "row-reverse" | "column-reverse";
-  alignItems: "start" | "center" | "end";
-  justifyContent: "start" | "center" | "end" | "space-between" | "space-around";
-  gap: number;
+  flexDirection: LayerProps["flexDirection"];
+  alignItems: LayerProps["alignItems"];
+  justifyContent: LayerProps["justifyContent"];
+  gap: LayerProps["gap"];
   size: Size;
 };
 
 export default function layout({
-  currentChildren,
-  index,
-  flexDirection,
-  alignItems,
-  justifyContent,
-  gap,
-  size,
-}: Args): [x: number, y: number] {
+                                 currentChildren,
+                                 index,
+                                 flexDirection,
+                                 alignItems,
+                                 justifyContent,
+                                 gap,
+                                 size,
+                               }: Args): [x: number, y: number] {
   const childrenWidth = currentChildren.reduce((width, child) => {
     return width + child.width;
   }, 0);
