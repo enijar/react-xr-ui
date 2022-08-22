@@ -16,6 +16,10 @@
     "package": "tsc -p tsconfig.lib.json",
     "prepublishOnly": "npm run package"
   },
+  "browserslist": [
+    "defaults",
+    "not IE 11"
+  ],
   "files": [
     "dist/*"
   ],
