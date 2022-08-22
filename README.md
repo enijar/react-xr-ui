@@ -10,8 +10,6 @@ Build UIs with React that work in VR, AR and web contexts.
 
 ### Install
 
-> Note: not currently an installable package from `npm`
-
 ```shell
 npm add react-xr-ui
 ```
