@@ -8,7 +8,6 @@
     "jsx": "react",
     "pretty": true,
     "declaration": true,
-    "emitDeclarationOnly": true,
     "skipLibCheck": true
   },
   "include": ["lib/**/*"]
