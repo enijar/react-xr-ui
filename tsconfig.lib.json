@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "lib": ["es2019", "dom"],
+    "target": "ES6",
+    "lib": ["ES2019", "DOM"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": false,
-    "jsx": "react",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
     "pretty": true,
     "skipLibCheck": true,
     "declaration": true,
