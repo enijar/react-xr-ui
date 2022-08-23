@@ -1,11 +1,27 @@
 import React from "react";
 import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
-import { DefaultXRControllers, VRCanvas as Canvas } from "@react-three/xr";
+import { useFrame } from "@react-three/fiber";
+import {
+  DefaultXRControllers,
+  useXR,
+  VRCanvas as Canvas,
+} from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { update } from "../../lib";
 
 type Props = {
   children?: React.ReactNode;
 };
+
+function Scene({ children }: Props) {
+  const { controllers } = useXR();
+
+  useFrame((state) => {
+    update(state, controllers);
+  });
+
+  return <>{children}</>;
+}
 
 export default function Example({ children }: Props) {
   const room = React.useMemo(() => {
@@ -24,7 +40,9 @@ export default function Example({ children }: Props) {
       <ambientLight />
       <DefaultXRControllers />
 
-      <group position={[0, 1, -1.88]}>{children}</group>
+      <Scene>
+        <group position={[0, 1, -1.88]}>{children}</group>
+      </Scene>
     </Canvas>
   );
 }
