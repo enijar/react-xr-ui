@@ -13,14 +13,14 @@ type Args = {
 };
 
 export default function layout({
-                                 currentChildren,
-                                 index,
-                                 flexDirection,
-                                 alignItems,
-                                 justifyContent,
-                                 gap,
-                                 size,
-                               }: Args): [x: number, y: number] {
+  currentChildren,
+  index,
+  flexDirection,
+  alignItems,
+  justifyContent,
+  gap,
+  size,
+}: Args): [x: number, y: number] {
   const childrenWidth = currentChildren.reduce((width, child) => {
     return width + child.width;
   }, 0);
