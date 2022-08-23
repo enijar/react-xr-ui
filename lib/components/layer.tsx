@@ -1,11 +1,11 @@
 import React from "react";
 import * as THREE from "three";
+import { RootState } from "@react-three/fiber";
 import canvasTxt, { fontStyle } from "canvas-txt";
 import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import updateManager from "../services/update";
 import { BorderArray, LayerContextType, LayerProps } from "../types";
-import { RootState } from "@react-three/fiber";
 
 const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,
