@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkreact_xr_ui=self.webpackChunkreact_xr_ui||[]).push([[268],{268:function(e,r,t){t.r(r),t.d(r,{default:function(){return a}});var n=t(294),u=t(291),o=t(228);function a(){return n.createElement(u.Z,null,n.createElement(o.Z,{width:1,height:1,backgroundImage:"./assets/images/robot.png",backgroundSize:"cover",borderRadius:.1,borderWidth:.02,borderColor:"#222222",backgroundPosition:[.5,.5]}))}}}]);
+//# sourceMappingURL=268.eddba173.chunk.js.map
