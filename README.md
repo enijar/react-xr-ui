@@ -70,10 +70,11 @@ function App() {
 - [x] `zIndex`
 - [x] borders (radius, color, width, image)
 - [ ] automatic children sizing
+- [ ] overflow: auto (scroll), hidden
+- [ ] interactive controls for VR
 - [x] typography
 - [x] flexbox
-- [ ] publish NPM package
-- [ ] add interactive controls for VR
+- [x] publish NPM package
 
 ### Contributing
 
