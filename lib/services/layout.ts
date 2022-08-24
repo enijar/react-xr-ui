@@ -43,41 +43,38 @@ export default function layout({
   ) {
     contentSize += gap * (currentChildren.length - 1);
   }
+
   /**
    * justifyContent
    */
-  if (justifyContent === "start") {
-    x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - size[axis];
+  if (flexDirection === "column") {
+    x = size[axis] * 0.5 + currentChildren[index][axis] * -0.5;
+  } else {
+    x = size[axis] * -0.5 + currentChildren[index][axis] * 0.5;
+  }
+  if (["row-reverse", "column-reverse"].includes(flexDirection)) {
+    for (let i = currentChildren.length - 2; i >= index; i--) {
+      x += currentChildren[i + 1][axis] + gap;
+    }
+  } else {
     if (flexDirection === "column") {
-      x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - contentSize;
+      for (let i = currentChildren.length - 2; i >= index; i--) {
+        x += currentChildren[i + 1][axis] + gap;
+      }
+    } else {
+      for (let i = 1; i <= index; i++) {
+        x += currentChildren[i - 1][axis] + gap;
+      }
     }
-    for (let i = 1; i <= index; i++) {
-      x +=
-        currentChildren[i - 1][axis] * 0.5 +
-        currentChildren[i][axis] * 0.5 +
-        gap;
-    }
+  }
+  if (justifyContent === "start") {
+    // No calculation needed
   }
   if (justifyContent === "center") {
-    x = currentChildren[0][axis] * 0.5 - contentSize * 0.5;
-    for (let i = 1; i <= index; i++) {
-      x +=
-        currentChildren[i - 1][axis] * 0.5 +
-        currentChildren[i][axis] * 0.5 +
-        gap;
-    }
+    x += size[axis] * 0.5 - contentSize * 0.5;
   }
   if (justifyContent === "end") {
-    x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - contentSize;
-    if (flexDirection === "column") {
-      x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - size[axis];
-    }
-    for (let i = 1; i <= index; i++) {
-      x +=
-        currentChildren[i - 1][axis] * 0.5 +
-        currentChildren[i][axis] * 0.5 +
-        gap;
-    }
+    x += size[axis] - contentSize;
   }
   if (justifyContent === "space-between") {
     if (contentSize >= size[axis]) {

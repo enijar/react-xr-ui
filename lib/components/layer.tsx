@@ -292,14 +292,7 @@ function Layer(
     const size = { width, height };
     size.width -= borderWidth * 2;
     size.height -= borderWidth * 2;
-    let refs = [...childGroupRefs];
-    if (["column", "row-reverse"].includes(flexDirection)) {
-      refs.reverse();
-    }
-    refs.forEach((ref, index) => {
-      if (flexDirection === "column") {
-        index = refs.length - 1 - index;
-      }
+    childGroupRefs.forEach((childGroupRef, index) => {
       const [x, y] = layout({
         currentChildren,
         index,
@@ -309,8 +302,8 @@ function Layer(
         gap,
         size,
       });
-      ref.current.position.x = x;
-      ref.current.position.y = y;
+      childGroupRef.current.position.x = x;
+      childGroupRef.current.position.y = y;
     });
   }, [
     childGroupRefs,
