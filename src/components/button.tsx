@@ -36,7 +36,7 @@ export default function Button({
       verticalAlign="middle"
       onPointerOver={() => setPointerOver(true)}
       onPointerOut={() => setPointerOver(false)}
-      onClick={(event) => {
+      onPointerDown={(event) => {
         onClick(event);
         setPointerOver(false);
       }}
