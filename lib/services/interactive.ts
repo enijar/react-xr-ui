@@ -83,7 +83,7 @@ function firePointerMove(interaction: Interaction): boolean {
 
 const interactive: Interactive = {
   disabled: false,
-  enabled: false,
+  enabled: true,
   lastInteractionUuid: "",
   interactions: [],
   interactionsState: {},
