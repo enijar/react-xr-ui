@@ -72,7 +72,6 @@
     }
   },
   "dependencies": {
-    "react-merge-refs": "^2.0.1",
     "canvas-txt": "^3.0.0"
   }
 }

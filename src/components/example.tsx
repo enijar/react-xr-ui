@@ -14,7 +14,7 @@ type Props = {
 };
 
 function Scene({ children }: Props) {
-  const { controllers } = useXR();
+  const controllers = useXR((state) => state.controllers);
 
   useFrame((state) => {
     update(state, controllers);

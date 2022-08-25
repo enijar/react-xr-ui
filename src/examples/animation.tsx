@@ -2,10 +2,10 @@ import React from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import Example from "@/components/example";
-import { Layer } from "../../lib";
+import { Layer, LayerRef } from "../../lib";
 
 function AnimatedBorders() {
-  const layerRef = React.useRef<THREE.Group>(null);
+  const layerRef = React.useRef<LayerRef>(null);
 
   const [borderRadius, setBorderRadius] = React.useState(0);
 
@@ -16,11 +16,17 @@ function AnimatedBorders() {
     const now = Date.now();
     const speed = 0.001;
     const delta = (1 + Math.sin(now * speed)) / 2;
-    layer.position.x = mapLinear(delta, 0, 1, -0.5, 0.5);
+    layer.group.position.x = mapLinear(delta, 0, 1, -0.5, 0.5);
     setBorderRadius(() => {
       return mapLinear(delta, 0, 1, 0, 0.5);
     });
   });
+
+  React.useEffect(() => {
+    const layer = layerRef.current;
+    if (layer === null) return;
+    layer.test();
+  }, []);
 
   return (
     <Layer
