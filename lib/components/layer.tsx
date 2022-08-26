@@ -300,7 +300,6 @@ function Layer(
     const res = Math.min(width, height);
     size.width -= res * borderWidth * 2;
     size.height -= res * borderWidth * 2;
-    console.log(size.height);
     childGroupRefs.forEach((childGroupRef, index) => {
       const [x, y] = layout({
         currentChildren,
