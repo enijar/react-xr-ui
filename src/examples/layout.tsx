@@ -135,6 +135,7 @@ export default function Layout() {
         flexDirection="row"
         alignItems="center"
         justifyContent="start"
+        gap={0.01}
         // flexDirection={flexDirection}
         // alignItems={alignItems}
         // justifyContent={justifyContent}
