@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { GroupProps } from "@react-three/fiber";
 import { align, vAlign } from "canvas-txt";
 
@@ -60,4 +61,9 @@ export type LayerProps = GroupProps & {
   fontSize?: number;
   fontWeight?: string;
   childIndex?: number;
+};
+
+export type LayerRef = {
+  group: THREE.Group;
+  test: () => void;
 };

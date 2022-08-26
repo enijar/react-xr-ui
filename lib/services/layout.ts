@@ -31,10 +31,10 @@ export default function layout({
   let y = 0;
   let contentSize = childrenWidth;
   let axis: Axis = "width";
-  let axisInverted: Axis = "height";
+  let oppositeAxis: Axis = "height";
   if (["column", "column-reverse"].includes(flexDirection)) {
     axis = "height";
-    axisInverted = "width";
+    oppositeAxis = "width";
     contentSize = childrenHeight;
   }
   if (
@@ -44,112 +44,97 @@ export default function layout({
     contentSize += gap * (currentChildren.length - 1);
   }
 
+  if (["space-between", "space-around"].includes(justifyContent)) {
+    gap = 0;
+  }
+
+  const isReverse = ["row-reverse", "column-reverse"].includes(flexDirection);
+  const isColumn = ["column", "column-reverse"].includes(flexDirection);
+
+  let dir = 1;
+  if (isColumn) {
+    dir = -1;
+  }
+
   /**
    * justifyContent
    */
-  if (flexDirection === "column") {
-    x = size[axis] * 0.5 + currentChildren[index][axis] * -0.5;
-  } else {
-    x = size[axis] * -0.5 + currentChildren[index][axis] * 0.5;
+  switch (justifyContent) {
+    case "start":
+      x =
+        ((size[axis] - currentChildren[index][axis]) * 0.5 -
+          (size[axis] - contentSize)) *
+        dir;
+      break;
+    case "end":
+      x = (size[axis] * 0.5 - currentChildren[index][axis] * 0.5) * dir;
+      break;
+    case "center":
+      x = (contentSize * 0.5 - currentChildren[index][axis] * 0.5) * dir;
+      break;
+    case "space-between":
+      if (currentChildren.length > 1) {
+        x = (size[axis] * 0.5 - currentChildren[index][axis] * 0.5) * dir;
+      }
+      break;
+    case "space-around":
+      if (currentChildren.length > 1) {
+        x = (size[axis] * 0.5 - currentChildren[index][axis] * 0.5) * dir;
+      }
+      break;
   }
-  if (["row-reverse", "column-reverse"].includes(flexDirection)) {
-    for (let i = currentChildren.length - 2; i >= index; i--) {
-      x += currentChildren[i + 1][axis] + gap;
+
+  let spacing = 0;
+  if (currentChildren.length > 1) {
+    if (justifyContent === "space-between") {
+      spacing =
+        Math.max(0, size[axis] - contentSize) /
+        Math.max(1, currentChildren.length - 1);
     }
-  } else {
-    if (flexDirection === "column") {
-      for (let i = currentChildren.length - 2; i >= index; i--) {
-        x += currentChildren[i + 1][axis] + gap;
-      }
-    } else {
-      for (let i = 1; i <= index; i++) {
-        x += currentChildren[i - 1][axis] + gap;
-      }
-    }
-  }
-  if (justifyContent === "start") {
-    // No calculation needed
-  }
-  if (justifyContent === "center") {
-    x += size[axis] * 0.5 - contentSize * 0.5;
-  }
-  if (justifyContent === "end") {
-    x += size[axis] - contentSize;
-  }
-  if (justifyContent === "space-between") {
-    if (contentSize >= size[axis]) {
-      x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - size[axis];
-      for (let i = 1; i <= index; i++) {
-        x +=
-          currentChildren[i - 1][axis] * 0.5 + currentChildren[i][axis] * 0.5;
-      }
-    } else {
-      let spacing = Math.max(0, size[axis] - contentSize);
-      if (currentChildren.length === 0) {
-        spacing = 0;
-      } else if (spacing > 0) {
-        spacing /= currentChildren.length - 1;
-      }
-      x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - size[axis];
-      for (let i = 1; i <= index; i++) {
-        x +=
-          currentChildren[i - 1][axis] * 0.5 +
-          currentChildren[i][axis] * 0.5 +
-          spacing;
-      }
+    if (justifyContent === "space-around") {
+      spacing =
+        Math.max(0, size[axis] - contentSize) /
+        Math.max(1, currentChildren.length + 1);
     }
   }
+
   if (justifyContent === "space-around") {
-    if (contentSize >= size[axis]) {
-      x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - size[axis];
-      for (let i = 1; i <= index; i++) {
-        x +=
-          currentChildren[i - 1][axis] * 0.5 + currentChildren[i][axis] * 0.5;
-      }
-    } else {
-      let spacing = Math.max(0, size[axis] - contentSize);
-      if (currentChildren.length === 0) {
-        spacing = 0;
-      } else if (spacing > 0) {
-        spacing /= currentChildren.length + 1;
-      }
-      x = size[axis] * 0.5 + currentChildren[0][axis] * 0.5 - size[axis];
-      x += spacing;
-      for (let i = 1; i <= index; i++) {
-        x +=
-          currentChildren[i - 1][axis] * 0.5 +
-          currentChildren[i][axis] * 0.5 +
-          spacing;
-      }
+    x -= spacing * dir;
+  }
+
+  if (isReverse) {
+    for (let i = 1; i <= index; i++) {
+      x -= (currentChildren[i - 1][axis] + spacing + gap) * dir;
+    }
+  } else {
+    for (let i = currentChildren.length - 2; i >= index; i--) {
+      x -= (currentChildren[i + 1][axis] + spacing + gap) * dir;
     }
   }
+
   /**
    * alignItems
    */
-  if (alignItems === "start") {
-    if (["row", "row-reverse"].includes(flexDirection)) {
-      y = size[axisInverted] * 0.5 - currentChildren[index][axisInverted] * 0.5;
-    }
-    if (["column", "column-reverse"].includes(flexDirection)) {
+  switch (alignItems) {
+    case "start":
       y =
-        size[axisInverted] * -0.5 + currentChildren[index][axisInverted] * 0.5;
-    }
-  }
-  if (alignItems === "center") {
-    // No calculation needed
-  }
-  if (alignItems === "end") {
-    if (["row", "row-reverse"].includes(flexDirection)) {
+        (size[oppositeAxis] * 0.5 -
+          currentChildren[index][oppositeAxis] * 0.5) *
+        dir;
+      break;
+    case "end":
       y =
-        size[axisInverted] * -0.5 + currentChildren[index][axisInverted] * 0.5;
-    }
-    if (["column", "column-reverse"].includes(flexDirection)) {
-      y = size[axisInverted] * 0.5 - currentChildren[index][axisInverted] * 0.5;
-    }
+        (currentChildren[index][oppositeAxis] * 0.5 -
+          size[oppositeAxis] * 0.5) *
+        dir;
+      break;
+    case "center":
+      y = 0;
+      break;
   }
+
   if (["column", "column-reverse"].includes(flexDirection)) {
     return [y, x];
   }
-
   return [x, y];
 }

@@ -1,12 +1,10 @@
-import React from "react";
+import React, { useImperativeHandle } from "react";
 import * as THREE from "three";
-import { RootState } from "@react-three/fiber";
 import canvasTxt from "canvas-txt";
-import { mergeRefs } from "react-merge-refs";
 import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import updateManager from "../services/update";
-import { BorderArray, LayerContextType, LayerProps } from "../types";
+import { LayerRef, BorderArray, LayerContextType, LayerProps } from "../types";
 import interactive from "../services/interactive";
 
 const LayerContext = React.createContext<LayerContextType>({
@@ -55,13 +53,22 @@ function Layer(
     onPointerUp,
     ...props
   }: LayerProps,
-  ref: React.ForwardedRef<THREE.Group>
+  ref: React.ForwardedRef<LayerRef>
 ) {
   const renderOrder = useRenderOrder();
 
   const groupRef = React.useRef<THREE.Group>(null);
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
+
+  useImperativeHandle(ref, () => {
+    return {
+      group: groupRef.current,
+      test() {
+        console.log("Test");
+      },
+    };
+  });
 
   const layerContext = React.useContext(LayerContext);
 
@@ -138,7 +145,7 @@ function Layer(
     const w = ctx.canvas.width;
     const h = ctx.canvas.height;
     const d2r = Math.PI / 180; // degrees to radians
-    const res = (w + h) / 2;
+    const res = Math.min(w, h);
     const { mapLinear } = THREE.MathUtils;
 
     ctx.globalCompositeOperation = "source-over";
@@ -290,8 +297,9 @@ function Layer(
   // Layout calculations
   React.useEffect(() => {
     const size = { width, height };
-    size.width -= borderWidth * 2;
-    size.height -= borderWidth * 2;
+    const res = Math.min(width, height);
+    size.width -= res * borderWidth * 2;
+    size.height -= res * borderWidth * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
       const [x, y] = layout({
         currentChildren,
@@ -362,7 +370,7 @@ function Layer(
 
   return (
     <LayerContext.Provider value={layerProviderValue}>
-      <group ref={mergeRefs([ref, groupRef])} {...props} visible={visible}>
+      <group ref={groupRef} {...props} visible={visible}>
         <mesh renderOrder={renderOrder + zIndex}>
           <planeBufferGeometry args={[width, height]} />
           <meshBasicMaterial
