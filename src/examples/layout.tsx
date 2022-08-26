@@ -133,7 +133,7 @@ export default function Layout() {
         flexDirection="row"
         alignItems="start"
         justifyContent="start"
-        // gap={0.01}
+        gap={0.03}
         // flexDirection={flexDirection}
         // alignItems={alignItems}
         // justifyContent={justifyContent}

@@ -70,14 +70,13 @@ export default function layout({
       break;
   }
 
-  // Offset x starting position
   if (isReverse) {
     for (let i = 1; i <= index; i++) {
-      x -= currentChildren[i - 1][axis] * dir;
+      x -= (currentChildren[i - 1][axis] + gap) * dir;
     }
   } else {
     for (let i = currentChildren.length - 2; i >= index; i--) {
-      x -= currentChildren[i + 1][axis] * dir;
+      x -= (currentChildren[i + 1][axis] + gap) * dir;
     }
   }
 
