@@ -26,13 +26,29 @@ The 2D UI is a 1x1 meter red box, with a dark grey border, and a small border ra
 ```tsx
 import React from "react";
 import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
-import { Layer } from "react-xr-ui";
+import { Layer, update, interactive } from "react-xr-ui";
+import { useXREvent } from "@react-three/xr";
 import { useFrame } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 
 function Scene() {
   useFrame((state) => {
     update(state);
+  });
+
+  React.useEffect(() => {
+    return interactive.create();
+  }, []);
+
+  useXREvent("selectstart", () => {
+    interactive.enabled = true;
+    interactive.pointerDown = true;
+    interactive.cleanDown = true;
+  });
+
+  useXREvent("selectend", () => {
+    interactive.pointerDown = false;
+    interactive.cleanUp = true;
   });
 
   return (

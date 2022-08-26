@@ -4,10 +4,11 @@ import { useFrame } from "@react-three/fiber";
 import {
   DefaultXRControllers,
   useXR,
+  useXREvent,
   VRCanvas as Canvas,
 } from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { update } from "../../lib";
+import { update, interactive } from "../../lib";
 
 type Props = {
   children?: React.ReactNode;
@@ -18,6 +19,21 @@ function Scene({ children }: Props) {
 
   useFrame((state) => {
     update(state, controllers);
+  });
+
+  React.useEffect(() => {
+    return interactive.create();
+  }, []);
+
+  useXREvent("selectstart", () => {
+    interactive.enabled = true;
+    interactive.pointerDown = true;
+    interactive.cleanDown = true;
+  });
+
+  useXREvent("selectend", () => {
+    interactive.pointerDown = false;
+    interactive.cleanUp = true;
   });
 
   return <>{children}</>;
