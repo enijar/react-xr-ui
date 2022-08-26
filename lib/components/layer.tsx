@@ -145,7 +145,7 @@ function Layer(
     const w = ctx.canvas.width;
     const h = ctx.canvas.height;
     const d2r = Math.PI / 180; // degrees to radians
-    const res = (w + h) / 2;
+    const res = Math.min(w, h);
     const { mapLinear } = THREE.MathUtils;
 
     ctx.globalCompositeOperation = "source-over";
@@ -297,8 +297,10 @@ function Layer(
   // Layout calculations
   React.useEffect(() => {
     const size = { width, height };
-    size.width -= borderWidth * 2;
-    size.height -= borderWidth * 2;
+    const res = Math.min(width, height);
+    size.width -= res * borderWidth * 2;
+    size.height -= res * borderWidth * 2;
+    console.log(size.height);
     childGroupRefs.forEach((childGroupRef, index) => {
       const [x, y] = layout({
         currentChildren,

@@ -31,8 +31,10 @@ export default function layout({
   let y = 0;
   let contentSize = childrenWidth;
   let axis: Axis = "width";
+  let oppositeAxis: Axis = "height";
   if (["column", "column-reverse"].includes(flexDirection)) {
     axis = "height";
+    oppositeAxis = "width";
     contentSize = childrenHeight;
   }
   if (
@@ -84,10 +86,16 @@ export default function layout({
    */
   switch (alignItems) {
     case "start":
-      y = (size[axis] * 0.5 - currentChildren[index][axis] * 0.5) * dir;
+      y =
+        (size[oppositeAxis] * 0.5 -
+          currentChildren[index][oppositeAxis] * 0.5) *
+        dir;
       break;
     case "end":
-      y = (currentChildren[index][axis] * 0.5 - size[axis] * 0.5) * dir;
+      y =
+        (currentChildren[index][oppositeAxis] * 0.5 -
+          size[oppositeAxis] * 0.5) *
+        dir;
       break;
     case "center":
       y = 0;

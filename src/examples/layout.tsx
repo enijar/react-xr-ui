@@ -124,78 +124,16 @@ export default function Layout() {
       {/*  </Layer>*/}
       {/*</Layer>*/}
       <Layer
-        position-x={-0.4}
-        position-y={0.4}
-        width={0.7}
-        height={0.7}
+        width={1}
+        height={1.4}
         borderWidth={0.025}
-        borderColor="#222222"
+        borderColor="rgba(0, 0, 0, 0.25)"
         borderRadius={0.05}
         backgroundColor="#444444"
         flexDirection="row"
-        alignItems="center"
+        alignItems="start"
         justifyContent="start"
-        gap={0.01}
-        // flexDirection={flexDirection}
-        // alignItems={alignItems}
-        // justifyContent={justifyContent}
-      >
-        <Layer width={0.1} height={0.1} backgroundColor="red" />
-        <Layer width={0.2} height={0.2} backgroundColor="green" />
-        <Layer width={0.3} height={0.3} backgroundColor="lightblue" />
-      </Layer>
-      <Layer
-        position-x={-0.4}
-        position-y={-0.4}
-        width={0.7}
-        height={0.7}
-        borderWidth={0.025}
-        borderColor="#222222"
-        borderRadius={0.05}
-        backgroundColor="#444444"
-        flexDirection="row-reverse"
-        alignItems="center"
-        justifyContent="end"
-        // flexDirection={flexDirection}
-        // alignItems={alignItems}
-        // justifyContent={justifyContent}
-      >
-        <Layer width={0.1} height={0.1} backgroundColor="red" />
-        <Layer width={0.2} height={0.2} backgroundColor="green" />
-        <Layer width={0.3} height={0.3} backgroundColor="lightblue" />
-      </Layer>
-      <Layer
-        position-x={0.4}
-        position-y={0.4}
-        width={0.7}
-        height={0.7}
-        borderWidth={0.025}
-        borderColor="#222222"
-        borderRadius={0.05}
-        backgroundColor="#444444"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="start"
-        // flexDirection={flexDirection}
-        // alignItems={alignItems}
-        // justifyContent={justifyContent}
-      >
-        <Layer width={0.1} height={0.1} backgroundColor="red" />
-        <Layer width={0.2} height={0.2} backgroundColor="green" />
-        <Layer width={0.3} height={0.3} backgroundColor="lightblue" />
-      </Layer>
-      <Layer
-        position-x={0.4}
-        position-y={-0.4}
-        width={0.7}
-        height={0.7}
-        borderWidth={0.025}
-        borderColor="#222222"
-        borderRadius={0.05}
-        backgroundColor="#444444"
-        flexDirection="column-reverse"
-        alignItems="center"
-        justifyContent="end"
+        // gap={0.01}
         // flexDirection={flexDirection}
         // alignItems={alignItems}
         // justifyContent={justifyContent}
