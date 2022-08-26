@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GroupProps } from "@react-three/fiber";
-import { align, vAlign } from "canvas-txt";
+import { align, lineHeight, vAlign } from "canvas-txt";
 
 export type Child = {
   width: number;
@@ -60,6 +60,7 @@ export type LayerProps = GroupProps & {
   fontFamily?: string;
   fontSize?: number;
   fontWeight?: string;
+  lineHeight?: number;
   childIndex?: number;
 };
 

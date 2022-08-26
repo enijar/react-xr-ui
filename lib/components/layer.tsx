@@ -44,6 +44,7 @@ function Layer(
     fontFamily = "system-ui, sans-serif",
     fontSize = 0.1,
     fontWeight = "normal",
+    lineHeight = null,
     childIndex,
     children,
     onPointerMove,
@@ -193,8 +194,8 @@ function Layer(
       const y = backgroundPosition[1];
       const sx = 0;
       const sy = 0;
-      const sw = images.backgroundImage.width;
-      const sh = images.backgroundImage.height;
+      const sw = Math.max(1, images.backgroundImage.width);
+      const sh = Math.max(1, images.backgroundImage.height);
       const ir = sw / sh;
       const cr = w / h;
       let dw = sw;
@@ -207,7 +208,7 @@ function Layer(
         case "contain":
           dw = w - ox * 2;
           dh = h - oy * 2;
-          if (ir > cr) {
+          if (ir >= cr) {
             dh = dw / ir;
           } else {
             dw = dh * ir;
@@ -216,7 +217,7 @@ function Layer(
         case "cover":
           dw = w - ox * 2;
           dh = h - oy * 2;
-          if (ir < cr) {
+          if (ir <= cr) {
             dh = dw / ir;
           } else {
             dw = dh * ir;
@@ -235,7 +236,7 @@ function Layer(
     if (textContent !== undefined) {
       canvasTxt.font = fontFamily;
       canvasTxt.fontSize = fontSize * Math.min(w, h);
-      canvasTxt.lineHeight = null;
+      canvasTxt.lineHeight = lineHeight * canvasTxt.fontSize;
       canvasTxt.align = textAlign;
       canvasTxt.vAlign = verticalAlign;
       canvasTxt.justify = justifyText;
@@ -274,6 +275,7 @@ function Layer(
     fontSize,
     fontFamily,
     fontSize,
+    lineHeight,
     justifyContent,
     verticalAlign,
     textAlign,
