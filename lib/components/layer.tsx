@@ -79,11 +79,17 @@ function Layer(
 
   React.useEffect(() => {
     if (layerContext.parentUuid === null) return;
-    layerContext.addChild({ width, height, index: childIndex, uuid });
+    layerContext.addChild({
+      width,
+      height,
+      index: childIndex,
+      autoLayout,
+      uuid,
+    });
     return () => {
       layerContext.removeChild(uuid);
     };
-  }, [width, height, childIndex, layerContext.parentUuid]);
+  }, [width, height, childIndex, autoLayout, layerContext.parentUuid]);
 
   React.useEffect(() => {
     interactive.add({
@@ -303,7 +309,7 @@ function Layer(
     size.width -= res * borderWidth * 2;
     size.height -= res * borderWidth * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
-      const [x, y] = layout({
+      let [x, y] = layout({
         currentChildren,
         index,
         flexDirection,
@@ -312,6 +318,10 @@ function Layer(
         gap,
         size,
       });
+      if (!currentChildren[index].autoLayout) {
+        x = 0;
+        y = 0;
+      }
       childGroupRef.current.position.x = x;
       childGroupRef.current.position.y = y;
     });

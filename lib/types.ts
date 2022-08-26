@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import { GroupProps } from "@react-three/fiber";
-import { align, lineHeight, vAlign } from "canvas-txt";
+import { align, vAlign } from "canvas-txt";
 
 export type Child = {
   width: number;
   height: number;
+  autoLayout: boolean;
   index: number;
   uuid: string;
 };

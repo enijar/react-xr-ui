@@ -22,9 +22,11 @@ export default function layout({
   size,
 }: Args): [x: number, y: number] {
   const childrenWidth = currentChildren.reduce((width, child) => {
+    if (!child.autoLayout) return width;
     return width + child.width;
   }, 0);
   const childrenHeight = currentChildren.reduce((height, child) => {
+    if (!child.autoLayout) return height;
     return height + child.height;
   }, 0);
   let x = 0;
@@ -104,10 +106,14 @@ export default function layout({
 
   if (isReverse) {
     for (let i = 1; i <= index; i++) {
-      x -= (currentChildren[i - 1][axis] + spacing + gap) * dir;
+      const child = currentChildren[i - 1];
+      if (!child.autoLayout) continue;
+      x -= (child[axis] + spacing + gap) * dir;
     }
   } else {
     for (let i = currentChildren.length - 2; i >= index; i--) {
+      const child = currentChildren[i + 1];
+      if (!child.autoLayout) continue;
       x -= (currentChildren[i + 1][axis] + spacing + gap) * dir;
     }
   }
