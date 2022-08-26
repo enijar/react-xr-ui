@@ -1,12 +1,12 @@
 {
   "name": "react-xr-ui",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/enijar/react-three-ui"
+    "url": "https://github.com/enijar/react-xr-ui"
   },
   "license": "MIT",
   "scripts": {
