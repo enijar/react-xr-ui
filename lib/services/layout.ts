@@ -44,6 +44,10 @@ export default function layout({
     contentSize += gap * (currentChildren.length - 1);
   }
 
+  if (["space-between", "space-around"].includes(justifyContent)) {
+    gap = 0;
+  }
+
   const isReverse = ["row-reverse", "column-reverse"].includes(flexDirection);
   const isColumn = ["column", "column-reverse"].includes(flexDirection);
 
@@ -68,15 +72,43 @@ export default function layout({
     case "center":
       x = (contentSize * 0.5 - currentChildren[index][axis] * 0.5) * dir;
       break;
+    case "space-between":
+      if (currentChildren.length > 1) {
+        x = (size[axis] * 0.5 - currentChildren[index][axis] * 0.5) * dir;
+      }
+      break;
+    case "space-around":
+      if (currentChildren.length > 1) {
+        x = (size[axis] * 0.5 - currentChildren[index][axis] * 0.5) * dir;
+      }
+      break;
+  }
+
+  let spacing = 0;
+  if (currentChildren.length > 1) {
+    if (justifyContent === "space-between") {
+      spacing =
+        Math.max(0, size[axis] - contentSize) /
+        Math.max(1, currentChildren.length - 1);
+    }
+    if (justifyContent === "space-around") {
+      spacing =
+        Math.max(0, size[axis] - contentSize) /
+        Math.max(1, currentChildren.length + 1);
+    }
+  }
+
+  if (justifyContent === "space-around") {
+    x -= spacing * dir;
   }
 
   if (isReverse) {
     for (let i = 1; i <= index; i++) {
-      x -= (currentChildren[i - 1][axis] + gap) * dir;
+      x -= (currentChildren[i - 1][axis] + spacing + gap) * dir;
     }
   } else {
     for (let i = currentChildren.length - 2; i >= index; i--) {
-      x -= (currentChildren[i + 1][axis] + gap) * dir;
+      x -= (currentChildren[i + 1][axis] + spacing + gap) * dir;
     }
   }
 
