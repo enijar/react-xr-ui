@@ -62,6 +62,12 @@ function Layer(
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
 
+  React.useEffect(() => {
+    const material = materialRef.current;
+    if (material === null) return;
+    material.blending = THREE.CustomBlending;
+  }, []);
+
   useImperativeHandle(ref, () => {
     return {
       group: groupRef.current,
@@ -133,6 +139,7 @@ function Layer(
   const canvasTexture = React.useMemo(() => {
     const canvasTexture = new THREE.CanvasTexture(ctx.canvas);
     canvasTexture.anisotropy = 16;
+    canvasTexture.premultiplyAlpha = true;
     return canvasTexture;
   }, [ctx.canvas, width, height]);
 
