@@ -37,6 +37,11 @@ const examples: Example[] = [
     pathname: "complex-ui",
     component: React.lazy(() => import("@/examples/complex-ui")),
   },
+  {
+    title: "Stress Test",
+    pathname: "stress-test",
+    component: React.lazy(() => import("@/examples/stress-test")),
+  },
 ];
 
 export default examples;
