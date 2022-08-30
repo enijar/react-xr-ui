@@ -1,6 +1,7 @@
 import React, { useImperativeHandle } from "react";
 import * as THREE from "three";
 import canvasTxt from "canvas-txt";
+import { useFrame } from "@react-three/fiber";
 import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import updateManager from "../services/update";
@@ -288,6 +289,10 @@ function Layer(
     textContent,
     color,
   ]);
+
+  useFrame(() => {
+    update();
+  });
 
   React.useEffect(() => {
     updateManager.add(uuid, update);
