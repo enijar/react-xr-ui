@@ -15,9 +15,6 @@ const PUBLIC_PATH = process.env.PUBLIC_PATH ?? "/";
 const HTTPS = process.env.HTTPS === "true";
 
 const config = {
-  cache: {
-    type: "filesystem",
-  },
   mode: DEV_MODE ? "development" : "production",
   target: DEV_MODE ? "web" : "browserslist",
   stats: "minimal",
