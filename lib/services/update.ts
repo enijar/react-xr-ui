@@ -7,6 +7,7 @@ type Fn = (state: RootState) => void;
 const updates = new Map<string, Fn>();
 
 export default function update(state: RootState, controllers: XRController[]) {
+  updates.forEach((fn) => fn(state));
   interactive.update(state.camera, state.raycaster, controllers);
 }
 

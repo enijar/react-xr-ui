@@ -1,11 +1,10 @@
 import React, { useImperativeHandle } from "react";
 import * as THREE from "three";
 import canvasTxt from "canvas-txt";
-import { useFrame } from "@react-three/fiber";
 import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import updateManager from "../services/update";
-import { LayerRef, BorderArray, LayerContextType, LayerProps } from "../types";
+import { BorderArray, LayerContextType, LayerProps, LayerRef } from "../types";
 import interactive from "../services/interactive";
 
 const LayerContext = React.createContext<LayerContextType>({
@@ -20,7 +19,7 @@ const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 function Layer(
   {
     zIndex = 0,
-    resolution = 2048,
+    resolution = 1024,
     visible = true,
     autoLayout = true,
     width = 1,
@@ -289,10 +288,6 @@ function Layer(
     textContent,
     color,
   ]);
-
-  useFrame(() => {
-    update();
-  });
 
   React.useEffect(() => {
     updateManager.add(uuid, update);
