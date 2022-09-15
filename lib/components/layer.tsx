@@ -391,7 +391,7 @@ function Layer(
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible}>
         <mesh renderOrder={renderOrder + zIndex}>
-          <planeBufferGeometry args={[width, height]} />
+          <planeGeometry args={[width, height]} />
           <meshBasicMaterial
             ref={materialRef}
             side={THREE.FrontSide}
