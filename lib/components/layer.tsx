@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from "react";
+import React from "react";
 import * as THREE from "three";
 import canvasTxt from "canvas-txt";
 import useRenderOrder from "../hooks/use-render-order";
@@ -68,7 +68,7 @@ function Layer(
     material.blending = THREE.CustomBlending;
   }, []);
 
-  useImperativeHandle(ref, () => {
+  React.useImperativeHandle(ref, () => {
     return {
       group: groupRef.current,
       test() {
@@ -418,6 +418,4 @@ function Layer(
   );
 }
 
-const ForwardedLayer = React.forwardRef(Layer);
-ForwardedLayer.displayName = "layer";
-export default ForwardedLayer;
+export default React.forwardRef(Layer);
