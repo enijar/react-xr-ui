@@ -97,26 +97,32 @@ function Layer(
     };
   }, [width, height, childIndex, autoLayout, layerContext.parentUuid]);
 
-  React.useEffect(() => {
-    interactive.add({
-      uuid,
-      object: groupRef.current,
-      onPointerMove,
-      onPointerOver,
-      onPointerOut,
-      onPointerDown,
-      onPointerUp,
-    });
-  }, [
-    uuid,
+  const pointerRefs = React.useRef({
     onPointerMove,
     onPointerOver,
     onPointerOut,
     onPointerDown,
     onPointerUp,
-  ]);
+  });
 
-  React.useEffect(() => {
+  React.useMemo(() => {
+    pointerRefs.current.onPointerMove = onPointerMove;
+    pointerRefs.current.onPointerOver = onPointerOver;
+    pointerRefs.current.onPointerOut = onPointerOut;
+    pointerRefs.current.onPointerDown = onPointerDown;
+    pointerRefs.current.onPointerUp = onPointerUp;
+  }, [onPointerMove, onPointerOver, onPointerOut, onPointerDown, onPointerUp]);
+
+  React.useLayoutEffect(() => {
+    interactive.add({
+      uuid,
+      object: groupRef.current,
+      onPointerMove: pointerRefs.current.onPointerMove,
+      onPointerOver: pointerRefs.current.onPointerOver,
+      onPointerOut: pointerRefs.current.onPointerOut,
+      onPointerDown: pointerRefs.current.onPointerDown,
+      onPointerUp: pointerRefs.current.onPointerUp,
+    });
     return () => {
       interactive.remove(uuid);
     };
