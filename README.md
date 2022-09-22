@@ -112,6 +112,8 @@ export default function App() {
 - [ ] flex wrap
 - [ ] less boilerplate setup code
 - [ ] 1.0 release 🎉
+- [ ] Optimise rendering by reducing no. canvas elements created
+- [ ] Add `onClick` to pointer events
 
 ### Contributing
 
