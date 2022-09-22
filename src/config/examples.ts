@@ -38,9 +38,9 @@ const examples: Example[] = [
     component: React.lazy(() => import("@/examples/complex-ui")),
   },
   {
-    title: "Stress Test",
-    pathname: "stress-test",
-    component: React.lazy(() => import("@/examples/stress-test")),
+    title: "Padding",
+    pathname: "padding",
+    component: React.lazy(() => import("@/examples/padding")),
   },
 ];
 

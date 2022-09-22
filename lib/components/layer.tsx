@@ -4,7 +4,7 @@ import canvasTxt from "canvas-txt";
 import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import updateManager from "../services/update";
-import { BorderArray, LayerContextType, LayerProps, LayerRef } from "../types";
+import { ValueArray, LayerContextType, LayerProps, LayerRef } from "../types";
 import interactive from "../services/interactive";
 
 const LayerContext = React.createContext<LayerContextType>({
@@ -29,6 +29,7 @@ function Layer(
     backgroundImage,
     backgroundSize,
     backgroundPosition = DEFAULT_BACKGROUND_POSITION,
+    padding = 0,
     borderRadius = 0,
     borderWidth = 0,
     borderColor = "transparent",
@@ -175,7 +176,7 @@ function Layer(
     // Border radius
     {
       const isArray = Array.isArray(borderRadius);
-      const array = borderRadius as BorderArray;
+      const array = borderRadius as ValueArray;
       const number = borderRadius as number;
       let [tl = 0, tr = 0, br = 0, bl = 0] = isArray
         ? array
@@ -319,8 +320,16 @@ function Layer(
   React.useEffect(() => {
     const size = { width, height };
     const res = Math.min(width, height);
+    const paddingX = Array.isArray(padding)
+      ? (padding[1] ?? 0) + (padding[3] ?? 0)
+      : padding;
+    const paddingY = Array.isArray(padding)
+      ? (padding[0] ?? 0) + (padding[2] ?? 0)
+      : padding;
     size.width -= res * borderWidth * 2;
     size.height -= res * borderWidth * 2;
+    size.width -= res * paddingX * 2;
+    size.height -= res * paddingY * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
       let [x, y] = layout({
         currentChildren,
@@ -347,6 +356,7 @@ function Layer(
     alignItems,
     justifyContent,
     borderWidth,
+    padding,
     gap,
   ]);
 

@@ -22,7 +22,7 @@ export type Size = {
   height: number;
 };
 
-export type BorderArray = [
+export type ValueArray = [
   topLeft?: number,
   topRight?: number,
   bottomRight?: number,
@@ -41,7 +41,8 @@ export type LayerProps = GroupProps & {
   backgroundImage?: string;
   backgroundSize?: "stretch" | "contain" | "cover";
   backgroundPosition?: [left: number, top: number];
-  borderRadius?: number | BorderArray;
+  padding?: number | ValueArray;
+  borderRadius?: number | ValueArray;
   borderWidth?: number;
   borderColor?: string;
   flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
