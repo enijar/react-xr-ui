@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import Example from "@/components/example";
 import { Layer, LayerRef } from "../../lib";
+import ViewCode from "@/components/view-code";
 
 function Scene() {
   const [score, setScore] = React.useState(0);
@@ -93,8 +94,11 @@ function Scene() {
 
 export default function ComplexUi() {
   return (
-    <Example>
-      <Scene />
-    </Example>
+    <>
+      <Example>
+        <Scene />
+      </Example>
+      <ViewCode pathname="complex-ui" />
+    </>
   );
 }
