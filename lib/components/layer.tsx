@@ -85,26 +85,24 @@ function Layer(
     const size: { width: number; height: number } = { width: 1, height: 1 };
     if (typeof width === "string") {
       const percent = parseFloat(width);
-      const normal = percent / 100;
       if (layerContext.parentUuid === null) {
-        size.width = normal;
+        size.width = percent / 100;
       } else if (isNaN(percent)) {
         size.width = 1;
       } else {
-        size.width = layerContext.parentSize.width * normal;
+        size.width = layerContext.parentSize.width * (percent / 100);
       }
     } else {
       size.width = width ?? 1;
     }
     if (typeof height === "string") {
       const percent = parseFloat(height);
-      const normal = percent / 100;
       if (layerContext.parentUuid === null) {
-        size.height = normal;
+        size.height = percent / 100;
       } else if (isNaN(percent)) {
         size.height = 1;
       } else {
-        size.height = layerContext.parentSize.height * normal;
+        size.height = layerContext.parentSize.height * (percent / 100);
       }
     } else {
       size.height = height ?? 1;
