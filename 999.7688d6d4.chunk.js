@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkreact_xr_ui=self.webpackChunkreact_xr_ui||[]).push([[999],{999:function(e,r,t){t.r(r),t.d(r,{default:function(){return a}});var n=t(294),u=t(291),c=t(228);function a(){return n.createElement(u.Z,null,n.createElement(c.Z,{gap:.1,backgroundColor:"crimson"},n.createElement(c.Z,{width:"50%",height:"50%",backgroundColor:"#333333"})))}}}]);
-//# sourceMappingURL=999.7688d6d4.chunk.js.map
