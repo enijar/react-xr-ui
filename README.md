@@ -26,13 +26,13 @@ The 2D UI is a 1x1 meter red box, with a dark grey border, and a small border ra
 ```tsx
 import React from "react";
 import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
-import { Layer, update, interactive } from "react-xr-ui";
-import { useXREvent, useXR } from "@react-three/xr";
-import { useFrame } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Controllers, useXR, useXREvent, XR } from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { update, interactive } from "react-xr-ui";
 
 function Scene() {
-  const { controllers } = useXR();
+  const controllers = useXR((state) => state.controllers);
 
   useFrame((state) => {
     update(state, controllers);
@@ -54,43 +54,43 @@ function Scene() {
   });
 
   return (
-    <>
-      <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
-      <OrbitControls makeDefault target={[0, 1, -1.8]} />
-      <ambientLight />
-      <DefaultXRControllers />
-
-      {/** 3D Stuff */}
-      <></>
-
-      {/** 2D UI */}
-      <group position={[0, 1, -1.88]}>
-        <Layer
-          width={1}
-          height={1}
-          backgroundColor="crimson"
-          borderRadius={0.1}
-          borderWidth={0.02}
-          borderColor="#222222"
-        />
-      </group>
-    </>
+    <group position={[0, 1, -1.88]}>
+      <Layer
+        width={1}
+        height={1}
+        backgroundColor="crimson"
+        borderRadius={0.1}
+        borderWidth={0.02}
+        borderColor="#222222"
+      />
+    </group>
   );
 }
 
-function App() {
+export default function App() {
   const room = React.useMemo(() => {
     return new BoxLineGeometry(6, 6, 6, 10, 10, 10).translate(0, 3, 0);
   }, []);
 
   return (
     <Canvas legacy flat linear gl={{ alpha: false }}>
-      {/** Background, cameras, controls and lights */}
-      <color args={["#333333"]} attach="background" />
-      <lineSegments geometry={room}>
-        <lineBasicMaterial color="#c0c0c0" />
-      </lineSegments>
-      <Scene />
+      <XR>
+        {/** Background, cameras, controls, and lights */}
+        <color args={["#333333"]} attach="background" />
+        <lineSegments geometry={room}>
+          <lineBasicMaterial color="#c0c0c0" />
+        </lineSegments>
+        <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
+        <OrbitControls makeDefault target={[0, 1, -1.8]} />
+        <ambientLight />
+        <Controllers />
+
+        {/** 3D Stuff */}
+        <></>
+
+        {/** 2D UI */}
+        <Scene />
+      </XR>
     </Canvas>
   );
 }
@@ -103,9 +103,9 @@ function App() {
 - [x] `backgroundSize`
 - [x] `zIndex`
 - [x] borders (radius, color, width, image)
-- [ ] automatic children sizing
+- [x] automatic children sizing
 - [ ] overflow: auto (scroll), hidden
-- [ ] interactive controls for VR
+- [x] interactive controls for VR
 - [x] typography
 - [x] flexbox
 - [x] publish NPM package
