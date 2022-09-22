@@ -18,7 +18,7 @@ npm add react-xr-ui
 
 ### Usage
 
-Here is a full basic setup. This renders everything inside a [@react-three/xr](https://github.com/pmndrs/react-xr)
+Here is a full basic setup. This renders everything inside a [@react-three/fiber](https://github.com/pmndrs/react-three-fiber)
 canvas.
 
 The 2D UI is a 1x1 meter red box, with a dark grey border, and a small border radius.
