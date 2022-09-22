@@ -42,6 +42,11 @@ const examples: Example[] = [
     pathname: "padding",
     component: React.lazy(() => import("@/examples/padding")),
   },
+  {
+    title: "Relative Sizing",
+    pathname: "relative-sizing",
+    component: React.lazy(() => import("@/examples/relative-sizing")),
+  },
 ];
 
 export default examples;

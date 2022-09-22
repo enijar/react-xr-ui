@@ -9,6 +9,7 @@ import interactive from "../services/interactive";
 
 const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,
+  parentSize: { width: 1, height: 1 },
   currentChildren: [],
   addChild() {},
   removeChild() {},
@@ -22,8 +23,8 @@ function Layer(
     resolution = 1024,
     visible = true,
     autoLayout = true,
-    width = 1,
-    height = 1,
+    width,
+    height,
     opacity = 1,
     backgroundColor = "transparent",
     backgroundImage,
@@ -80,6 +81,37 @@ function Layer(
 
   const layerContext = React.useContext(LayerContext);
 
+  const size = React.useMemo<{ width: number; height: number }>(() => {
+    const size: { width: number; height: number } = { width: 1, height: 1 };
+    if (typeof width === "string") {
+      const percent = parseFloat(width);
+      const normal = percent / 100;
+      if (layerContext.parentUuid === null) {
+        size.width = normal;
+      } else if (isNaN(percent)) {
+        size.width = 1;
+      } else {
+        size.width = layerContext.parentSize.width * normal;
+      }
+    } else {
+      size.width = width ?? 1;
+    }
+    if (typeof height === "string") {
+      const percent = parseFloat(height);
+      const normal = percent / 100;
+      if (layerContext.parentUuid === null) {
+        size.height = normal;
+      } else if (isNaN(percent)) {
+        size.height = 1;
+      } else {
+        size.height = layerContext.parentSize.height * normal;
+      }
+    } else {
+      size.height = height ?? 1;
+    }
+    return size;
+  }, [width, height, layerContext.parentUuid, layerContext.parentSize]);
+
   const uuid = React.useMemo(() => {
     return THREE.MathUtils.generateUUID();
   }, []);
@@ -87,8 +119,8 @@ function Layer(
   React.useEffect(() => {
     if (layerContext.parentUuid === null) return;
     layerContext.addChild({
-      width,
-      height,
+      width: size.width,
+      height: size.height,
       index: childIndex,
       autoLayout,
       uuid,
@@ -96,7 +128,7 @@ function Layer(
     return () => {
       layerContext.removeChild(uuid);
     };
-  }, [width, height, childIndex, autoLayout, layerContext.parentUuid]);
+  }, [size, childIndex, autoLayout, layerContext.parentUuid]);
 
   const pointerRefs = React.useRef({
     onPointerMove,
@@ -137,9 +169,9 @@ function Layer(
 
   // Set canvas size
   React.useMemo(() => {
-    ctx.canvas.width = Math.max(1, Math.floor(width * resolution));
-    ctx.canvas.height = Math.max(1, Math.floor(height * resolution));
-  }, [ctx.canvas, width, height, resolution]);
+    ctx.canvas.width = Math.max(1, Math.floor(size.width * resolution));
+    ctx.canvas.height = Math.max(1, Math.floor(size.height * resolution));
+  }, [ctx.canvas, size, resolution]);
 
   // Create canvas texture with the newly created canvas;
   // this will be used as the texture for the plane
@@ -148,7 +180,7 @@ function Layer(
     canvasTexture.anisotropy = 16;
     canvasTexture.premultiplyAlpha = true;
     return canvasTexture;
-  }, [ctx.canvas, width, height]);
+  }, [ctx.canvas, size]);
 
   const images = React.useMemo(() => {
     const backgroundImage = new Image();
@@ -318,8 +350,7 @@ function Layer(
 
   // Layout calculations
   React.useEffect(() => {
-    const size = { width, height };
-    const res = Math.min(width, height);
+    const res = Math.min(size.width, size.height);
     const paddingX = Array.isArray(padding)
       ? (padding[1] ?? 0) + (padding[3] ?? 0)
       : padding;
@@ -350,8 +381,7 @@ function Layer(
   }, [
     childGroupRefs,
     currentChildren,
-    width,
-    height,
+    size,
     flexDirection,
     alignItems,
     justifyContent,
@@ -363,6 +393,7 @@ function Layer(
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
       currentChildren,
+      parentSize: size,
       parentUuid: uuid,
       addChild(child) {
         setCurrentChildren((currentChildren) => {
@@ -386,7 +417,7 @@ function Layer(
         });
       },
     };
-  }, [currentChildren, uuid]);
+  }, [currentChildren, uuid, size]);
 
   React.useEffect(() => {
     const childrenGroup = childrenGroupRef.current;
@@ -407,7 +438,7 @@ function Layer(
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible}>
         <mesh renderOrder={renderOrder + zIndex}>
-          <planeGeometry args={[width, height]} />
+          <planeGeometry args={[size.width, size.height]} />
           <meshBasicMaterial
             ref={materialRef}
             side={THREE.FrontSide}

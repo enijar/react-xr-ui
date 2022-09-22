@@ -12,6 +12,7 @@ export type Child = {
 
 export type LayerContextType = {
   parentUuid: string | null;
+  parentSize: Size;
   currentChildren: Child[];
   addChild: (child: Child) => void;
   removeChild: (uuid: Child["uuid"]) => void;
@@ -34,8 +35,8 @@ export type LayerProps = GroupProps & {
   visible?: boolean;
   autoLayout?: boolean;
   resolution?: number;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   opacity?: number;
   backgroundColor?: string;
   backgroundImage?: string;
