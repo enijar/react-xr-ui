@@ -109,6 +109,9 @@ export default function App() {
 - [x] typography
 - [x] flexbox
 - [x] publish NPM package
+- [ ] flex wrap
+- [ ] less boilerplate setup code
+- [ ] 1.0 release 🎉
 
 ### Contributing
 
