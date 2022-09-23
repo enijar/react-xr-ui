@@ -2,7 +2,7 @@
 
 Build UIs with React that work in VR, AR and web contexts.
 
-[**View Live Examples**](https://enijar.github.io/react-three-ui/)
+[**View Live Examples**](https://enijar.github.io/react-xr-ui/)
 
 > ⚠️ Not ready for production use
 
