@@ -348,17 +348,18 @@ function Layer(
 
   // Layout calculations
   React.useEffect(() => {
-    const res = Math.min(size.width, size.height);
+    const newSize = { ...size };
+    const res = Math.min(newSize.width, newSize.height);
     const paddingX = Array.isArray(padding)
       ? (padding[1] ?? 0) + (padding[3] ?? 0)
       : padding;
     const paddingY = Array.isArray(padding)
       ? (padding[0] ?? 0) + (padding[2] ?? 0)
       : padding;
-    size.width -= res * borderWidth * 2;
-    size.height -= res * borderWidth * 2;
-    size.width -= res * paddingX * 2;
-    size.height -= res * paddingY * 2;
+    newSize.width -= res * borderWidth * 2;
+    newSize.height -= res * borderWidth * 2;
+    newSize.width -= res * paddingX * 2;
+    newSize.height -= res * paddingY * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
       let [x, y] = layout({
         currentChildren,
@@ -367,7 +368,7 @@ function Layer(
         alignItems,
         justifyContent,
         gap,
-        size,
+        size: newSize,
       });
       if (!currentChildren[index].autoLayout) {
         x = 0;
