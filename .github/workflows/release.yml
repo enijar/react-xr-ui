@@ -9,13 +9,18 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Publish to NPM
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
           node-version: 16.15.0
           registry-url: "https://registry.npmjs.org"
-      - run: npm ci
-      - run: npm publish
+
+      - name: Publish to NPM
+        run: |
+          npm ci
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
