@@ -3,7 +3,7 @@ import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Controllers, useXR, useXREvent, XR } from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { update, interactive } from "../../lib";
+import { update, interactive } from "../../src";
 
 type Props = {
   children?: React.ReactNode;

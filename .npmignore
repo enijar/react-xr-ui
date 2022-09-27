@@ -1,7 +1,7 @@
 .idea/
 .github/
 public/
-src/
+examples/
 .editorconfig
 .nvmrc
 tsconfig.json

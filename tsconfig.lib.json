@@ -15,8 +15,8 @@
     "resolveJsonModule": true,
     "noImplicitAny": false,
     "noImplicitThis": false,
-    "baseUrl": "./lib"
+    "baseUrl": "./src"
   },
-  "include": ["./lib"],
+  "include": ["./src"],
   "exclude": ["./node_modules/**/*"]
 }

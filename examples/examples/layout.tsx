@@ -1,6 +1,6 @@
 import React from "react";
 import Example from "@/components/example";
-import { Layer, LayerProps } from "../../lib";
+import { Layer, LayerProps } from "../../src";
 import Button from "@/components/button";
 import ViewCode from "@/components/view-code";
 

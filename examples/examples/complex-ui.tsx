@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import Example from "@/components/example";
-import { Layer, LayerRef } from "../../lib";
+import { Layer, LayerRef } from "../../src";
 import ViewCode from "@/components/view-code";
 
 function Scene() {

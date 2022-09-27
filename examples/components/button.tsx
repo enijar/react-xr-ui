@@ -1,6 +1,6 @@
 import { GroupProps } from "@react-three/fiber";
 import React from "react";
-import { Layer } from "../../lib";
+import { Layer } from "../../src";
 
 type Props = {
   textContent: string;
