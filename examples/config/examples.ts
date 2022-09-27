@@ -3,7 +3,7 @@ import React from "react";
 type Example = {
   title: string;
   pathname: string;
-  component: React.LazyExoticComponent<any>;
+  component: React.LazyExoticComponent<React.FunctionComponent>;
 };
 
 const examples: Example[] = [

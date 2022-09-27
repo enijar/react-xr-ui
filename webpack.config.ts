@@ -8,7 +8,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const DEV_MODE = process.env.NODE_ENV === "development";
-const SRC_DIR = path.resolve(__dirname, "src");
+const SRC_DIR = path.resolve(__dirname, "examples");
 const PUBLIC_DIR = path.resolve(__dirname, "public");
 const BUILD_DIR = path.resolve(__dirname, "build");
 const PUBLIC_PATH = process.env.PUBLIC_PATH ?? "/";

@@ -9,7 +9,7 @@ export default function ViewCode({ pathname }: Props) {
     <a
       target="_blank"
       rel="nofollow"
-      href={`https://github.com/Enijar/react-xr-ui/tree/main/src/examples/${pathname}.tsx`}
+      href={`https://github.com/Enijar/react-xr-ui/tree/main/examples/examples/${pathname}.tsx`}
       style={{
         display: "flex",
         gap: "1ch",
