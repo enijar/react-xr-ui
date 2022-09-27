@@ -1,6 +1,6 @@
 import React from "react";
 import Example from "@/components/example";
-import { Layer } from "../../src";
+import { Layer } from "react-xr-ui";
 import Button from "@/components/button";
 import ViewCode from "@/components/view-code";
 

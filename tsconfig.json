@@ -10,7 +10,8 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./examples/*"]
+      "@/*": ["./examples/*"],
+      "react-xr-ui": ["./src/index.ts"]
     }
   }
 }
