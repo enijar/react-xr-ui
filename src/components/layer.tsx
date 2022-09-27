@@ -1,7 +1,6 @@
 import React from "react";
 import * as THREE from "three";
 import canvasTxt from "canvas-txt";
-import useRenderOrder from "../hooks/use-render-order";
 import layout from "../services/layout";
 import updateManager from "../services/update";
 import { ValueArray, LayerContextType, LayerProps, LayerRef } from "../types";
@@ -11,6 +10,7 @@ const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,
   parentSize: { width: 1, height: 1 },
   currentChildren: [],
+  renderOrder: 0,
   addChild() {},
   removeChild() {},
 });
@@ -58,8 +58,6 @@ function Layer(
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>
 ) {
-  const renderOrder = useRenderOrder();
-
   const groupRef = React.useRef<THREE.Group>(null);
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
@@ -389,11 +387,19 @@ function Layer(
     gap,
   ]);
 
+  const renderOrder = React.useMemo(() => {
+    if (layerContext.parentUuid === null) {
+      return zIndex;
+    }
+    return layerContext.renderOrder + zIndex + 1;
+  }, [layerContext.parentUuid, layerContext.renderOrder, zIndex]);
+
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
       currentChildren,
       parentSize: size,
       parentUuid: uuid,
+      renderOrder,
       addChild(child) {
         setCurrentChildren((currentChildren) => {
           const nextCurrentChildren = [...currentChildren];
@@ -416,7 +422,7 @@ function Layer(
         });
       },
     };
-  }, [currentChildren, uuid, size]);
+  }, [currentChildren, uuid, size, renderOrder]);
 
   React.useEffect(() => {
     const childrenGroup = childrenGroupRef.current;
