@@ -6,15 +6,20 @@ Build UIs with React that work in VR, AR and web contexts.
 
 > ⚠️ Not ready for production use
 
-> Whilst this package is open, it's primary users are for devs at [Finer Vision](https://github.com/finer-vision). We're
-> keen on opening this up to the wider open-source community, so open a PR or issue if you want us to add missing features
-> to the package.
+> Whilst this package is open, it's primary users are for devs at [Finer Vision](https://github.com/finer-vision). We've been useing this 
+> package to build VR UIs for a number of client projects. We're keen on opening this up to the wider open-source community, so open a PR or 
+> issue if you want us to add missing features to the package.
 
 ### Install
 
 ```shell
 npm add react-xr-ui
 ```
+
+### Why?
+
+Until [WebXR DOM](https://www.w3.org/TR/webxr-dom-overlays-1/) lands, it's currently not possible to use HTML/CSS to build-out UIs in XR; this 
+package solves some of the pain points over building UIs in XR.
 
 ### Usage
 
