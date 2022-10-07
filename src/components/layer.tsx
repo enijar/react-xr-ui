@@ -364,7 +364,8 @@ function Layer(
     newSize.width -= res * paddingX * 2;
     newSize.height -= res * paddingY * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
-      if (childGroupRef.current === null) return;
+      const childGroup = childGroupRef.current;
+      if (childGroup === null) return;
       let [x, y] = layout({
         currentChildren,
         index,
@@ -378,8 +379,8 @@ function Layer(
         x = 0;
         y = 0;
       }
-      childGroupRef.current.position.x = x;
-      childGroupRef.current.position.y = y;
+      childGroup.position.x = x;
+      childGroup.position.y = y;
     });
   }, [
     childGroupRefs,
