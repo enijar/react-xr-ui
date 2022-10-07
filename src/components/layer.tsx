@@ -364,6 +364,7 @@ function Layer(
     newSize.width -= res * paddingX * 2;
     newSize.height -= res * paddingY * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
+      if (childGroupRef.current === null) return;
       let [x, y] = layout({
         currentChildren,
         index,
