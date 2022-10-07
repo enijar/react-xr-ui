@@ -55,6 +55,7 @@ function Layer(
     onPointerDown,
     onPointerUp,
     imageRendering = "crisp-edges",
+    imageSmoothingEnabled = true,
     ...props
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>
@@ -165,8 +166,9 @@ function Layer(
   }, []);
 
   React.useEffect(() => {
+    ctx.imageSmoothingEnabled = imageSmoothingEnabled;
     ctx.canvas.style.imageRendering = imageRendering;
-  }, [ctx, imageRendering]);
+  }, [ctx, imageRendering, imageSmoothingEnabled]);
 
   // Set canvas size
   React.useMemo(() => {
