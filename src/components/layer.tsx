@@ -448,7 +448,12 @@ function Layer(
 
   return (
     <LayerContext.Provider value={layerProviderValue}>
-      <group ref={groupRef} {...props} visible={visible}>
+      <group
+        ref={groupRef}
+        {...props}
+        visible={visible}
+        name="react-xr-ui-layer"
+      >
         <mesh renderOrder={renderOrder + zIndex}>
           <planeGeometry args={[size.width, size.height]} />
           <meshBasicMaterial
