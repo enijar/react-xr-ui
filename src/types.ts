@@ -68,6 +68,12 @@ export type LayerProps = GroupProps & {
   childIndex?: number;
   imageRendering?: "crisp-edges" | "pixelated" | string;
   imageSmoothingEnabled?: boolean;
+  textRendering?:
+    | "auto"
+    | "optimizeSpeed"
+    | "optimizeLegibility"
+    | "geometricPrecision"
+    | "inherit";
 };
 
 export type LayerRef = {
