@@ -67,6 +67,7 @@ export type LayerProps = GroupProps & {
   lineHeight?: number;
   childIndex?: number;
   imageRendering?: "crisp-edges" | "pixelated" | string;
+  dpr?: number;
 };
 
 export type LayerRef = {

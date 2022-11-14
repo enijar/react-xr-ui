@@ -55,6 +55,7 @@ function Layer(
     onPointerDown,
     onPointerUp,
     imageRendering = "crisp-edges",
+    dpr,
     ...props
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>
@@ -167,6 +168,11 @@ function Layer(
   React.useEffect(() => {
     ctx.canvas.style.imageRendering = imageRendering;
   }, [ctx, imageRendering]);
+
+  React.useMemo(() => {
+    const s = dpr ?? window.devicePixelRatio ?? 1;
+    ctx.scale(s, s);
+  }, [ctx, dpr]);
 
   // Set canvas size
   React.useMemo(() => {
