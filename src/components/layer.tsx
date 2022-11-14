@@ -55,6 +55,8 @@ function Layer(
     onPointerDown,
     onPointerUp,
     imageRendering = "crisp-edges",
+    imageSmoothingEnabled = true,
+    textRendering = "auto",
     dpr,
     ...props
   }: LayerProps,
@@ -166,8 +168,15 @@ function Layer(
   }, []);
 
   React.useEffect(() => {
+    ctx.imageSmoothingEnabled = imageSmoothingEnabled;
     ctx.canvas.style.imageRendering = imageRendering;
-  }, [ctx, imageRendering]);
+  }, [ctx, imageRendering, imageSmoothingEnabled]);
+
+  React.useEffect(() => {
+    // @ts-ignore
+    ctx.textRendering = textRendering;
+    ctx.canvas.style.textRendering = textRendering;
+  }, [ctx, textRendering]);
 
   React.useMemo(() => {
     const s = dpr ?? window.devicePixelRatio ?? 1;
@@ -370,6 +379,8 @@ function Layer(
     newSize.width -= res * paddingX * 2;
     newSize.height -= res * paddingY * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
+      const childGroup = childGroupRef.current;
+      if (childGroup === null) return;
       let [x, y] = layout({
         currentChildren,
         index,
@@ -383,8 +394,8 @@ function Layer(
         x = 0;
         y = 0;
       }
-      childGroupRef.current.position.x = x;
-      childGroupRef.current.position.y = y;
+      childGroup.position.x = x;
+      childGroup.position.y = y;
     });
   }, [
     childGroupRefs,
@@ -452,7 +463,12 @@ function Layer(
 
   return (
     <LayerContext.Provider value={layerProviderValue}>
-      <group ref={groupRef} {...props} visible={visible}>
+      <group
+        ref={groupRef}
+        {...props}
+        visible={visible}
+        name="react-xr-ui-layer"
+      >
         <mesh renderOrder={renderOrder + zIndex}>
           <planeGeometry args={[size.width, size.height]} />
           <meshBasicMaterial
