@@ -63,6 +63,7 @@ function Layer(
   ref: React.ForwardedRef<LayerRef>
 ) {
   const groupRef = React.useRef<THREE.Group>(null);
+  const meshRef = React.useRef<THREE.Mesh>(null);
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
 
@@ -75,6 +76,7 @@ function Layer(
   React.useImperativeHandle(ref, () => {
     return {
       group: groupRef.current,
+      mesh: meshRef.current,
       material: materialRef.current,
       test() {
         console.log("Test");
@@ -470,7 +472,7 @@ function Layer(
         visible={visible}
         name="react-xr-ui-layer"
       >
-        <mesh renderOrder={renderOrder + zIndex}>
+        <mesh ref={meshRef} renderOrder={renderOrder + zIndex}>
           <planeGeometry args={[size.width, size.height]} />
           <meshBasicMaterial
             ref={materialRef}
