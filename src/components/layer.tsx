@@ -75,6 +75,7 @@ function Layer(
   React.useImperativeHandle(ref, () => {
     return {
       group: groupRef.current,
+      material: materialRef.current,
       test() {
         console.log("Test");
       },

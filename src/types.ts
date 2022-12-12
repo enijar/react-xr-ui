@@ -79,5 +79,6 @@ export type LayerProps = GroupProps & {
 
 export type LayerRef = {
   group: THREE.Group;
+  material: THREE.MeshBasicMaterial;
   test: () => void;
 };
