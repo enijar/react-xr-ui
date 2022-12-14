@@ -159,7 +159,7 @@ const interactive: Interactive = {
         }
         continue;
       }
-      const intersect = intersects[0];
+      const intersect = intersects.sort((a, b) => a.distance - b.distance);
       if (firePointerOver(interaction)) {
         interactive.interactionsState[interaction.object.uuid].overFired = true;
         interactive.interactionsState[interaction.object.uuid].outFired = false;
