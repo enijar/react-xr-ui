@@ -3,7 +3,7 @@ import * as THREE from "three";
 import canvasTxt from "canvas-txt";
 import layout from "../services/layout";
 import updateManager from "../services/update";
-import { ValueArray, LayerContextType, LayerProps, LayerRef } from "../types";
+import { LayerContextType, LayerProps, LayerRef, ValueArray } from "../types";
 import interactive from "../services/interactive";
 
 const LayerContext = React.createContext<LayerContextType>({
