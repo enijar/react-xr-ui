@@ -43,7 +43,7 @@ export default function Interaction({
         if (!enabled) return;
         if (!fn) return;
         event.stopPropagation();
-        fn(event);
+        fn(event.intersections[0]);
       };
     },
     [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut]

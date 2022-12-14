@@ -48,8 +48,8 @@ export default function Interactions() {
           onUp={() => setDown(false)}
           onMove={(intersection) => {
             setPosition({
-              x: parseFloat(intersection.point.x.toFixed(2)),
-              y: parseFloat(intersection.point.y.toFixed(2)),
+              x: parseFloat(intersection.uv.x.toFixed(2)),
+              y: parseFloat(intersection.uv.y.toFixed(2)),
             });
           }}
         >
