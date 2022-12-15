@@ -53,12 +53,6 @@ function AnimatedBorders() {
     });
   });
 
-  React.useEffect(() => {
-    const layer = layerRef.current;
-    if (layer === null) return;
-    layer.test();
-  }, []);
-
   return (
     <Layer
       ref={layerRef}

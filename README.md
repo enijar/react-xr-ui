@@ -6,8 +6,8 @@ Build UIs with React that work in VR, AR and web contexts.
 
 > ⚠️ Not ready for production use
 
-> Whilst this package is open, it's primary users are for devs at [Finer Vision](https://github.com/finer-vision). We've been useing this 
-> package to build VR UIs for a number of client projects. We're keen on opening this up to the wider open-source community, so open a PR or 
+> Whilst this package is open, it's primary users are for devs at [Finer Vision](https://github.com/finer-vision). We've been useing this
+> package to build VR UIs for a number of client projects. We're keen on opening this up to the wider open-source community, so open a PR or
 > issue if you want us to add missing features to the package.
 
 ### Install
@@ -18,7 +18,7 @@ npm add react-xr-ui
 
 ### Why?
 
-Until [WebXR DOM](https://www.w3.org/TR/webxr-dom-overlays-1/) lands, it's currently not possible to use HTML/CSS to build-out UIs in XR; this 
+Until [WebXR DOM](https://www.w3.org/TR/webxr-dom-overlays-1/) lands, it's currently not possible to use HTML/CSS to build-out UIs in XR; this
 package solves some of the pain points over building UIs in XR.
 
 ### Usage
@@ -31,33 +31,12 @@ The 2D UI is a 1x1 meter red box, with a dark grey border, and a small border ra
 ```tsx
 import React from "react";
 import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Controllers, useXR, useXREvent, XR, XRButton } from "@react-three/xr";
+import { Canvas } from "@react-three/fiber";
+import { Controllers, XR, XRButton } from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { update, interactive } from "react-xr-ui";
+import { Layer } from "react-xr-ui";
 
 function Scene() {
-  const controllers = useXR((state) => state.controllers);
-
-  useFrame((state) => {
-    update(state, controllers);
-  });
-
-  React.useEffect(() => {
-    return interactive.create();
-  }, []);
-
-  useXREvent("selectstart", () => {
-    interactive.enabled = true;
-    interactive.pointerDown = true;
-    interactive.cleanDown = true;
-  });
-
-  useXREvent("selectend", () => {
-    interactive.pointerDown = false;
-    interactive.cleanUp = true;
-  });
-
   return (
     <group position={[0, 1, -1.88]}>
       <Layer
@@ -139,10 +118,10 @@ export default function Example({ children }: Props) {
 - [x] flexbox
 - [x] publish NPM package
 - [ ] flex wrap
-- [ ] less boilerplate setup code
+- [x] less boilerplate setup code
 - [ ] 1.0 release 🎉
 - [ ] Optimise rendering by reducing no. canvas elements created
-- [ ] Add `onClick` to pointer events
+- [ ] Add `onClick` to `Interaction` component
 
 ### Contributing
 

@@ -81,5 +81,4 @@ export type LayerRef = {
   group: THREE.Group;
   mesh: THREE.Mesh;
   material: THREE.MeshBasicMaterial;
-  test: () => void;
 };

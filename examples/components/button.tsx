@@ -1,11 +1,10 @@
-import { GroupProps } from "@react-three/fiber";
 import React from "react";
-import { Layer } from "react-xr-ui";
+import { Interaction, Layer } from "react-xr-ui";
 
 type Props = {
   textContent: string;
   selected: boolean;
-  onClick: GroupProps["onClick"];
+  onClick: () => void;
   fontSize: number;
   width: number;
   height: number;
@@ -24,22 +23,31 @@ export default function Button({
   const [pointerOver, setPointerOver] = React.useState(false);
 
   return (
-    <Layer
-      width={width}
-      height={height}
-      backgroundColor={pointerOver || selected ? "white" : "#111111"}
-      color={pointerOver || selected ? "#111111" : "white"}
-      textContent={textContent}
-      fontFamily={fontFamily}
-      fontSize={fontSize}
-      textAlign="center"
-      verticalAlign="middle"
-      onPointerOver={() => setPointerOver(true)}
-      onPointerOut={() => setPointerOver(false)}
-      onPointerDown={(event) => {
-        onClick(event);
+    <Interaction
+      onOver={() => {
+        setPointerOver(true);
+        document.body.style.cursor = "pointer";
+      }}
+      onOut={() => {
+        setPointerOver(false);
+        document.body.style.cursor = "auto";
+      }}
+      onDown={() => {
+        onClick();
         setPointerOver(false);
       }}
-    />
+    >
+      <Layer
+        width={width}
+        height={height}
+        backgroundColor={pointerOver || selected ? "white" : "#111111"}
+        color={pointerOver || selected ? "#111111" : "white"}
+        textContent={textContent}
+        fontFamily={fontFamily}
+        fontSize={fontSize}
+        textAlign="center"
+        verticalAlign="middle"
+      />
+    </Interaction>
   );
 }

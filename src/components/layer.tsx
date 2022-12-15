@@ -2,9 +2,8 @@ import React from "react";
 import * as THREE from "three";
 import canvasTxt from "canvas-txt";
 import layout from "../services/layout";
-import updateManager from "../services/update";
 import { LayerContextType, LayerProps, LayerRef, ValueArray } from "../types";
-import interactive from "../services/interactive";
+import { useFrame } from "@react-three/fiber";
 
 const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,
@@ -78,9 +77,6 @@ function Layer(
       group: groupRef.current,
       mesh: meshRef.current,
       material: materialRef.current,
-      test() {
-        console.log("Test");
-      },
     };
   });
 
@@ -149,21 +145,6 @@ function Layer(
     pointerRefs.current.onPointerUp = onPointerUp;
   }, [onPointerMove, onPointerOver, onPointerOut, onPointerDown, onPointerUp]);
 
-  React.useLayoutEffect(() => {
-    interactive.add({
-      uuid,
-      object: groupRef.current,
-      onPointerMove: pointerRefs.current.onPointerMove,
-      onPointerOver: pointerRefs.current.onPointerOver,
-      onPointerOut: pointerRefs.current.onPointerOut,
-      onPointerDown: pointerRefs.current.onPointerDown,
-      onPointerUp: pointerRefs.current.onPointerUp,
-    });
-    return () => {
-      interactive.remove(uuid);
-    };
-  }, [uuid]);
-
   // Create 2d canvas context
   const ctx = React.useMemo<CanvasRenderingContext2D>(() => {
     const canvas = document.createElement("canvas");
@@ -212,7 +193,7 @@ function Layer(
     images.backgroundImage.src = backgroundImage;
   }, [images.backgroundImage, backgroundImage]);
 
-  const update = React.useCallback(() => {
+  useFrame(() => {
     // Useful vars
     const w = ctx.canvas.width;
     const h = ctx.canvas.height;
@@ -331,33 +312,7 @@ function Layer(
 
     // Make sure canvas texture gets updated
     canvasTexture.needsUpdate = true;
-  }, [
-    ctx,
-    images,
-    borderWidth,
-    borderRadius,
-    borderColor,
-    backgroundImage,
-    backgroundColor,
-    backgroundPosition,
-    backgroundSize,
-    canvasTexture,
-    fontWeight,
-    fontSize,
-    fontFamily,
-    fontSize,
-    lineHeight,
-    justifyContent,
-    verticalAlign,
-    textAlign,
-    textContent,
-    color,
-  ]);
-
-  React.useEffect(() => {
-    updateManager.add(uuid, update);
-    return () => updateManager.remove(uuid);
-  }, [uuid, update]);
+  });
 
   const [currentChildren, setCurrentChildren] = React.useState<
     LayerContextType["currentChildren"]

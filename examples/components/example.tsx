@@ -1,36 +1,14 @@
 import React from "react";
 import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Controllers, useXR, useXREvent, XR, XRButton } from "@react-three/xr";
+import { Canvas } from "@react-three/fiber";
+import { Controllers, XR, XRButton } from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { update, interactive } from "react-xr-ui";
 
 type Props = {
   children?: React.ReactNode;
 };
 
 function Scene({ children }: Props) {
-  const controllers = useXR((state) => state.controllers);
-
-  useFrame((state) => {
-    update(state, controllers);
-  });
-
-  React.useEffect(() => {
-    return interactive.create();
-  }, []);
-
-  useXREvent("selectstart", () => {
-    interactive.enabled = true;
-    interactive.pointerDown = true;
-    interactive.cleanDown = true;
-  });
-
-  useXREvent("selectend", () => {
-    interactive.pointerDown = false;
-    interactive.cleanUp = true;
-  });
-
   return <>{children}</>;
 }
 
