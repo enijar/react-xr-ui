@@ -122,6 +122,8 @@ export default function Example({ children }: Props) {
 - [ ] 1.0 release 🎉
 - [ ] Optimise rendering by reducing no. canvas elements created
 - [ ] Add `onClick` to `Interaction` component
+- [ ] Auto width/height calculation of `Layer` component based on 
+content size
 
 ### Contributing
 
