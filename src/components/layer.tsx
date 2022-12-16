@@ -419,6 +419,13 @@ function Layer(
     });
   }, [opacity]);
 
+  React.useEffect(() => {
+    return () => {
+      ctx.canvas.width = 0;
+      ctx.canvas.height = 0;
+    };
+  }, [ctx]);
+
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group
