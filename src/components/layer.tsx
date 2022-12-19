@@ -43,7 +43,7 @@ function Layer(
     justifyText = false,
     verticalAlign = "top",
     color = "white",
-    fontFamily = "system-ui, sans-serif",
+    fontFamily,
     fontSize = 0.1,
     fontWeight = "normal",
     lineHeight = null,
@@ -67,6 +67,10 @@ function Layer(
   const res = React.useMemo(() => {
     return resolution ?? xrUiContext.layerResolution;
   }, [resolution, xrUiContext.layerResolution]);
+
+  const font = React.useMemo(() => {
+    return fontFamily ?? xrUiContext.fontFamily;
+  }, [fontFamily, xrUiContext.fontFamily]);
 
   const groupRef = React.useRef<THREE.Group>(null);
   const meshRef = React.useRef<THREE.Mesh>(null);
@@ -293,7 +297,7 @@ function Layer(
 
     // Typography
     if (textContent !== undefined) {
-      canvasTxt.font = fontFamily;
+      canvasTxt.font = font;
       canvasTxt.fontSize = fontSize * Math.min(w, h);
       canvasTxt.lineHeight = lineHeight * canvasTxt.fontSize;
       canvasTxt.align = textAlign;

@@ -85,4 +85,5 @@ export type LayerRef = {
 
 export type XrUiContextType = {
   layerResolution: number;
+  fontFamily: string;
 };
