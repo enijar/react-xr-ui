@@ -4,6 +4,7 @@ import canvasTxt from "canvas-txt";
 import layout from "../services/layout";
 import { LayerContextType, LayerProps, LayerRef, ValueArray } from "../types";
 import { useFrame } from "@react-three/fiber";
+import { XrUiContext } from "./xr-ui";
 
 const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,
@@ -19,7 +20,7 @@ const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 function Layer(
   {
     zIndex = 0,
-    resolution = 1024,
+    resolution,
     visible = true,
     autoLayout = true,
     width,
@@ -61,6 +62,12 @@ function Layer(
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>
 ) {
+  const xrUiContext = React.useContext(XrUiContext);
+
+  const res = React.useMemo(() => {
+    return resolution ?? xrUiContext.layerResolution;
+  }, [resolution, xrUiContext.layerResolution]);
+
   const groupRef = React.useRef<THREE.Group>(null);
   const meshRef = React.useRef<THREE.Mesh>(null);
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
@@ -169,9 +176,9 @@ function Layer(
 
   // Set canvas size
   React.useMemo(() => {
-    ctx.canvas.width = Math.max(1, Math.floor(size.width * resolution));
-    ctx.canvas.height = Math.max(1, Math.floor(size.height * resolution));
-  }, [ctx.canvas, size, resolution]);
+    ctx.canvas.width = Math.max(1, Math.floor(size.width * res));
+    ctx.canvas.height = Math.max(1, Math.floor(size.height * res));
+  }, [ctx.canvas, size, res]);
 
   // Create canvas texture with the newly created canvas;
   // this will be used as the texture for the plane

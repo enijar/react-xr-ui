@@ -34,7 +34,7 @@ import { BoxLineGeometry } from "three/examples/jsm/geometries/BoxLineGeometry";
 import { Canvas } from "@react-three/fiber";
 import { Controllers, XR, XRButton } from "@react-three/xr";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { Layer } from "react-xr-ui";
+import { XrUi, Layer } from "react-xr-ui";
 
 function Scene() {
   return (
@@ -60,21 +60,23 @@ export default function Example({ children }: Props) {
     <>
       <Canvas legacy flat linear gl={{ alpha: false }}>
         <XR>
-          {/** Background, cameras, controls and lights */}
-          <color args={["#333333"]} attach="background" />
-          <lineSegments geometry={room}>
-            <lineBasicMaterial color="#c0c0c0" />
-          </lineSegments>
-          <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
-          <OrbitControls makeDefault target={[0, 1, -1.8]} />
-          <ambientLight />
-          <Controllers />
+          <XrUi>
+            {/** Background, cameras, controls and lights */}
+            <color args={["#333333"]} attach="background" />
+            <lineSegments geometry={room}>
+              <lineBasicMaterial color="#c0c0c0" />
+            </lineSegments>
+            <PerspectiveCamera makeDefault position={[0, 1.6, 0]} />
+            <OrbitControls makeDefault target={[0, 1, -1.8]} />
+            <ambientLight />
+            <Controllers />
 
-          {/** 3D Stuff */}
-          <></>
+            {/** 3D Stuff */}
+            <></>
 
-          {/** 2D UI */}
-          <Scene />
+            {/** 2D UI */}
+            <Scene />
+          </XrUi>
         </XR>
       </Canvas>
       <XRButton
@@ -122,8 +124,8 @@ export default function Example({ children }: Props) {
 - [ ] 1.0 release 🎉
 - [ ] Optimise rendering by reducing no. canvas elements created
 - [ ] Add `onClick` to `Interaction` component
-- [ ] Auto width/height calculation of `Layer` component based on 
-content size
+- [ ] Auto width/height calculation of `Layer` component based on
+      content size
 
 ### Contributing
 

@@ -1,6 +1,7 @@
+import XrUi from "./components/xr-ui";
 import Layer from "./components/layer";
 import Interaction from "./components/interaction";
 
 export * from "./types";
 
-export { Layer, Interaction };
+export { XrUi, Layer, Interaction };

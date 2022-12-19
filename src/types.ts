@@ -82,3 +82,7 @@ export type LayerRef = {
   mesh: THREE.Mesh;
   material: THREE.MeshBasicMaterial;
 };
+
+export type XrUiContextType = {
+  layerResolution: number;
+};
