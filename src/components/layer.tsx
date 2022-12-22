@@ -17,6 +17,8 @@ const LayerContext = React.createContext<LayerContextType>({
 
 const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 
+const CACHED_IMAGES = new Map<string, HTMLImageElement>();
+
 function Layer(
   {
     zIndex = 0,
@@ -201,7 +203,12 @@ function Layer(
   // Set source for background image
   React.useMemo(() => {
     if (!backgroundImage) return;
-    images.backgroundImage.src = backgroundImage;
+    if (!CACHED_IMAGES.has(backgroundImage)) {
+      const image = new Image();
+      image.src = backgroundImage;
+      CACHED_IMAGES.set(backgroundImage, image);
+    }
+    images.backgroundImage = CACHED_IMAGES.get(backgroundImage);
   }, [images.backgroundImage, backgroundImage]);
 
   useFrame(() => {
