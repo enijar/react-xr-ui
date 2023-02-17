@@ -37,7 +37,7 @@ export default function LayerApi() {
       <Example>
         <AnimatedLayer />
       </Example>
-      <ViewCode pathname="animation" />
+      <ViewCode pathname="layer-api" />
     </>
   );
 }
