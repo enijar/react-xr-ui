@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GroupProps } from "@react-three/fiber";
 import { align, vAlign } from "canvas-txt";
+import React from "react";
 
 export type Child = {
   width: number;
@@ -77,10 +78,15 @@ export type LayerProps = GroupProps & {
   dpr?: number;
 };
 
+export type Attrs = {
+  opacity: number;
+};
+
 export type LayerRef = {
   group: THREE.Group;
   mesh: THREE.Mesh;
   material: THREE.MeshBasicMaterial;
+  setAttrs: React.Dispatch<React.SetStateAction<Attrs>>;
 };
 
 export type XrUiContextType = {

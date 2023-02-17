@@ -1,9 +1,15 @@
 import React from "react";
 import * as THREE from "three";
 import canvasTxt from "canvas-txt";
-import layout from "../services/layout";
-import { LayerContextType, LayerProps, LayerRef, ValueArray } from "../types";
 import { useFrame } from "@react-three/fiber";
+import layout from "../services/layout";
+import {
+  Attrs,
+  LayerContextType,
+  LayerProps,
+  LayerRef,
+  ValueArray,
+} from "../types";
 import { XrUiContext } from "./xr-ui";
 
 const LayerContext = React.createContext<LayerContextType>({
@@ -64,6 +70,18 @@ function Layer(
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>
 ) {
+  const [attrs, setAttrs] = React.useState<Attrs>(() => {
+    return {
+      opacity,
+    };
+  });
+
+  React.useEffect(() => {
+    setAttrs((attrs) => {
+      return { ...attrs, opacity };
+    });
+  }, [opacity]);
+
   const xrUiContext = React.useContext(XrUiContext);
 
   const res = React.useMemo(() => {
@@ -85,11 +103,12 @@ function Layer(
     material.blending = THREE.CustomBlending;
   }, []);
 
-  React.useImperativeHandle(ref, () => {
+  React.useImperativeHandle(ref, (): LayerRef => {
     return {
       group: groupRef.current,
       mesh: meshRef.current,
       material: materialRef.current,
+      setAttrs: setAttrs,
     };
   });
 
@@ -248,7 +267,7 @@ function Layer(
       ctx.closePath();
     }
 
-    ctx.globalAlpha = opacity;
+    ctx.globalAlpha = attrs.opacity;
 
     // Background color
     ctx.fillStyle = backgroundColor;
@@ -431,11 +450,11 @@ function Layer(
         object.material instanceof THREE.Material
       ) {
         object.material.transparent = true;
-        object.material.opacity = opacity;
+        object.material.opacity = attrs.opacity;
         object.material.needsUpdate = true;
       }
     });
-  }, [opacity]);
+  }, [attrs.opacity]);
 
   React.useEffect(() => {
     return () => {
@@ -457,7 +476,7 @@ function Layer(
           <meshBasicMaterial
             ref={materialRef}
             side={THREE.FrontSide}
-            opacity={opacity}
+            opacity={attrs.opacity}
             transparent={true}
             depthWrite={false}
             map={canvasTexture}
