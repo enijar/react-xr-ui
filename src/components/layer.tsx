@@ -33,6 +33,7 @@ function Layer(
     autoLayout = true,
     width,
     height,
+    aspectRatio,
     opacity = 1,
     backgroundColor = "transparent",
     backgroundImage,
@@ -140,8 +141,22 @@ function Layer(
     } else {
       size.height = height ?? 1;
     }
+    if (aspectRatio !== undefined) {
+      if (width === undefined) {
+        size.width = size.height * aspectRatio;
+      }
+      if (height === undefined) {
+        size.height = size.width * aspectRatio;
+      }
+    }
     return size;
-  }, [width, height, layerContext.parentUuid, layerContext.parentSize]);
+  }, [
+    width,
+    height,
+    layerContext.parentUuid,
+    layerContext.parentSize,
+    aspectRatio,
+  ]);
 
   const uuid = React.useMemo(() => {
     return THREE.MathUtils.generateUUID();

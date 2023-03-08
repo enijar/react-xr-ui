@@ -39,6 +39,7 @@ export type LayerProps = GroupProps & {
   resolution?: number;
   width?: number | string;
   height?: number | string;
+  aspectRatio?: number;
   opacity?: number;
   backgroundColor?: string;
   backgroundImage?: string;
