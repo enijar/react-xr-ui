@@ -253,17 +253,44 @@ function Layer(
   // Only render once if in optimizedRendering mode, else render @ 60FPS
   const shouldRenderRef = React.useRef(true);
   React.useEffect(() => {
-    if (!optimized) {
-      shouldRenderRef.current = true;
-      return;
-    }
-    const timeout = setTimeout(() => {
-      shouldRenderRef.current = false;
-    }, 0);
+    shouldRenderRef.current = true;
+    const frames: number[] = [];
+    frames.push(
+      requestAnimationFrame(() => {
+        frames.push(
+          requestAnimationFrame(() => {
+            shouldRenderRef.current = !optimized;
+          })
+        );
+      })
+    );
     return () => {
-      clearTimeout(timeout);
+      frames.forEach((frame) => {
+        cancelAnimationFrame(frame);
+      });
     };
-  }, [optimized]);
+  }, [
+    optimized,
+    ctx.canvas,
+    size,
+    res,
+    borderRadius,
+    borderColor,
+    attrs,
+    images,
+    backgroundColor,
+    backgroundPosition,
+    backgroundSize,
+    font,
+    fontSize,
+    lineHeight,
+    textAlign,
+    verticalAlign,
+    justifyText,
+    fontWeight,
+    color,
+    textContent,
+  ]);
 
   useFrame(() => {
     if (shouldRenderRef.current) {
