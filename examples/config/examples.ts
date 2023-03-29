@@ -62,6 +62,11 @@ const examples: Example[] = [
     pathname: "aspect-ratio",
     component: React.lazy(() => import("@/examples/aspect-ratio")),
   },
+  {
+    title: "Performance",
+    pathname: "performance",
+    component: React.lazy(() => import("@/examples/performance")),
+  },
 ];
 
 export default examples;

@@ -22,7 +22,7 @@ export default function Example({ children }: Props) {
     <>
       <Canvas legacy flat linear gl={{ alpha: false }}>
         <XR>
-          <XrUi>
+          <XrUi fontFamily="system-ui">
             {/** Background, cameras, controls and lights */}
             <color args={["#333333"]} attach="background" />
             <lineSegments geometry={room}>
