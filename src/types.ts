@@ -33,6 +33,7 @@ export type ValueArray = [
 ];
 
 export type LayerProps = GroupProps & {
+  optimizedRendering?: boolean;
   zIndex?: number;
   visible?: boolean;
   autoLayout?: boolean;
@@ -93,4 +94,5 @@ export type LayerRef = {
 export type XrUiContextType = {
   layerResolution: number;
   fontFamily: string;
+  optimizedRendering: boolean;
 };

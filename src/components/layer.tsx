@@ -27,6 +27,7 @@ const CACHED_IMAGES = new Map<string, HTMLImageElement>();
 
 function Layer(
   {
+    optimizedRendering,
     zIndex = 0,
     resolution,
     visible = true,
@@ -92,6 +93,10 @@ function Layer(
   const font = React.useMemo(() => {
     return fontFamily ?? xrUiContext.fontFamily;
   }, [fontFamily, xrUiContext.fontFamily]);
+
+  const optimized = React.useMemo(() => {
+    return optimizedRendering ?? xrUiContext.optimizedRendering;
+  }, [optimizedRendering, xrUiContext.optimizedRendering]);
 
   const groupRef = React.useRef<THREE.Group>(null);
   const meshRef = React.useRef<THREE.Mesh>(null);
@@ -245,122 +250,139 @@ function Layer(
     images.backgroundImage = CACHED_IMAGES.get(backgroundImage);
   }, [images.backgroundImage, backgroundImage]);
 
-  useFrame(() => {
-    // Useful vars
-    const w = ctx.canvas.width;
-    const h = ctx.canvas.height;
-    const d2r = Math.PI / 180; // degrees to radians
-    const res = Math.min(w, h);
-    const { mapLinear } = THREE.MathUtils;
-
-    ctx.globalCompositeOperation = "source-over";
-
-    ctx.clearRect(0, 0, w, h);
-
-    // Border radius
-    {
-      const isArray = Array.isArray(borderRadius);
-      const array = borderRadius as ValueArray;
-      const number = borderRadius as number;
-      let [tl = 0, tr = 0, br = 0, bl = 0] = isArray
-        ? array
-        : [number, number, number, number];
-      tl *= res;
-      tr *= res;
-      br *= res;
-      bl *= res;
-      ctx.beginPath();
-      ctx.moveTo(tl, 0);
-      ctx.lineTo(w - tr, 0);
-      ctx.arc(w - tr, tr, tr, d2r * 270, d2r * 360);
-      ctx.lineTo(w, h - br);
-      ctx.arc(w - br, h - br, br, 0, d2r * 90);
-      ctx.lineTo(bl, h);
-      ctx.arc(bl, h - bl, bl, d2r * 90, d2r * 180);
-      ctx.lineTo(0, tl);
-      ctx.arc(tl, tl, tl, d2r * 180, d2r * 270);
-      ctx.closePath();
+  // Only render once if in optimizedRendering mode, else render @ 60FPS
+  const shouldRenderRef = React.useRef(true);
+  React.useEffect(() => {
+    if (!optimized) {
+      shouldRenderRef.current = true;
+      return;
     }
+    const timeout = setTimeout(() => {
+      shouldRenderRef.current = false;
+    }, 0);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [optimized]);
 
-    ctx.globalAlpha = attrs.opacity;
+  useFrame(() => {
+    if (shouldRenderRef.current) {
+      // Useful vars
+      const w = ctx.canvas.width;
+      const h = ctx.canvas.height;
+      const d2r = Math.PI / 180; // degrees to radians
+      const res = Math.min(w, h);
+      const { mapLinear } = THREE.MathUtils;
 
-    // Background color
-    ctx.fillStyle = backgroundColor;
-    ctx.lineWidth = borderWidth * res * 2;
-    ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
 
-    const ox = borderWidth * res;
-    const oy = borderWidth * res;
+      ctx.clearRect(0, 0, w, h);
 
-    // Background image
-    if (backgroundImage !== undefined) {
-      const x = backgroundPosition[0];
-      const y = backgroundPosition[1];
-      const sx = 0;
-      const sy = 0;
-      const sw = Math.max(1, images.backgroundImage.width);
-      const sh = Math.max(1, images.backgroundImage.height);
-      const ir = sw / sh;
-      const cr = w / h;
-      let dw = sw;
-      let dh = sh;
-      switch (backgroundSize) {
-        case "stretch":
-          dw = w;
-          dh = h;
-          break;
-        case "contain":
-          dw = w - ox * 2;
-          dh = h - oy * 2;
-          if (ir >= cr) {
-            dh = dw / ir;
-          } else {
-            dw = dh * ir;
-          }
-          break;
-        case "cover":
-          dw = w - ox * 2;
-          dh = h - oy * 2;
-          if (ir <= cr) {
-            dh = dw / ir;
-          } else {
-            dw = dh * ir;
-          }
-          break;
+      // Border radius
+      {
+        const isArray = Array.isArray(borderRadius);
+        const array = borderRadius as ValueArray;
+        const number = borderRadius as number;
+        let [tl = 0, tr = 0, br = 0, bl = 0] = isArray
+          ? array
+          : [number, number, number, number];
+        tl *= res;
+        tr *= res;
+        br *= res;
+        bl *= res;
+        ctx.beginPath();
+        ctx.moveTo(tl, 0);
+        ctx.lineTo(w - tr, 0);
+        ctx.arc(w - tr, tr, tr, d2r * 270, d2r * 360);
+        ctx.lineTo(w, h - br);
+        ctx.arc(w - br, h - br, br, 0, d2r * 90);
+        ctx.lineTo(bl, h);
+        ctx.arc(bl, h - bl, bl, d2r * 90, d2r * 180);
+        ctx.lineTo(0, tl);
+        ctx.arc(tl, tl, tl, d2r * 180, d2r * 270);
+        ctx.closePath();
       }
-      const dx = ox + mapLinear(x, 0, 1, 0, w - ox * 2 - dw);
-      const dy = oy + mapLinear(y, 0, 1, 0, h - oy * 2 - dh);
+
+      ctx.globalAlpha = attrs.opacity;
+
+      // Background color
+      ctx.fillStyle = backgroundColor;
+      ctx.lineWidth = borderWidth * res * 2;
+      ctx.fill();
+
+      const ox = borderWidth * res;
+      const oy = borderWidth * res;
+
+      // Background image
+      if (backgroundImage !== undefined) {
+        const x = backgroundPosition[0];
+        const y = backgroundPosition[1];
+        const sx = 0;
+        const sy = 0;
+        const sw = Math.max(1, images.backgroundImage.width);
+        const sh = Math.max(1, images.backgroundImage.height);
+        const ir = sw / sh;
+        const cr = w / h;
+        let dw = sw;
+        let dh = sh;
+        switch (backgroundSize) {
+          case "stretch":
+            dw = w;
+            dh = h;
+            break;
+          case "contain":
+            dw = w - ox * 2;
+            dh = h - oy * 2;
+            if (ir >= cr) {
+              dh = dw / ir;
+            } else {
+              dw = dh * ir;
+            }
+            break;
+          case "cover":
+            dw = w - ox * 2;
+            dh = h - oy * 2;
+            if (ir <= cr) {
+              dh = dw / ir;
+            } else {
+              dw = dh * ir;
+            }
+            break;
+        }
+        const dx = ox + mapLinear(x, 0, 1, 0, w - ox * 2 - dw);
+        const dy = oy + mapLinear(y, 0, 1, 0, h - oy * 2 - dh);
+        ctx.save();
+        ctx.clip();
+        ctx.drawImage(images.backgroundImage, sx, sy, sw, sh, dx, dy, dw, dh);
+        ctx.restore();
+      }
+
+      // Typography
+      if (textContent !== undefined) {
+        canvasTxt.font = font;
+        canvasTxt.fontSize = fontSize * Math.min(w, h);
+        canvasTxt.lineHeight = lineHeight * canvasTxt.fontSize;
+        canvasTxt.align = textAlign;
+        canvasTxt.vAlign = verticalAlign;
+        canvasTxt.justify = justifyText;
+        canvasTxt.fontWeight = fontWeight;
+        ctx.textBaseline = "bottom";
+        ctx.fillStyle = color;
+        canvasTxt.drawText(ctx, textContent, ox, oy, w - ox * 2, h - oy * 2);
+      }
+
+      // Fixes antialiasing issue
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.stroke();
+      ctx.globalCompositeOperation = "source-over";
       ctx.save();
       ctx.clip();
-      ctx.drawImage(images.backgroundImage, sx, sy, sw, sh, dx, dy, dw, dh);
+
+      ctx.strokeStyle = borderColor;
+      // Border
+      ctx.stroke();
       ctx.restore();
     }
-
-    // Typography
-    if (textContent !== undefined) {
-      canvasTxt.font = font;
-      canvasTxt.fontSize = fontSize * Math.min(w, h);
-      canvasTxt.lineHeight = lineHeight * canvasTxt.fontSize;
-      canvasTxt.align = textAlign;
-      canvasTxt.vAlign = verticalAlign;
-      canvasTxt.justify = justifyText;
-      canvasTxt.fontWeight = fontWeight;
-      ctx.textBaseline = "bottom";
-      ctx.fillStyle = color;
-      canvasTxt.drawText(ctx, textContent, ox, oy, w - ox * 2, h - oy * 2);
-    }
-
-    // Fixes antialiasing issue
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.stroke();
-    ctx.globalCompositeOperation = "source-over";
-    ctx.save();
-    ctx.clip();
-
-    ctx.strokeStyle = borderColor;
-    // Border
-    ctx.stroke();
-    ctx.restore();
 
     // Make sure canvas texture gets updated
     canvasTexture.needsUpdate = true;

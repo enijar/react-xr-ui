@@ -7,13 +7,17 @@ import { XrUi } from "react-xr-ui";
 
 type Props = {
   children?: React.ReactNode;
+  optimizedRendering?: boolean;
 };
 
 function Scene({ children }: Props) {
   return <>{children}</>;
 }
 
-export default function Example({ children }: Props) {
+export default function Example({
+  children,
+  optimizedRendering = false,
+}: Props) {
   const room = React.useMemo(() => {
     return new BoxLineGeometry(6, 6, 6, 10, 10, 10).translate(0, 3, 0);
   }, []);
@@ -22,7 +26,7 @@ export default function Example({ children }: Props) {
     <>
       <Canvas legacy flat linear gl={{ alpha: false }}>
         <XR>
-          <XrUi fontFamily="system-ui">
+          <XrUi fontFamily="system-ui" optimizedRendering={optimizedRendering}>
             {/** Background, cameras, controls and lights */}
             <color args={["#333333"]} attach="background" />
             <lineSegments geometry={room}>

@@ -1,8 +1,8 @@
 import React from "react";
-import Example from "@/components/example";
-import { Layer, LayerProps } from "react-xr-ui";
-import ViewCode from "@/components/view-code";
 import { useFrame } from "@react-three/fiber";
+import { Layer, LayerProps } from "react-xr-ui";
+import Example from "@/components/example";
+import ViewCode from "@/components/view-code";
 
 function Nested({
   children,
@@ -139,7 +139,7 @@ function Scene() {
 export default function Performance() {
   return (
     <>
-      <Example>
+      <Example optimizedRendering={true}>
         <Scene />
       </Example>
       <ViewCode pathname="performance" />
