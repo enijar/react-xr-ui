@@ -116,7 +116,17 @@ function Scene() {
           <Nested alignItems={align} justifyContent={justify}>
             <Nested alignItems={align} justifyContent={justify}>
               <Nested alignItems={align} justifyContent={justify}>
-                <Nested alignItems={align} justifyContent={justify} />
+                <Nested alignItems={align} justifyContent={justify}>
+                  <Nested alignItems={align} justifyContent={justify}>
+                    <Nested alignItems={align} justifyContent={justify}>
+                      <Nested alignItems={align} justifyContent={justify}>
+                        <Nested alignItems={align} justifyContent={justify}>
+                          <Nested alignItems={align} justifyContent={justify} />
+                        </Nested>
+                      </Nested>
+                    </Nested>
+                  </Nested>
+                </Nested>
               </Nested>
             </Nested>
           </Nested>
