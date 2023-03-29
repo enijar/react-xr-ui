@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { Layer, LayerProps } from "react-xr-ui";
 import Example from "@/components/example";
 import ViewCode from "@/components/view-code";
+import Button from "@/components/button";
 
 function Nested({
   children,
@@ -137,9 +138,41 @@ function Scene() {
 }
 
 export default function Performance() {
+  const [optimizedRendering, setOptimizedRendering] = React.useState(false);
+
   return (
     <>
-      <Example optimizedRendering={true}>
+      <Example optimizedRendering={optimizedRendering}>
+        <group position-y={0.61}>
+          <Layer width={1} height={0.2} flexDirection="column" gap={0.025}>
+            <Layer width={1} height={0.1} gap={0.05}>
+              <Button
+                width={0.1}
+                height={0.1}
+                fontSize={0.5}
+                textContent="On"
+                selected={optimizedRendering}
+                onClick={() => setOptimizedRendering(true)}
+              />
+              <Button
+                width={0.1}
+                height={0.1}
+                fontSize={0.5}
+                textContent="Off"
+                selected={!optimizedRendering}
+                onClick={() => setOptimizedRendering(false)}
+              />
+            </Layer>
+            <Layer
+              width={1}
+              height={0.05}
+              textContent="Open Dev Tools to see Frame rendering stats"
+              fontSize={0.6}
+              textAlign="center"
+              verticalAlign="middle"
+            />
+          </Layer>
+        </group>
         <Scene />
       </Example>
       <ViewCode pathname="performance" />

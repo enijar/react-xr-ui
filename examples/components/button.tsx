@@ -9,6 +9,7 @@ type Props = {
   width: number;
   height: number;
   fontFamily?: string;
+  optimizedRendering?: boolean;
 };
 
 export default function Button({
@@ -19,6 +20,7 @@ export default function Button({
   width,
   height,
   fontFamily = "system-ui, sans-serif",
+  optimizedRendering = false,
 }: Props) {
   const [pointerOver, setPointerOver] = React.useState(false);
 
@@ -47,6 +49,7 @@ export default function Button({
         fontSize={fontSize}
         textAlign="center"
         verticalAlign="middle"
+        optimizedRendering={optimizedRendering}
       />
     </Interaction>
   );
