@@ -33,6 +33,8 @@ export type ValueArray = [
 ];
 
 export type LayerProps = GroupProps & {
+  depthTest?: boolean;
+  depthWrite?: boolean;
   optimizedRendering?: boolean;
   zIndex?: number;
   visible?: boolean;

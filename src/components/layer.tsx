@@ -32,6 +32,8 @@ function Layer(
     resolution,
     visible = true,
     autoLayout = true,
+    depthTest = false,
+    depthWrite = false,
     width,
     height,
     aspectRatio,
@@ -542,7 +544,8 @@ function Layer(
             side={THREE.FrontSide}
             opacity={attrs.opacity}
             transparent={true}
-            depthWrite={false}
+            depthTest={depthTest}
+            depthWrite={depthWrite}
             map={canvasTexture}
           />
         </mesh>
