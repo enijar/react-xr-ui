@@ -75,6 +75,8 @@ function Layer(
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>
 ) {
+  const shouldRenderRef = React.useRef(true);
+
   const [attrs, setAttrs] = React.useState<Attrs>(() => {
     return {
       opacity,
@@ -242,19 +244,30 @@ function Layer(
     return { backgroundImage };
   }, []);
 
+  const [shouldRenderKey, setShouldRenderKey] = React.useState(0);
+
   // Set source for background image
   React.useMemo(() => {
     if (!backgroundImage) return;
     if (!CACHED_IMAGES.has(backgroundImage)) {
       const image = new Image();
+      image.onload = () => {
+        console.log("load");
+        setShouldRenderKey((shouldRenderKey) => {
+          return (shouldRenderKey + 1) % 1000;
+        });
+      };
       image.src = backgroundImage;
       CACHED_IMAGES.set(backgroundImage, image);
     }
     images.backgroundImage = CACHED_IMAGES.get(backgroundImage);
   }, [images.backgroundImage, backgroundImage]);
 
+  const [currentChildren, setCurrentChildren] = React.useState<
+    LayerContextType["currentChildren"]
+  >([]);
+
   // Only render once if in optimizedRendering mode, else render @ 60FPS
-  const shouldRenderRef = React.useRef(true);
   React.useEffect(() => {
     shouldRenderRef.current = true;
     const frames: number[] = [];
@@ -273,6 +286,8 @@ function Layer(
       });
     };
   }, [
+    shouldRenderKey,
+    currentChildren,
     optimized,
     ctx.canvas,
     size,
@@ -417,10 +432,6 @@ function Layer(
     // Make sure canvas texture gets updated
     canvasTexture.needsUpdate = true;
   });
-
-  const [currentChildren, setCurrentChildren] = React.useState<
-    LayerContextType["currentChildren"]
-  >([]);
 
   const childGroupRefs = React.useMemo(() => {
     return currentChildren.map(() => React.createRef<THREE.Group>());
