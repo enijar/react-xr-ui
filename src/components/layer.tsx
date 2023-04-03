@@ -478,6 +478,10 @@ function Layer(
     return layerContext.renderOrder + zIndex + 1;
   }, [layerContext.parentUuid, layerContext.renderOrder, zIndex]);
 
+  const alpha = React.useMemo(() => {
+    return xrUiContext.alphaTest ?? alphaTest;
+  }, [xrUiContext.alphaTest, alphaTest]);
+
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
       currentChildren,
@@ -547,7 +551,7 @@ function Layer(
             transparent={true}
             depthTest={depthTest}
             depthWrite={depthWrite}
-            alphaTest={alphaTest}
+            alphaTest={alpha}
             map={canvasTexture}
           />
         </mesh>

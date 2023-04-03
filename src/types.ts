@@ -98,4 +98,5 @@ export type XrUiContextType = {
   layerResolution: number;
   fontFamily: string;
   optimizedRendering: boolean;
+  alphaTest: number;
 };

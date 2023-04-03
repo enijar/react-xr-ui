@@ -5,13 +5,15 @@ export const XrUiContext = React.createContext<XrUiContextType>({
   layerResolution: 1024,
   fontFamily: "system-ui, sans-serif",
   optimizedRendering: false,
+  alphaTest: 0,
 });
 
 type Props = {
   children?: React.ReactNode;
-  layerResolution?: number;
-  fontFamily?: string;
-  optimizedRendering?: boolean;
+  layerResolution?: XrUiContextType["layerResolution"];
+  fontFamily?: XrUiContextType["fontFamily"];
+  optimizedRendering?: XrUiContextType["optimizedRendering"];
+  alphaTest?: XrUiContextType["alphaTest"];
 };
 
 export default function XrUi({
@@ -19,10 +21,11 @@ export default function XrUi({
   layerResolution = 1024,
   fontFamily,
   optimizedRendering = false,
+  alphaTest,
 }: Props) {
   return (
     <XrUiContext.Provider
-      value={{ layerResolution, fontFamily, optimizedRendering }}
+      value={{ layerResolution, fontFamily, optimizedRendering, alphaTest }}
     >
       {children}
     </XrUiContext.Provider>
