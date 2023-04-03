@@ -42,6 +42,7 @@ function Layer(
     backgroundImage,
     backgroundSize,
     backgroundPosition = DEFAULT_BACKGROUND_POSITION,
+    alphaTest = 0,
     padding = 0,
     borderRadius = 0,
     borderWidth = 0,
@@ -546,6 +547,7 @@ function Layer(
             transparent={true}
             depthTest={depthTest}
             depthWrite={depthWrite}
+            alphaTest={alphaTest}
             map={canvasTexture}
           />
         </mesh>
