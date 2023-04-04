@@ -32,6 +32,7 @@ function Layer(
     resolution,
     visible = true,
     autoLayout = true,
+    premultiplyAlpha,
     depthTest,
     depthWrite = false,
     width,
@@ -238,6 +239,11 @@ function Layer(
     canvasTexture.premultiplyAlpha = true;
     return canvasTexture;
   }, [ctx.canvas, size]);
+
+  React.useEffect(() => {
+    canvasTexture.premultiplyAlpha =
+      premultiplyAlpha ?? xrUiContext.premultiplyAlpha;
+  }, [canvasTexture, premultiplyAlpha, xrUiContext.premultiplyAlpha]);
 
   const images = React.useMemo(() => {
     const backgroundImage = new Image();

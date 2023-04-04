@@ -39,6 +39,7 @@ export type LayerProps = GroupProps & {
   zIndex?: number;
   visible?: boolean;
   autoLayout?: boolean;
+  premultiplyAlpha?: boolean;
   resolution?: number;
   width?: number | string;
   height?: number | string;
@@ -100,4 +101,5 @@ export type XrUiContextType = {
   optimizedRendering: boolean;
   alphaTest: number;
   depthTest: boolean;
+  premultiplyAlpha: boolean;
 };

@@ -7,6 +7,7 @@ export const XrUiContext = React.createContext<XrUiContextType>({
   optimizedRendering: false,
   alphaTest: 0,
   depthTest: false,
+  premultiplyAlpha: true,
 });
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
   optimizedRendering?: XrUiContextType["optimizedRendering"];
   alphaTest?: XrUiContextType["alphaTest"];
   depthTest?: XrUiContextType["depthTest"];
+  premultiplyAlpha?: XrUiContextType["premultiplyAlpha"];
 };
 
 export default function XrUi({
@@ -25,6 +27,7 @@ export default function XrUi({
   optimizedRendering = false,
   alphaTest,
   depthTest = false,
+  premultiplyAlpha = false,
 }: Props) {
   return (
     <XrUiContext.Provider
@@ -34,6 +37,7 @@ export default function XrUi({
         optimizedRendering,
         alphaTest,
         depthTest,
+        premultiplyAlpha,
       }}
     >
       {children}
