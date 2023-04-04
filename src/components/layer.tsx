@@ -32,7 +32,7 @@ function Layer(
     resolution,
     visible = true,
     autoLayout = true,
-    depthTest = false,
+    depthTest,
     depthWrite = false,
     width,
     height,
@@ -559,7 +559,7 @@ function Layer(
             side={THREE.FrontSide}
             opacity={attrs.opacity}
             transparent={true}
-            depthTest={depthTest}
+            depthTest={depthTest ?? xrUiContext.depthTest}
             depthWrite={depthWrite}
             alphaTest={alpha}
             map={canvasTexture}

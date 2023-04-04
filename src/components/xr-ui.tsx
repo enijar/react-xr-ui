@@ -6,6 +6,7 @@ export const XrUiContext = React.createContext<XrUiContextType>({
   fontFamily: "system-ui, sans-serif",
   optimizedRendering: false,
   alphaTest: 0,
+  depthTest: false,
 });
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
   fontFamily?: XrUiContextType["fontFamily"];
   optimizedRendering?: XrUiContextType["optimizedRendering"];
   alphaTest?: XrUiContextType["alphaTest"];
+  depthTest?: XrUiContextType["depthTest"];
 };
 
 export default function XrUi({
@@ -22,10 +24,17 @@ export default function XrUi({
   fontFamily,
   optimizedRendering = false,
   alphaTest,
+  depthTest = false,
 }: Props) {
   return (
     <XrUiContext.Provider
-      value={{ layerResolution, fontFamily, optimizedRendering, alphaTest }}
+      value={{
+        layerResolution,
+        fontFamily,
+        optimizedRendering,
+        alphaTest,
+        depthTest,
+      }}
     >
       {children}
     </XrUiContext.Provider>

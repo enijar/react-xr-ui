@@ -99,4 +99,5 @@ export type XrUiContextType = {
   fontFamily: string;
   optimizedRendering: boolean;
   alphaTest: number;
+  depthTest: boolean;
 };
