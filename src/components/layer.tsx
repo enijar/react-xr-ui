@@ -252,7 +252,6 @@ function Layer(
     if (!CACHED_IMAGES.has(backgroundImage)) {
       const image = new Image();
       image.onload = () => {
-        console.log("load");
         setShouldRenderKey((shouldRenderKey) => {
           return (shouldRenderKey + 1) % 1000;
         });
