@@ -82,6 +82,7 @@ export type LayerProps = GroupProps & {
     | "geometricPrecision"
     | "inherit";
   dpr?: number;
+  onLayout?: () => void;
 };
 
 export type Attrs = {

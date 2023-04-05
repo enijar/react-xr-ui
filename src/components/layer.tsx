@@ -72,6 +72,7 @@ function Layer(
     imageSmoothingEnabled = true,
     textRendering = "auto",
     dpr,
+    onLayout,
     ...props
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>
@@ -252,12 +253,22 @@ function Layer(
 
   const [shouldRenderKey, setShouldRenderKey] = React.useState(0);
 
+  const mountedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
   // Set source for background image
   React.useMemo(() => {
     if (!backgroundImage) return;
     if (!CACHED_IMAGES.has(backgroundImage)) {
       const image = new Image();
       image.onload = () => {
+        if (!mountedRef.current) return;
         setShouldRenderKey((shouldRenderKey) => {
           return (shouldRenderKey + 1) % 1000;
         });
@@ -442,6 +453,11 @@ function Layer(
     return currentChildren.map(() => React.createRef<THREE.Group>());
   }, [currentChildren]);
 
+  const onLayoutRef = React.useRef(onLayout);
+  React.useMemo(() => {
+    onLayoutRef.current = onLayout;
+  }, [onLayout]);
+
   // Layout calculations
   React.useEffect(() => {
     const newSize = { ...size };
@@ -475,6 +491,9 @@ function Layer(
       childGroup.position.x = x;
       childGroup.position.y = y;
     });
+    if (onLayoutRef.current) {
+      onLayoutRef.current();
+    }
   }, [
     childGroupRefs,
     currentChildren,
