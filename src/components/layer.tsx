@@ -601,21 +601,23 @@ function Layer(
         visible={visible}
         name="react-xr-ui-layer"
       >
-        {canvasTexture !== null && (
-          <mesh ref={meshRef} renderOrder={renderOrder + zIndex}>
-            <planeGeometry args={[size.width, size.height]} />
-            <meshBasicMaterial
-              ref={materialRef}
-              side={THREE.FrontSide}
-              opacity={attrs.opacity}
-              transparent={true}
-              depthTest={depthTest ?? xrUiContext.depthTest}
-              depthWrite={depthWrite}
-              alphaTest={alpha}
-              map={canvasTexture}
-            />
-          </mesh>
-        )}
+        <mesh
+          ref={meshRef}
+          renderOrder={renderOrder + zIndex}
+          visible={canvasTexture !== null}
+        >
+          <planeGeometry args={[size.width, size.height]} />
+          <meshBasicMaterial
+            ref={materialRef}
+            side={THREE.FrontSide}
+            opacity={attrs.opacity}
+            transparent={true}
+            depthTest={depthTest ?? xrUiContext.depthTest}
+            depthWrite={depthWrite}
+            alphaTest={alpha}
+            map={canvasTexture ?? undefined}
+          />
+        </mesh>
         <group renderOrder={renderOrder + zIndex + 1} ref={childrenGroupRef}>
           {React.Children.map(children, (child, childIndex) => {
             if (React.isValidElement(child)) {
