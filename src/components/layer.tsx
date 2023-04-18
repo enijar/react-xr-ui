@@ -204,44 +204,65 @@ function Layer(
     pointerRefs.current.onPointerUp = onPointerUp;
   }, [onPointerMove, onPointerOver, onPointerOut, onPointerDown, onPointerUp]);
 
+  const layoutOnly = React.useMemo<boolean>(() => {
+    const props = [
+      backgroundColor === "transparent" ? undefined : backgroundColor,
+      backgroundImage,
+      borderColor === "transparent" ? undefined : borderColor,
+      textContent,
+    ];
+    return props.filter((prop) => prop !== undefined).length === 0;
+  }, [backgroundColor, backgroundImage, borderColor, textContent]);
+
   // Create 2d canvas context
-  const ctx = React.useMemo<CanvasRenderingContext2D>(() => {
+  const ctx = React.useMemo<CanvasRenderingContext2D | null>(() => {
+    if (layoutOnly) {
+      return null;
+    }
     const canvas = document.createElement("canvas");
     return canvas.getContext("2d");
-  }, []);
+  }, [layoutOnly]);
 
   React.useEffect(() => {
+    if (ctx === null) return;
     ctx.imageSmoothingEnabled = imageSmoothingEnabled;
     ctx.canvas.style.imageRendering = imageRendering;
   }, [ctx, imageRendering, imageSmoothingEnabled]);
 
   React.useEffect(() => {
+    if (ctx === null) return;
     // @ts-ignore
     ctx.textRendering = textRendering;
     ctx.canvas.style.textRendering = textRendering;
   }, [ctx, textRendering]);
 
   React.useMemo(() => {
+    if (ctx === null) return;
     const s = dpr ?? window.devicePixelRatio ?? 1;
     ctx.scale(s, s);
   }, [ctx, dpr]);
 
   // Set canvas size
   React.useMemo(() => {
+    if (ctx === null) return;
     ctx.canvas.width = Math.max(1, Math.floor(size.width * res));
     ctx.canvas.height = Math.max(1, Math.floor(size.height * res));
-  }, [ctx.canvas, size, res]);
+  }, [ctx, size, res]);
 
   // Create canvas texture with the newly created canvas;
   // this will be used as the texture for the plane
   const canvasTexture = React.useMemo(() => {
+    if (ctx === null) {
+      return null;
+    }
     const canvasTexture = new THREE.CanvasTexture(ctx.canvas);
     canvasTexture.anisotropy = 16;
     canvasTexture.premultiplyAlpha = true;
     return canvasTexture;
-  }, [ctx.canvas, size]);
+  }, [ctx, size]);
 
   React.useEffect(() => {
+    if (canvasTexture === null) return;
     canvasTexture.premultiplyAlpha =
       premultiplyAlpha ?? xrUiContext.premultiplyAlpha;
   }, [canvasTexture, premultiplyAlpha, xrUiContext.premultiplyAlpha]);
@@ -305,7 +326,7 @@ function Layer(
     shouldRenderKey,
     currentChildren,
     optimized,
-    ctx.canvas,
+    ctx,
     size,
     res,
     borderRadius,
@@ -327,7 +348,7 @@ function Layer(
   ]);
 
   useFrame(() => {
-    if (shouldRenderRef.current) {
+    if (shouldRenderRef.current && ctx !== null) {
       // Useful vars
       const w = ctx.canvas.width;
       const h = ctx.canvas.height;
@@ -445,8 +466,10 @@ function Layer(
       ctx.restore();
     }
 
-    // Make sure canvas texture gets updated
-    canvasTexture.needsUpdate = true;
+    if (canvasTexture !== null) {
+      // Make sure canvas texture gets updated
+      canvasTexture.needsUpdate = true;
+    }
   });
 
   const childGroupRefs = React.useMemo(() => {
@@ -564,6 +587,7 @@ function Layer(
 
   React.useEffect(() => {
     return () => {
+      if (ctx === null) return;
       ctx.canvas.width = 0;
       ctx.canvas.height = 0;
     };
@@ -577,19 +601,21 @@ function Layer(
         visible={visible}
         name="react-xr-ui-layer"
       >
-        <mesh ref={meshRef} renderOrder={renderOrder + zIndex}>
-          <planeGeometry args={[size.width, size.height]} />
-          <meshBasicMaterial
-            ref={materialRef}
-            side={THREE.FrontSide}
-            opacity={attrs.opacity}
-            transparent={true}
-            depthTest={depthTest ?? xrUiContext.depthTest}
-            depthWrite={depthWrite}
-            alphaTest={alpha}
-            map={canvasTexture}
-          />
-        </mesh>
+        {canvasTexture !== null && (
+          <mesh ref={meshRef} renderOrder={renderOrder + zIndex}>
+            <planeGeometry args={[size.width, size.height]} />
+            <meshBasicMaterial
+              ref={materialRef}
+              side={THREE.FrontSide}
+              opacity={attrs.opacity}
+              transparent={true}
+              depthTest={depthTest ?? xrUiContext.depthTest}
+              depthWrite={depthWrite}
+              alphaTest={alpha}
+              map={canvasTexture}
+            />
+          </mesh>
+        )}
         <group renderOrder={renderOrder + zIndex + 1} ref={childrenGroupRef}>
           {React.Children.map(children, (child, childIndex) => {
             if (React.isValidElement(child)) {
