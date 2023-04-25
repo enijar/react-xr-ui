@@ -6,7 +6,7 @@ export const XrUiContext = React.createContext<XrUiContextType>({
   fontFamily: "system-ui, sans-serif",
   optimizedRendering: false,
   alphaTest: 0,
-  depthTest: false,
+  depthTest: true,
   premultiplyAlpha: true,
 });
 
@@ -26,7 +26,7 @@ export default function XrUi({
   fontFamily,
   optimizedRendering = false,
   alphaTest,
-  depthTest = false,
+  depthTest = true,
   premultiplyAlpha = false,
 }: Props) {
   return (
