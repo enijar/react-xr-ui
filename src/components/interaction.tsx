@@ -3,13 +3,15 @@ import type { Intersection } from "three";
 import { Interactive, useXR, XRInteractionEvent } from "@react-three/xr";
 import { ThreeEvent } from "@react-three/fiber";
 
+type Fn = (intersection: Intersection, intersections: Intersection[]) => void;
+
 type Props = {
   children: React.ReactNode;
-  onMove?: (intersection: Intersection) => void;
-  onOver?: (intersection: Intersection) => void;
-  onOut?: (intersection: Intersection) => void;
-  onDown?: (intersection: Intersection) => void;
-  onUp?: (intersection: Intersection) => void;
+  onMove?: Fn;
+  onOver?: Fn;
+  onOut?: Fn;
+  onDown?: Fn;
+  onUp?: Fn;
   enabled?: boolean;
 };
 
@@ -25,25 +27,25 @@ export default function Interaction({
   const isPresenting = useXR((state) => state.isPresenting);
 
   const handleVrInteraction = React.useCallback(
-    (fn?: (intersection: Intersection) => void) => {
+    (fn?: Fn) => {
       return (event: XRInteractionEvent) => {
         if (!isPresenting) return;
         if (!enabled) return;
         if (!fn) return;
-        fn(event.intersection);
+        fn(event.intersection, event.intersections);
       };
     },
     [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut]
   );
 
   const handleWebInteraction = React.useCallback(
-    (fn?: (intersection: Intersection) => void) => {
+    (fn?: Fn) => {
       return (event: ThreeEvent<PointerEvent>) => {
         if (isPresenting) return;
         if (!enabled) return;
         if (!fn) return;
         event.stopPropagation();
-        fn(event.intersections[0]);
+        fn(event.intersections[0], event.intersections);
       };
     },
     [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut]
