@@ -85,10 +85,10 @@ export type LayerProps = GroupProps & {
   onLayout?: () => void;
 };
 
-export type Attrs = {
+export type Attrs = Partial<{
   opacity: number;
   backgroundColor: string;
-};
+}>;
 
 export type LayerRef = {
   group: THREE.Group;

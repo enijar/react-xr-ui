@@ -79,7 +79,7 @@ function Layer(
 ) {
   const shouldRenderRef = React.useRef(true);
 
-  const [attrs, setAttrs] = React.useState<Partial<Attrs>>(() => {
+  const [attrs, setAttrs] = React.useState<Attrs>(() => {
     return {
       opacity,
       backgroundColor,
