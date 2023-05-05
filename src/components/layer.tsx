@@ -82,6 +82,7 @@ function Layer(
   const [attrs, setAttrs] = React.useState<Attrs>(() => {
     return {
       opacity,
+      backgroundColor,
     };
   });
 
@@ -90,6 +91,12 @@ function Layer(
       return { ...attrs, opacity };
     });
   }, [opacity]);
+
+  React.useEffect(() => {
+    setAttrs((attrs) => {
+      return { ...attrs, backgroundColor };
+    });
+  }, [backgroundColor]);
 
   const xrUiContext = React.useContext(XrUiContext);
 
@@ -106,7 +113,10 @@ function Layer(
   }, [optimizedRendering, xrUiContext.optimizedRendering]);
 
   const groupRef = React.useRef<THREE.Group>(null);
-  const meshRef = React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>(null);
+  const meshRef =
+    React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>(
+      null
+    );
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
 
@@ -206,13 +216,15 @@ function Layer(
 
   const layoutOnly = React.useMemo<boolean>(() => {
     const props = [
-      backgroundColor === "transparent" ? undefined : backgroundColor,
+      attrs.backgroundColor === "transparent"
+        ? undefined
+        : attrs.backgroundColor,
       backgroundImage,
       borderColor === "transparent" ? undefined : borderColor,
       textContent,
     ];
     return props.filter((prop) => prop !== undefined).length === 0;
-  }, [backgroundColor, backgroundImage, borderColor, textContent]);
+  }, [attrs.backgroundColor, backgroundImage, borderColor, textContent]);
 
   // Create 2d canvas context
   const ctx = React.useMemo<CanvasRenderingContext2D | null>(() => {
@@ -333,7 +345,6 @@ function Layer(
     borderColor,
     attrs,
     images,
-    backgroundColor,
     backgroundPosition,
     backgroundSize,
     font,
@@ -388,7 +399,7 @@ function Layer(
       ctx.globalAlpha = attrs.opacity;
 
       // Background color
-      ctx.fillStyle = backgroundColor;
+      ctx.fillStyle = attrs.backgroundColor;
       ctx.lineWidth = borderWidth * res * 2;
       ctx.fill();
 

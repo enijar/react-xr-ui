@@ -87,6 +87,7 @@ export type LayerProps = GroupProps & {
 
 export type Attrs = {
   opacity: number;
+  backgroundColor: string;
 };
 
 export type LayerRef = {
