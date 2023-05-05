@@ -106,7 +106,7 @@ function Layer(
   }, [optimizedRendering, xrUiContext.optimizedRendering]);
 
   const groupRef = React.useRef<THREE.Group>(null);
-  const meshRef = React.useRef<THREE.Mesh>(null);
+  const meshRef = React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>(null);
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
 
