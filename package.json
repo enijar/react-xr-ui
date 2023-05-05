@@ -1,6 +1,6 @@
 {
   "name": "react-xr-ui",
-  "version": "0.0.58",
+  "version": "0.0.59",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
