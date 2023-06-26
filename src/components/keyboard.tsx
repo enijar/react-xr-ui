@@ -1,8 +1,9 @@
 import React from "react";
+import type { Intersection } from "three";
 import * as THREE from "three";
+import { useFrame } from "@react-three/fiber";
 import Layer from "./layer";
 import Interaction from "./interaction";
-import { useFrame } from "@react-three/fiber";
 
 type Props = {
   onChange?: (value: string) => void;
@@ -17,7 +18,7 @@ export default function Keyboard({ onChange }: Props) {
   const settings = React.useMemo(() => {
     return {
       width: 1,
-      height: 0.7,
+      height: 0.38461538461538464,
       scale: 1,
     };
   }, []);
@@ -32,7 +33,11 @@ export default function Keyboard({ onChange }: Props) {
     ctx.canvas.height = settings.height * 512;
   }, [ctx.canvas, settings.width, settings.height]);
 
-  const stateRef = React.useRef({ shift: false });
+  const stateRef = React.useRef({
+    shift: false,
+    pointer: { x: -1, y: -1 },
+    value: "",
+  });
 
   type Layout = Array<
     Array<Array<{ label: string; value?: string; spanCols?: number } | null>>
@@ -41,6 +46,10 @@ export default function Keyboard({ onChange }: Props) {
   const layout: Layout = React.useMemo(() => {
     return [
       [
+        [
+          { label: "§", value: "§" },
+          { label: "±", value: "±" },
+        ],
         [
           { label: "1", value: "1" },
           { label: "!", value: "!" },
@@ -81,9 +90,17 @@ export default function Keyboard({ onChange }: Props) {
           { label: "0", value: "0" },
           { label: ")", value: ")" },
         ],
+        [
+          { label: "-", value: "-" },
+          { label: "_", value: "_" },
+        ],
+        [
+          { label: "=", value: "=" },
+          { label: "+", value: "+" },
+        ],
       ],
       [
-        [{ label: "⇥", value: "\t" }],
+        [{ label: "TAB", value: "\t" }],
         [
           { label: "q", value: "q" },
           { label: "Q", value: "Q" },
@@ -134,7 +151,7 @@ export default function Keyboard({ onChange }: Props) {
         ],
       ],
       [
-        [{ label: "⇧" }],
+        [{ label: "CAPS" }],
         [
           { label: "a", value: "a" },
           { label: "A", value: "A" },
@@ -253,7 +270,7 @@ export default function Keyboard({ onChange }: Props) {
     ctx.clearRect(0, 0, w, h);
 
     // Background
-    ctx.fillStyle = "crimson";
+    ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, w, h);
 
     // Layout
@@ -264,19 +281,34 @@ export default function Keyboard({ onChange }: Props) {
           key = keys[1] ?? keys[0];
         }
         if (key === null) return;
-        if (key.value === undefined) return;
+        if (key.label === undefined) return;
+        const { x: px, y: py } = stateRef.current.pointer;
+
+        function isPointerHit(
+          kx: number,
+          ky: number,
+          kw: number,
+          kh: number
+        ): boolean {
+          const px = stateRef.current.pointer.x * w;
+          const py = stateRef.current.pointer.y * h;
+          return px >= kx && px <= kx + kw && py >= ky && py <= ky + kh;
+        }
+
+        // console.log(px, py);
         const spanCols = key.spanCols ?? 1;
-        const cx = keySize * spanCols;
-        const cy = 0;
-        const x = keySize * colIndex;
-        const y = keySize * rowIndex;
-        ctx.fillStyle = "#555555";
-        ctx.fillRect(x, y, keySize * spanCols, keySize);
-        ctx.font = `12px system-ui`;
+        const kx = keySize * colIndex;
+        const ky = keySize * rowIndex;
+        const cx = kx + (keySize * spanCols) / 2;
+        const cy = ky + keySize / 2;
+        const hit = isPointerHit(kx, ky, keySize * spanCols, keySize);
+        ctx.fillStyle = hit ? "crimson" : "#222222";
+        ctx.fillRect(kx, ky, keySize * spanCols, keySize);
+        ctx.font = `${keySize * 0.35}px system-ui`;
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(key.value, x, y);
+        ctx.fillText(key.label, cx, cy);
       });
     });
 
@@ -284,12 +316,24 @@ export default function Keyboard({ onChange }: Props) {
     mesh.material.map.needsUpdate = true;
   });
 
+  const setPointer = React.useCallback((intersection: Intersection) => {
+    stateRef.current.pointer.x = intersection.uv.x;
+    stateRef.current.pointer.y = 1 - intersection.uv.y;
+  }, []);
+
   return (
-    <Interaction>
-      <Layer width={1} aspectRatio={1}>
-        <mesh ref={meshRef} scale={settings.scale}>
+    <Interaction
+      onOver={setPointer}
+      onMove={setPointer}
+      onOut={() => {
+        stateRef.current.pointer.x = -1;
+        stateRef.current.pointer.y = -1;
+      }}
+    >
+      <Layer width={settings.width} height={settings.height}>
+        <mesh ref={meshRef} scale={settings.scale} renderOrder={999999}>
           <planeGeometry args={[settings.width, settings.height]} />
-          <meshBasicMaterial>
+          <meshBasicMaterial depthWrite={false}>
             <canvasTexture attach="map" image={ctx.canvas} />
           </meshBasicMaterial>
         </mesh>

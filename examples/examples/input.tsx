@@ -7,7 +7,7 @@ export default function Input() {
   return (
     <>
       <Example>
-        <Layer flexDirection="column">
+        <Layer flexDirection="column" gap={0.1}>
           <Layer
             width={1}
             height={0.1}
