@@ -4,10 +4,12 @@ import { Layer, Keyboard } from "react-xr-ui";
 import ViewCode from "@/components/view-code";
 
 export default function Input() {
+  const [name, setName] = React.useState("");
+
   return (
     <>
       <Example>
-        <Layer flexDirection="column" gap={0.1}>
+        <Layer flexDirection="column" gap={0.05}>
           <Layer
             width={1}
             height={0.1}
@@ -15,7 +17,14 @@ export default function Input() {
             textContent="Enter your name"
             textAlign="center"
           />
-          <Keyboard />
+          <Layer
+            width={1}
+            height={0.05}
+            fontSize={1}
+            textContent={name}
+            textAlign="center"
+          />
+          <Keyboard onChange={setName} />
         </Layer>
       </Example>
       <ViewCode pathname="input" />

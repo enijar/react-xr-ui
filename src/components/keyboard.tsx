@@ -9,7 +9,17 @@ type Props = {
   onChange?: (value: string) => void;
 };
 
+const ACTION = {
+  delete: "delete",
+  toggleCase: "toggleCase",
+} as const;
+
 export default function Keyboard({ onChange }: Props) {
+  const onChangeRef = React.useRef(onChange);
+  React.useMemo(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   const meshRef = React.useRef<THREE.Mesh<
     THREE.PlaneGeometry,
     THREE.MeshBasicMaterial
@@ -33,17 +43,31 @@ export default function Keyboard({ onChange }: Props) {
     ctx.canvas.height = settings.height * 512;
   }, [ctx.canvas, settings.width, settings.height]);
 
-  const stateRef = React.useRef({
-    shift: false,
+  type Key = {
+    label: string;
+    value?: string;
+    action?: keyof typeof ACTION;
+    spanCols?: number;
+    spanRows?: number;
+  };
+
+  type State = {
+    uppercase: boolean;
+    pointer: { x: number; y: number };
+    value: string;
+    hitKey: Key | null;
+  };
+
+  const stateRef = React.useRef<State>({
+    uppercase: false,
     pointer: { x: -1, y: -1 },
     value: "",
+    hitKey: null,
   });
 
-  type Layout = Array<
-    Array<Array<{ label: string; value?: string; spanCols?: number } | null>>
-  >;
+  type Layout = Array<Array<Array<Key | null>>>;
 
-  const layout: Layout = React.useMemo(() => {
+  const layout = React.useMemo<Layout>(() => {
     return [
       [
         [
@@ -98,6 +122,7 @@ export default function Keyboard({ onChange }: Props) {
           { label: "=", value: "=" },
           { label: "+", value: "+" },
         ],
+        [{ label: "DEL", action: ACTION.delete }],
       ],
       [
         [{ label: "TAB", value: "\t" }],
@@ -151,7 +176,7 @@ export default function Keyboard({ onChange }: Props) {
         ],
       ],
       [
-        [{ label: "CAPS" }],
+        [{ label: "CAPS", action: ACTION.toggleCase }],
         [
           { label: "a", value: "a" },
           { label: "A", value: "A" },
@@ -277,12 +302,11 @@ export default function Keyboard({ onChange }: Props) {
     layout.forEach((cols, rowIndex) => {
       cols.forEach((keys, colIndex) => {
         let key = keys[0];
-        if (stateRef.current.shift) {
+        if (stateRef.current.uppercase) {
           key = keys[1] ?? keys[0];
         }
         if (key === null) return;
         if (key.label === undefined) return;
-        const { x: px, y: py } = stateRef.current.pointer;
 
         function isPointerHit(
           kx: number,
@@ -295,13 +319,15 @@ export default function Keyboard({ onChange }: Props) {
           return px >= kx && px <= kx + kw && py >= ky && py <= ky + kh;
         }
 
-        // console.log(px, py);
         const spanCols = key.spanCols ?? 1;
         const kx = keySize * colIndex;
         const ky = keySize * rowIndex;
         const cx = kx + (keySize * spanCols) / 2;
         const cy = ky + keySize / 2;
         const hit = isPointerHit(kx, ky, keySize * spanCols, keySize);
+        if (hit) {
+          stateRef.current.hitKey = key;
+        }
         ctx.fillStyle = hit ? "crimson" : "#222222";
         ctx.fillRect(kx, ky, keySize * spanCols, keySize);
         ctx.font = `${keySize * 0.35}px system-ui`;
@@ -328,6 +354,28 @@ export default function Keyboard({ onChange }: Props) {
       onOut={() => {
         stateRef.current.pointer.x = -1;
         stateRef.current.pointer.y = -1;
+      }}
+      onDown={(intersection) => {
+        setPointer(intersection);
+        if (stateRef.current.hitKey === null) return;
+        if (stateRef.current.hitKey.value !== undefined) {
+          // todo: account for cursor position
+          stateRef.current.value += stateRef.current.hitKey.value;
+        }
+        if (stateRef.current.hitKey.action !== undefined) {
+          switch (stateRef.current.hitKey.action) {
+            case ACTION.delete:
+              // todo: account for cursor position
+              stateRef.current.value = stateRef.current.value.slice(0, -1);
+              break;
+            case ACTION.toggleCase:
+              stateRef.current.uppercase = !stateRef.current.uppercase;
+              break;
+          }
+        }
+        if (onChangeRef.current !== undefined) {
+          onChangeRef.current(stateRef.current.value);
+        }
       }}
     >
       <Layer width={settings.width} height={settings.height}>
