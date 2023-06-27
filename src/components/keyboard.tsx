@@ -25,24 +25,6 @@ export default function Keyboard({ onChange }: Props) {
     THREE.MeshBasicMaterial
   > | null>(null);
 
-  const settings = React.useMemo(() => {
-    return {
-      width: 1,
-      height: 0.38461538461538464,
-      scale: 1,
-    };
-  }, []);
-
-  const ctx = React.useMemo(() => {
-    const canvas = document.createElement("canvas");
-    return canvas.getContext("2d")!;
-  }, []);
-
-  React.useMemo(() => {
-    ctx.canvas.width = settings.width * 512;
-    ctx.canvas.height = settings.height * 512;
-  }, [ctx.canvas, settings.width, settings.height]);
-
   type Key = {
     label: string;
     value?: string;
@@ -284,6 +266,28 @@ export default function Keyboard({ onChange }: Props) {
     }, 0);
   }, [layout]);
 
+  const ctx = React.useMemo(() => {
+    const canvas = document.createElement("canvas");
+    return canvas.getContext("2d")!;
+  }, []);
+
+  const settings = React.useMemo(() => {
+    const kh = ctx.canvas.width / maxRowLength;
+    return {
+      width: 1,
+      height: (kh * layout.length) / ctx.canvas.width,
+      scale: 1,
+      textScale: 0.4,
+      canvasScale: 1024,
+    };
+  }, [ctx.canvas.width, layout, maxRowLength]);
+
+  React.useMemo(() => {
+    ctx.canvas.width = settings.width * settings.canvasScale;
+    ctx.canvas.height = settings.height * settings.canvasScale;
+    ctx.canvas.style.textRendering = "geometricPrecision";
+  }, [ctx.canvas, settings.width, settings.height, settings.canvasScale]);
+
   useFrame(() => {
     const mesh = meshRef.current;
     if (mesh === null) return;
@@ -334,7 +338,7 @@ export default function Keyboard({ onChange }: Props) {
         }
         ctx.fillStyle = hit ? "crimson" : "#222222";
         ctx.fillRect(kx, ky, kw, kh);
-        ctx.font = `${Math.min(kw, kh) * 0.35}px system-ui`;
+        ctx.font = `${Math.min(kw, kh) * settings.textScale}px system-ui`;
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
