@@ -122,7 +122,7 @@ export default function Keyboard({ onChange }: Props) {
           { label: "=", value: "=" },
           { label: "+", value: "+" },
         ],
-        [{ label: "DEL", action: ACTION.delete }],
+        [{ label: "⌫", action: ACTION.delete }],
       ],
       [
         [{ label: "TAB", value: "\t" }],
@@ -174,6 +174,7 @@ export default function Keyboard({ onChange }: Props) {
           { label: "]", value: "]" },
           { label: "}", value: "}" },
         ],
+        [{ label: "↵", value: "\n", spanRows: 2 }],
       ],
       [
         [{ label: "CAPS", action: ACTION.toggleCase }],
@@ -320,17 +321,20 @@ export default function Keyboard({ onChange }: Props) {
         }
 
         const spanCols = key.spanCols ?? 1;
+        const spanRows = key.spanRows ?? 1;
+        const kw = keySize * spanCols;
+        const kh = keySize * spanRows;
         const kx = keySize * colIndex;
         const ky = keySize * rowIndex;
-        const cx = kx + (keySize * spanCols) / 2;
-        const cy = ky + keySize / 2;
-        const hit = isPointerHit(kx, ky, keySize * spanCols, keySize);
+        const cx = kx + kw / 2;
+        const cy = ky + kh / 2;
+        const hit = isPointerHit(kx, ky, kw, kh);
         if (hit) {
           stateRef.current.hitKey = key;
         }
         ctx.fillStyle = hit ? "crimson" : "#222222";
-        ctx.fillRect(kx, ky, keySize * spanCols, keySize);
-        ctx.font = `${keySize * 0.35}px system-ui`;
+        ctx.fillRect(kx, ky, kw, kh);
+        ctx.font = `${Math.min(kw, kh) * 0.35}px system-ui`;
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";

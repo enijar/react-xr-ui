@@ -19,8 +19,8 @@ export default function Input() {
           />
           <Layer
             width={1}
-            height={0.05}
-            fontSize={1}
+            height={0.1}
+            fontSize={0.5}
             textContent={name}
             textAlign="center"
           />
