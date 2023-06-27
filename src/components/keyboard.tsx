@@ -1,7 +1,7 @@
 import React from "react";
 import type { Intersection } from "three";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import Layer from "./layer";
 import Interaction from "./interaction";
 
@@ -15,6 +15,11 @@ const ACTION = {
 } as const;
 
 export default function Keyboard({ onChange }: Props) {
+  const capabilities = useThree((state) => state.gl.capabilities);
+  const anisotropy = React.useMemo(() => {
+    return capabilities.getMaxAnisotropy();
+  }, [capabilities]);
+
   const onChangeRef = React.useRef(onChange);
   React.useMemo(() => {
     onChangeRef.current = onChange;
@@ -390,7 +395,11 @@ export default function Keyboard({ onChange }: Props) {
         <mesh ref={meshRef} scale={settings.scale} renderOrder={999999}>
           <planeGeometry args={[settings.width, settings.height]} />
           <meshBasicMaterial depthWrite={false}>
-            <canvasTexture attach="map" image={ctx.canvas} />
+            <canvasTexture
+              attach="map"
+              image={ctx.canvas}
+              anisotropy={anisotropy}
+            />
           </meshBasicMaterial>
         </mesh>
       </Layer>
