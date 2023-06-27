@@ -125,7 +125,7 @@ export default function Keyboard({ onChange }: Props) {
         [{ label: "⌫", action: ACTION.delete }],
       ],
       [
-        [{ label: "TAB", value: "\t" }],
+        [{ label: "↹", value: "\t" }],
         [
           { label: "q", value: "q" },
           { label: "Q", value: "Q" },
@@ -177,7 +177,7 @@ export default function Keyboard({ onChange }: Props) {
         [{ label: "↵", value: "\n", spanRows: 2 }],
       ],
       [
-        [{ label: "CAPS", action: ACTION.toggleCase }],
+        [{ label: "⇪", action: ACTION.toggleCase }],
         [
           { label: "a", value: "a" },
           { label: "A", value: "A" },
