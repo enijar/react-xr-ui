@@ -7,6 +7,10 @@ import Interaction from "./interaction";
 
 type Props = {
   onChange?: (value: string) => void;
+  backgroundColor?: string;
+  keyColor?: string;
+  keyHoverColor?: string;
+  enabled?: boolean;
 };
 
 const ACTION = {
@@ -14,7 +18,13 @@ const ACTION = {
   toggleCase: "toggleCase",
 } as const;
 
-export default function Keyboard({ onChange }: Props) {
+export default function Keyboard({
+  onChange,
+  backgroundColor = "#000000",
+  keyColor = "#222222",
+  keyHoverColor = "#444444",
+  enabled = true,
+}: Props) {
   const capabilities = useThree((state) => state.gl.capabilities);
   const anisotropy = React.useMemo(() => {
     return capabilities.getMaxAnisotropy();
@@ -305,7 +315,7 @@ export default function Keyboard({ onChange }: Props) {
     ctx.clearRect(0, 0, w, h);
 
     // Background
-    ctx.fillStyle = "#000000";
+    ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, w, h);
 
     // Layout
@@ -341,7 +351,7 @@ export default function Keyboard({ onChange }: Props) {
         if (hit) {
           stateRef.current.hitKey = key;
         }
-        ctx.fillStyle = hit ? "crimson" : "#222222";
+        ctx.fillStyle = hit ? keyHoverColor : keyColor;
         ctx.fillRect(kx, ky, kw, kh);
         ctx.font = `${Math.min(kw, kh) * settings.textScale}px system-ui`;
         ctx.fillStyle = "#ffffff";
@@ -362,6 +372,7 @@ export default function Keyboard({ onChange }: Props) {
 
   return (
     <Interaction
+      enabled={enabled}
       onOver={setPointer}
       onMove={setPointer}
       onOut={() => {
@@ -391,7 +402,7 @@ export default function Keyboard({ onChange }: Props) {
         }
       }}
     >
-      <Layer width={settings.width} height={settings.height}>
+      <Layer width={settings.width} height={settings.height} visible={enabled}>
         <mesh ref={meshRef} scale={settings.scale} renderOrder={999999}>
           <planeGeometry args={[settings.width, settings.height]} />
           <meshBasicMaterial depthWrite={false}>
