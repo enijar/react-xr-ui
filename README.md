@@ -4,11 +4,8 @@ Build UIs with React that work in VR, AR and web contexts.
 
 [**View Live Examples**](https://enijar.github.io/react-xr-ui/)
 
-> ⚠️ Not ready for production use
-
-> Whilst this package is open, it's primary users are for devs at [Finer Vision](https://github.com/finer-vision). We've been useing this
-> package to build VR UIs for a number of client projects. We're keen on opening this up to the wider open-source community, so open a PR or
-> issue if you want us to add missing features to the package.
+> We've been using this package for various WebXR projects at [Finer Vision](https://github.com/finer-vision). We think it's a good
+> library, so we've open sourced it. If you want more features added or bugs fix please open a pull request or issue
 
 ### Install
 
@@ -106,7 +103,7 @@ export default function Example({ children }: Props) {
 }
 ```
 
-### Roadmap
+### Roadmap to 1.0.0
 
 - [x] `backgroundColor`
 - [x] `backgroundImage`
