@@ -614,6 +614,13 @@ function Layer(
     };
   }, [ctx]);
 
+  const childs = React.useMemo(() => {
+    if (Array.isArray(children)) {
+      return children.filter((child) => React.isValidElement(child));
+    }
+    return React.isValidElement(children) ? children : [];
+  }, [children]);
+
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group
@@ -640,15 +647,12 @@ function Layer(
           />
         </mesh>
         <group renderOrder={renderOrder + zIndex + 1} ref={childrenGroupRef}>
-          {React.Children.map(children, (child, childIndex) => {
-            if (React.isValidElement(child)) {
-              return (
-                <group key={childIndex} ref={childGroupRefs[childIndex]}>
-                  {React.cloneElement(child, { ...child.props, childIndex })}
-                </group>
-              );
-            }
-            return child;
+          {React.Children.map(childs, (child, childIndex) => {
+            return (
+              <group key={childIndex} ref={childGroupRefs[childIndex]}>
+                {React.cloneElement(child, { ...child.props, childIndex })}
+              </group>
+            );
           })}
         </group>
       </group>
