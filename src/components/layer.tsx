@@ -58,7 +58,7 @@ function Layer(
     verticalAlign = "top",
     color = "white",
     fontFamily,
-    fontSize = 0.1,
+    fontSize = "16px",
     fontWeight = "normal",
     lineHeight = null,
     childIndex,
@@ -453,7 +453,17 @@ function Layer(
       // Typography
       if (textContent !== undefined) {
         canvasTxt.font = font;
-        canvasTxt.fontSize = fontSize * Math.min(w, h);
+        let actualFontSize = 0;
+        if (typeof fontSize === "string") {
+          let px = parseFloat(fontSize);
+          if (isNaN(px)) {
+            px = 16;
+          }
+          actualFontSize = px;
+        } else {
+          actualFontSize = fontSize * Math.min(w, h);
+        }
+        canvasTxt.fontSize = actualFontSize;
         canvasTxt.lineHeight = lineHeight * canvasTxt.fontSize;
         canvasTxt.align = textAlign;
         canvasTxt.vAlign = verticalAlign;

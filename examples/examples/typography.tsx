@@ -63,6 +63,7 @@ export default function Typography() {
           />
         </Layer>
         <Layer
+          position-x={-0.55}
           width={1}
           height={1}
           borderWidth={0.025}
@@ -70,7 +71,23 @@ export default function Typography() {
           borderRadius={0.05}
           backgroundColor="#444444"
           fontFamily={fontFamily}
-          textContent={`This is a test with some long text...`}
+          fontSize={0.1}
+          textContent={`This font will scale to 10% the size of the smallest dimension of this layer`}
+          textAlign="center"
+          verticalAlign="middle"
+          color="crimson"
+        />
+        <Layer
+          position-x={0.55}
+          width={1}
+          height={1}
+          borderWidth={0.025}
+          borderColor="#222222"
+          borderRadius={0.05}
+          backgroundColor="#444444"
+          fontFamily={fontFamily}
+          fontSize="50px"
+          textContent={`This font is fixed to 50px`}
           textAlign="center"
           verticalAlign="middle"
           color="crimson"

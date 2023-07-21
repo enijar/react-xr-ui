@@ -5,7 +5,7 @@ type Props = {
   textContent: string;
   selected: boolean;
   onClick: () => void;
-  fontSize: number;
+  fontSize: number | `${number}px`;
   width: number;
   height: number;
   fontFamily?: string;

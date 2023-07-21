@@ -69,7 +69,7 @@ export type LayerProps = GroupProps & {
   verticalAlign?: typeof vAlign;
   color?: string;
   fontFamily?: string;
-  fontSize?: number;
+  fontSize?: number | `${number}px`;
   fontWeight?: string;
   lineHeight?: number;
   childIndex?: number;
