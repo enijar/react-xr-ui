@@ -17,20 +17,8 @@ function Scene() {
     const speedY = 0.0025;
     const deltaX = Math.sin(Date.now() * speedX);
     const deltaY = Math.sin(Date.now() * speedY);
-    target.group.position.x = THREE.MathUtils.mapLinear(
-      deltaX,
-      -1,
-      1,
-      -0.575,
-      0.575
-    );
-    target.group.position.y = THREE.MathUtils.mapLinear(
-      deltaY,
-      -1,
-      1,
-      -0.325,
-      0.325
-    );
+    target.group.position.x = THREE.MathUtils.mapLinear(deltaX, -1, 1, -0.575, 0.575);
+    target.group.position.y = THREE.MathUtils.mapLinear(deltaY, -1, 1, -0.325, 0.325);
   });
 
   return (

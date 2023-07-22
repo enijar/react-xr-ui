@@ -35,10 +35,7 @@ export default function Keyboard({
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  const meshRef = React.useRef<THREE.Mesh<
-    THREE.PlaneGeometry,
-    THREE.MeshBasicMaterial
-  > | null>(null);
+  const meshRef = React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial> | null>(null);
 
   type Key = {
     label: string;
@@ -328,12 +325,7 @@ export default function Keyboard({
         if (key === null) return;
         if (key.label === undefined) return;
 
-        function isPointerHit(
-          kx: number,
-          ky: number,
-          kw: number,
-          kh: number
-        ): boolean {
+        function isPointerHit(kx: number, ky: number, kw: number, kh: number): boolean {
           const px = stateRef.current.pointer.x * w;
           const py = stateRef.current.pointer.y * h;
           return px >= kx && px <= kx + kw && py >= ky && py <= ky + kh;
@@ -406,11 +398,7 @@ export default function Keyboard({
         <mesh ref={meshRef} scale={settings.scale} renderOrder={999999}>
           <planeGeometry args={[settings.width, settings.height]} />
           <meshBasicMaterial depthWrite={false}>
-            <canvasTexture
-              attach="map"
-              image={ctx.canvas}
-              anisotropy={anisotropy}
-            />
+            <canvasTexture attach="map" image={ctx.canvas} anisotropy={anisotropy} />
           </meshBasicMaterial>
         </mesh>
       </Layer>

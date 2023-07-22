@@ -14,10 +14,7 @@ function Scene({ children }: Props) {
   return <>{children}</>;
 }
 
-export default function Example({
-  children,
-  optimizedRendering = false,
-}: Props) {
+export default function Example({ children }: Props) {
   const room = React.useMemo(() => {
     return new BoxLineGeometry(6, 6, 6, 10, 10, 10).translate(0, 3, 0);
   }, []);
@@ -26,7 +23,7 @@ export default function Example({
     <>
       <Canvas legacy flat linear gl={{ alpha: false }}>
         <XR>
-          <XrUi fontFamily="system-ui" optimizedRendering={optimizedRendering}>
+          <XrUi>
             {/** Background, cameras, controls and lights */}
             <color args={["#333333"]} attach="background" />
             <lineSegments geometry={room}>
@@ -55,12 +52,7 @@ export default function Example({
         }}
         mode="VR"
         sessionInit={{
-          optionalFeatures: [
-            "local-floor",
-            "bounded-floor",
-            "hand-tracking",
-            "layers",
-          ],
+          optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking", "layers"],
         }}
       >
         Enter Immersive VR

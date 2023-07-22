@@ -1,16 +1,10 @@
 import React from "react";
 import * as THREE from "three";
-import canvasTxt from "canvas-txt";
-import { useFrame } from "@react-three/fiber";
 import layout from "../services/layout";
-import {
-  Attrs,
-  LayerContextType,
-  LayerProps,
-  LayerRef,
-  ValueArray,
-} from "../types";
+import { Attrs, LayerContextType, LayerProps, LayerRef } from "../types";
 import { XrUiContext } from "./xr-ui";
+import { Text } from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
 
 const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,
@@ -27,7 +21,6 @@ const CACHED_IMAGES = new Map<string, HTMLImageElement>();
 
 function Layer(
   {
-    optimizedRendering,
     zIndex = 0,
     resolution,
     visible = true,
@@ -43,7 +36,6 @@ function Layer(
     backgroundImage,
     backgroundSize,
     backgroundPosition = DEFAULT_BACKGROUND_POSITION,
-    alphaTest = 0,
     padding = 0,
     borderRadius = 0,
     borderWidth = 0,
@@ -56,7 +48,7 @@ function Layer(
     textAlign = "left",
     justifyText = false,
     verticalAlign = "top",
-    color = "white",
+    color = "#ffffff",
     fontFamily,
     fontSize = "16px",
     fontWeight = "normal",
@@ -68,17 +60,12 @@ function Layer(
     onPointerOut,
     onPointerDown,
     onPointerUp,
-    imageRendering = "crisp-edges",
-    imageSmoothingEnabled = true,
-    textRendering = "auto",
-    dpr,
+    detail = 32,
     onLayout,
     ...props
   }: LayerProps,
-  ref: React.ForwardedRef<LayerRef>
+  ref: React.ForwardedRef<LayerRef>,
 ) {
-  const shouldRenderRef = React.useRef(true);
-
   const [attrs, setAttrs] = React.useState<Attrs>(() => {
     return {
       opacity,
@@ -100,23 +87,12 @@ function Layer(
 
   const xrUiContext = React.useContext(XrUiContext);
 
-  const res = React.useMemo(() => {
-    return resolution ?? xrUiContext.layerResolution;
-  }, [resolution, xrUiContext.layerResolution]);
-
   const font = React.useMemo(() => {
     return fontFamily ?? xrUiContext.fontFamily;
   }, [fontFamily, xrUiContext.fontFamily]);
 
-  const optimized = React.useMemo(() => {
-    return optimizedRendering ?? xrUiContext.optimizedRendering;
-  }, [optimizedRendering, xrUiContext.optimizedRendering]);
-
   const groupRef = React.useRef<THREE.Group>(null);
-  const meshRef =
-    React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>(
-      null
-    );
+  const meshRef = React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>(null);
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
 
@@ -172,13 +148,7 @@ function Layer(
       }
     }
     return size;
-  }, [
-    width,
-    height,
-    layerContext.parentUuid,
-    layerContext.parentSize,
-    aspectRatio,
-  ]);
+  }, [width, height, layerContext.parentUuid, layerContext.parentSize, aspectRatio]);
 
   const uuid = React.useMemo(() => {
     return THREE.MathUtils.generateUUID();
@@ -214,71 +184,6 @@ function Layer(
     pointerRefs.current.onPointerUp = onPointerUp;
   }, [onPointerMove, onPointerOver, onPointerOut, onPointerDown, onPointerUp]);
 
-  const layoutOnly = React.useMemo<boolean>(() => {
-    const props = [
-      attrs.backgroundColor === "transparent"
-        ? undefined
-        : attrs.backgroundColor,
-      backgroundImage,
-      borderColor === "transparent" ? undefined : borderColor,
-      textContent,
-    ];
-    return props.filter((prop) => prop !== undefined).length === 0;
-  }, [attrs.backgroundColor, backgroundImage, borderColor, textContent]);
-
-  // Create 2d canvas context
-  const ctx = React.useMemo<CanvasRenderingContext2D | null>(() => {
-    if (layoutOnly) {
-      return null;
-    }
-    const canvas = document.createElement("canvas");
-    return canvas.getContext("2d");
-  }, [layoutOnly]);
-
-  React.useEffect(() => {
-    if (ctx === null) return;
-    ctx.imageSmoothingEnabled = imageSmoothingEnabled;
-    ctx.canvas.style.imageRendering = imageRendering;
-  }, [ctx, imageRendering, imageSmoothingEnabled]);
-
-  React.useEffect(() => {
-    if (ctx === null) return;
-    // @ts-ignore
-    ctx.textRendering = textRendering;
-    ctx.canvas.style.textRendering = textRendering;
-  }, [ctx, textRendering]);
-
-  React.useMemo(() => {
-    if (ctx === null) return;
-    const s = dpr ?? window.devicePixelRatio ?? 1;
-    ctx.scale(s, s);
-  }, [ctx, dpr]);
-
-  // Set canvas size
-  React.useMemo(() => {
-    if (ctx === null) return;
-    ctx.canvas.width = Math.max(1, Math.floor(size.width * res));
-    ctx.canvas.height = Math.max(1, Math.floor(size.height * res));
-  }, [ctx, size, res]);
-
-  // Create canvas texture with the newly created canvas;
-  // this will be used as the texture for the plane
-  const canvasTexture = React.useMemo(() => {
-    if (ctx === null) {
-      return null;
-    }
-    const canvasTexture = new THREE.CanvasTexture(ctx.canvas);
-    canvasTexture.anisotropy = 16;
-    canvasTexture.premultiplyAlpha = true;
-    return canvasTexture;
-  }, [ctx, size]);
-
-  React.useEffect(() => {
-    if (canvasTexture === null) return;
-    canvasTexture.premultiplyAlpha =
-      premultiplyAlpha ?? xrUiContext.premultiplyAlpha;
-  }, [canvasTexture, premultiplyAlpha, xrUiContext.premultiplyAlpha]);
-
   const images = React.useMemo(() => {
     const backgroundImage = new Image();
     return { backgroundImage };
@@ -312,186 +217,7 @@ function Layer(
     images.backgroundImage = CACHED_IMAGES.get(backgroundImage);
   }, [images.backgroundImage, backgroundImage]);
 
-  const [currentChildren, setCurrentChildren] = React.useState<
-    LayerContextType["currentChildren"]
-  >([]);
-
-  // Only render once if in optimizedRendering mode, else render @ 60FPS
-  React.useEffect(() => {
-    shouldRenderRef.current = true;
-    const frames: number[] = [];
-    frames.push(
-      requestAnimationFrame(() => {
-        frames.push(
-          requestAnimationFrame(() => {
-            shouldRenderRef.current = !optimized;
-          })
-        );
-      })
-    );
-    return () => {
-      frames.forEach((frame) => {
-        cancelAnimationFrame(frame);
-      });
-    };
-  }, [
-    shouldRenderKey,
-    currentChildren,
-    optimized,
-    ctx,
-    size,
-    res,
-    borderRadius,
-    borderColor,
-    attrs,
-    images,
-    backgroundPosition,
-    backgroundSize,
-    font,
-    fontSize,
-    lineHeight,
-    textAlign,
-    verticalAlign,
-    justifyText,
-    fontWeight,
-    color,
-    textContent,
-  ]);
-
-  useFrame(() => {
-    if (shouldRenderRef.current && ctx !== null) {
-      // Useful vars
-      const w = ctx.canvas.width;
-      const h = ctx.canvas.height;
-      const d2r = Math.PI / 180; // degrees to radians
-      const res = Math.min(w, h);
-      const { mapLinear } = THREE.MathUtils;
-
-      ctx.globalCompositeOperation = "source-over";
-
-      ctx.clearRect(0, 0, w, h);
-
-      // Border radius
-      {
-        const isArray = Array.isArray(borderRadius);
-        const array = borderRadius as ValueArray;
-        const number = borderRadius as number;
-        let [tl = 0, tr = 0, br = 0, bl = 0] = isArray
-          ? array
-          : [number, number, number, number];
-        tl *= res;
-        tr *= res;
-        br *= res;
-        bl *= res;
-        ctx.beginPath();
-        ctx.moveTo(tl, 0);
-        ctx.lineTo(w - tr, 0);
-        ctx.arc(w - tr, tr, tr, d2r * 270, d2r * 360);
-        ctx.lineTo(w, h - br);
-        ctx.arc(w - br, h - br, br, 0, d2r * 90);
-        ctx.lineTo(bl, h);
-        ctx.arc(bl, h - bl, bl, d2r * 90, d2r * 180);
-        ctx.lineTo(0, tl);
-        ctx.arc(tl, tl, tl, d2r * 180, d2r * 270);
-        ctx.closePath();
-      }
-
-      ctx.globalAlpha = attrs.opacity;
-
-      // Background color
-      ctx.fillStyle = attrs.backgroundColor;
-      ctx.lineWidth = borderWidth * res * 2;
-      ctx.fill();
-
-      const ox = borderWidth * res;
-      const oy = borderWidth * res;
-
-      // Background image
-      if (backgroundImage !== undefined) {
-        const x = backgroundPosition[0];
-        const y = backgroundPosition[1];
-        const sx = 0;
-        const sy = 0;
-        const sw = Math.max(1, images.backgroundImage.width);
-        const sh = Math.max(1, images.backgroundImage.height);
-        const ir = sw / sh;
-        const cr = w / h;
-        let dw = sw;
-        let dh = sh;
-        switch (backgroundSize) {
-          case "stretch":
-            dw = w;
-            dh = h;
-            break;
-          case "contain":
-            dw = w - ox * 2;
-            dh = h - oy * 2;
-            if (ir >= cr) {
-              dh = dw / ir;
-            } else {
-              dw = dh * ir;
-            }
-            break;
-          case "cover":
-            dw = w - ox * 2;
-            dh = h - oy * 2;
-            if (ir <= cr) {
-              dh = dw / ir;
-            } else {
-              dw = dh * ir;
-            }
-            break;
-        }
-        const dx = ox + mapLinear(x, 0, 1, 0, w - ox * 2 - dw);
-        const dy = oy + mapLinear(y, 0, 1, 0, h - oy * 2 - dh);
-        ctx.save();
-        ctx.clip();
-        ctx.drawImage(images.backgroundImage, sx, sy, sw, sh, dx, dy, dw, dh);
-        ctx.restore();
-      }
-
-      // Typography
-      if (textContent !== undefined) {
-        canvasTxt.font = font;
-        let actualFontSize = 0;
-        if (typeof fontSize === "string") {
-          let px = parseFloat(fontSize);
-          if (isNaN(px)) {
-            px = 16;
-          }
-          actualFontSize = px;
-        } else {
-          actualFontSize = fontSize * Math.min(w, h);
-        }
-        canvasTxt.fontSize = actualFontSize;
-        canvasTxt.lineHeight = lineHeight * canvasTxt.fontSize;
-        canvasTxt.align = textAlign;
-        canvasTxt.vAlign = verticalAlign;
-        canvasTxt.justify = justifyText;
-        canvasTxt.fontWeight = fontWeight;
-        ctx.textBaseline = "bottom";
-        ctx.fillStyle = color;
-        canvasTxt.drawText(ctx, textContent, ox, oy, w - ox * 2, h - oy * 2);
-      }
-
-      // Fixes antialiasing issue
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.stroke();
-      ctx.globalCompositeOperation = "source-over";
-      ctx.save();
-      ctx.clip();
-
-      ctx.strokeStyle = borderColor;
-      // Border
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    if (canvasTexture !== null) {
-      // Make sure canvas texture gets updated
-      canvasTexture.needsUpdate = true;
-    }
-  });
+  const [currentChildren, setCurrentChildren] = React.useState<LayerContextType["currentChildren"]>([]);
 
   const childGroupRefs = React.useMemo(() => {
     return currentChildren.map(() => React.createRef<THREE.Group>());
@@ -506,12 +232,8 @@ function Layer(
   React.useEffect(() => {
     const newSize = { ...size };
     const res = Math.min(newSize.width, newSize.height);
-    const paddingX = Array.isArray(padding)
-      ? (padding[1] ?? 0) + (padding[3] ?? 0)
-      : padding;
-    const paddingY = Array.isArray(padding)
-      ? (padding[0] ?? 0) + (padding[2] ?? 0)
-      : padding;
+    const paddingX = Array.isArray(padding) ? (padding[1] ?? 0) + (padding[3] ?? 0) : padding;
+    const paddingY = Array.isArray(padding) ? (padding[0] ?? 0) + (padding[2] ?? 0) : padding;
     newSize.width -= res * borderWidth * 2;
     newSize.height -= res * borderWidth * 2;
     newSize.width -= res * paddingX * 2;
@@ -538,17 +260,7 @@ function Layer(
     if (onLayoutRef.current) {
       onLayoutRef.current();
     }
-  }, [
-    childGroupRefs,
-    currentChildren,
-    size,
-    flexDirection,
-    alignItems,
-    justifyContent,
-    borderWidth,
-    padding,
-    gap,
-  ]);
+  }, [childGroupRefs, currentChildren, size, flexDirection, alignItems, justifyContent, borderWidth, padding, gap]);
 
   const renderOrder = React.useMemo(() => {
     if (layerContext.parentUuid === null) {
@@ -556,10 +268,6 @@ function Layer(
     }
     return layerContext.renderOrder + zIndex + 1;
   }, [layerContext.parentUuid, layerContext.renderOrder, zIndex]);
-
-  const alpha = React.useMemo(() => {
-    return xrUiContext.alphaTest ?? alphaTest;
-  }, [xrUiContext.alphaTest, alphaTest]);
 
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
@@ -595,24 +303,13 @@ function Layer(
     const childrenGroup = childrenGroupRef.current;
     if (childrenGroup === null) return;
     childrenGroup.traverse((object) => {
-      if (
-        object instanceof THREE.Mesh &&
-        object.material instanceof THREE.Material
-      ) {
+      if (object instanceof THREE.Mesh && object.material instanceof THREE.Material) {
         object.material.transparent = true;
         object.material.opacity = attrs.opacity;
         object.material.needsUpdate = true;
       }
     });
   }, [attrs.opacity]);
-
-  React.useEffect(() => {
-    return () => {
-      if (ctx === null) return;
-      ctx.canvas.width = 0;
-      ctx.canvas.height = 0;
-    };
-  }, [ctx]);
 
   const childs = React.useMemo(() => {
     if (Array.isArray(children)) {
@@ -621,31 +318,122 @@ function Layer(
     return React.isValidElement(children) ? children : [];
   }, [children]);
 
+  const roundedPlane = React.useMemo(() => {
+    const shape = new THREE.Shape();
+    const br = borderRadius;
+    const radiusTopLeft = typeof br === "number" ? br : br[0];
+    const radiusTopRight = typeof br === "number" ? br : br[1];
+    const radiusBottomRight = typeof br === "number" ? br : br[2];
+    const radiusBottomLeft = typeof br === "number" ? br : br[3];
+    const width = size.width;
+    const height = size.height;
+    shape.moveTo(-width / 2 + radiusTopLeft, height / 2);
+    // Top-right corner
+    shape.lineTo(width / 2 - radiusTopRight, height / 2);
+    shape.absarc(width / 2 - radiusTopRight, height / 2 - radiusTopRight, radiusTopRight, Math.PI * 1.5, 0, true);
+    // Bottom-right corner
+    shape.lineTo(width / 2, -height / 2 + radiusBottomRight);
+    shape.absarc(
+      width / 2 - radiusBottomRight,
+      -height / 2 + radiusBottomRight,
+      radiusBottomRight,
+      0,
+      Math.PI * 1.5,
+      true,
+    );
+    // Bottom-left corner
+    shape.lineTo(-width / 2 + radiusBottomLeft, -height / 2);
+    shape.absarc(
+      -width / 2 + radiusBottomLeft,
+      -height / 2 + radiusBottomLeft,
+      radiusBottomLeft,
+      Math.PI * 0.5,
+      Math.PI,
+      true,
+    );
+    // Top-left corner
+    shape.lineTo(-width / 2, height / 2 - radiusTopLeft);
+    shape.absarc(-width / 2 + radiusTopLeft, height / 2 - radiusTopLeft, radiusTopLeft, Math.PI, Math.PI * 1.5, true);
+    return shape;
+  }, [size.width, size.height, borderRadius]);
+
+  const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
+
+  const [groupZ, setGroupZ] = React.useState(5);
+
+  const groupWorldPositionVector = React.useMemo(() => {
+    return new THREE.Vector3(0, 0, 0);
+  }, []);
+
+  useFrame(() => {
+    const group = groupRef.current;
+    if (group === null) return;
+    groupWorldPositionVector.copy(group.position);
+    const distanceFromCamera = camera.worldToLocal(groupWorldPositionVector);
+    if (distanceFromCamera.z !== groupZ) {
+      setGroupZ(distanceFromCamera.z);
+    }
+  });
+
+  const realFontSize = React.useMemo(() => {
+    if (typeof fontSize === "string") {
+      let px = parseFloat(fontSize);
+      if (isNaN(px)) {
+        px = 16;
+      }
+      const fovInRadians = (camera.fov * Math.PI) / 180;
+      const heightAtDistance = 2 * Math.tan(fovInRadians / 2) * groupZ;
+      return (px / window.innerHeight) * heightAtDistance;
+    } else {
+      return fontSize * Math.min(size.width, size.height);
+    }
+  }, [fontSize, size, camera, groupZ]);
+
+  const textMaterial = React.useMemo(() => {
+    return new THREE.MeshBasicMaterial({});
+  }, []);
+
+  React.useMemo(() => {
+    textMaterial.opacity = color === "transparent" ? 0 : 1;
+    textMaterial.depthTest = depthTest ?? xrUiContext.depthTest;
+    textMaterial.depthWrite = depthWrite;
+    textMaterial.transparent = true;
+    textMaterial.needsUpdate = true;
+  }, [textMaterial, color, depthTest, depthWrite, xrUiContext.depthTest]);
+
   return (
     <LayerContext.Provider value={layerProviderValue}>
-      <group
-        ref={groupRef}
-        {...props}
-        visible={visible}
-        name="react-xr-ui-layer"
-      >
+      <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
         <mesh
           ref={meshRef}
           renderOrder={renderOrder + zIndex}
-          visible={canvasTexture !== null}
+          visible={backgroundColor !== "transparent"}
+          name="react-xr-ui-layer-mesh"
         >
-          <planeGeometry args={[size.width, size.height]} />
+          <shapeGeometry args={[roundedPlane, detail]} />
           <meshBasicMaterial
             ref={materialRef}
             side={THREE.FrontSide}
             opacity={attrs.opacity}
+            color={backgroundColor === "transparent" ? undefined : backgroundColor}
             transparent={true}
             depthTest={depthTest ?? xrUiContext.depthTest}
             depthWrite={depthWrite}
-            alphaTest={alpha}
-            map={canvasTexture ?? undefined}
           />
         </mesh>
+        {textContent !== undefined && (
+          <Text
+            name="react-xr-ui-layer-text"
+            renderOrder={renderOrder + zIndex}
+            anchorX={textAlign}
+            anchorY={verticalAlign}
+            font={font}
+            fontSize={realFontSize}
+            color={color === "transparent" ? undefined : color}
+          >
+            {textContent}
+          </Text>
+        )}
         <group renderOrder={renderOrder + zIndex + 1} ref={childrenGroupRef}>
           {React.Children.map(childs, (child, childIndex) => {
             return (

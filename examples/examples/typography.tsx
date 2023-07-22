@@ -10,15 +10,9 @@ export default function Typography() {
   return (
     <>
       <Example>
-        <Layer
-          width={1.3}
-          height={0.1}
-          justifyContent="space-around"
-          position-y={0.6}
-        >
+        <Layer width={1.3} height={0.1} justifyContent="space-around" position-y={0.6}>
           <Button
             textContent="system-ui"
-            fontFamily="system-ui"
             selected={fontFamily === "system-ui"}
             onClick={() => setFontFamily("system-ui")}
             fontSize={0.3}

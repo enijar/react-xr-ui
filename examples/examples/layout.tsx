@@ -5,23 +5,14 @@ import Button from "@/components/button";
 import ViewCode from "@/components/view-code";
 
 export default function Layout() {
-  const [flexDirection, setFlexDirection] =
-    React.useState<LayerProps["flexDirection"]>("row");
-  const [alignItems, setAlignItems] =
-    React.useState<LayerProps["alignItems"]>("center");
-  const [justifyContent, setJustifyContent] =
-    React.useState<LayerProps["justifyContent"]>("space-around");
+  const [flexDirection, setFlexDirection] = React.useState<LayerProps["flexDirection"]>("row");
+  const [alignItems, setAlignItems] = React.useState<LayerProps["alignItems"]>("center");
+  const [justifyContent, setJustifyContent] = React.useState<LayerProps["justifyContent"]>("space-around");
 
   return (
     <>
       <Example>
-        <Layer
-          width={1.5}
-          height={0.2}
-          flexDirection="column"
-          justifyContent="space-between"
-          position-y={0.625}
-        >
+        <Layer width={1.5} height={0.2} flexDirection="column" justifyContent="space-between" position-y={0.625}>
           <Layer width={0.8} height={0.05} justifyContent="space-around">
             <Button
               width={0.1}

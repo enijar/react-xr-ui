@@ -36,12 +36,7 @@ export default function RelativeSizing() {
             onClick={() => setAspectRatio(2 / 4)}
           />
         </Layer>
-        <Layer
-          height={1}
-          aspectRatio={aspectRatio}
-          gap={0.1}
-          backgroundColor="crimson"
-        />
+        <Layer height={1} aspectRatio={aspectRatio} gap={0.1} backgroundColor="crimson" />
       </Example>
       <ViewCode pathname="aspect-ratio" />
     </>

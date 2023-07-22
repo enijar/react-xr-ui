@@ -39,10 +39,7 @@ export default function layout({
     oppositeAxis = "width";
     contentSize = childrenHeight;
   }
-  if (
-    currentChildren.length > 0 &&
-    !["space-between", "space-around"].includes(justifyContent)
-  ) {
+  if (currentChildren.length > 0 && !["space-between", "space-around"].includes(justifyContent)) {
     contentSize += gap * (currentChildren.length - 1);
   }
 
@@ -63,10 +60,7 @@ export default function layout({
    */
   switch (justifyContent) {
     case "start":
-      x =
-        ((size[axis] - currentChildren[index][axis]) * 0.5 -
-          (size[axis] - contentSize)) *
-        dir;
+      x = ((size[axis] - currentChildren[index][axis]) * 0.5 - (size[axis] - contentSize)) * dir;
       break;
     case "end":
       x = (size[axis] * 0.5 - currentChildren[index][axis] * 0.5) * dir;
@@ -89,14 +83,10 @@ export default function layout({
   let spacing = 0;
   if (currentChildren.length > 1) {
     if (justifyContent === "space-between") {
-      spacing =
-        Math.max(0, size[axis] - contentSize) /
-        Math.max(1, currentChildren.length - 1);
+      spacing = Math.max(0, size[axis] - contentSize) / Math.max(1, currentChildren.length - 1);
     }
     if (justifyContent === "space-around") {
-      spacing =
-        Math.max(0, size[axis] - contentSize) /
-        Math.max(1, currentChildren.length + 1);
+      spacing = Math.max(0, size[axis] - contentSize) / Math.max(1, currentChildren.length + 1);
     }
   }
 
@@ -123,16 +113,10 @@ export default function layout({
    */
   switch (alignItems) {
     case "start":
-      y =
-        (size[oppositeAxis] * 0.5 -
-          currentChildren[index][oppositeAxis] * 0.5) *
-        dir;
+      y = (size[oppositeAxis] * 0.5 - currentChildren[index][oppositeAxis] * 0.5) * dir;
       break;
     case "end":
-      y =
-        (currentChildren[index][oppositeAxis] * 0.5 -
-          size[oppositeAxis] * 0.5) *
-        dir;
+      y = (currentChildren[index][oppositeAxis] * 0.5 - size[oppositeAxis] * 0.5) * dir;
       break;
     case "center":
       y = 0;

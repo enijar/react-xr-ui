@@ -1,5 +1,4 @@
 import React from "react";
-import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import Example from "@/components/example";
 import { Layer, LayerRef } from "react-xr-ui";

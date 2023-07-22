@@ -45,11 +45,7 @@ export default function Basic() {
           />
         </Layer>
 
-        <Layer
-          width={sizes[size]}
-          height={sizes[size]}
-          backgroundColor="crimson"
-        />
+        <Layer width={sizes[size]} height={sizes[size]} backgroundColor="crimson" />
       </Example>
       <ViewCode pathname="basic" />
     </>

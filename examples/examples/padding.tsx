@@ -53,12 +53,7 @@ export default function Padding() {
           justifyContent="start"
           gap={0.1}
         >
-          <Layer
-            width={0.2}
-            height={0.2}
-            backgroundColor="#333333"
-            borderRadius={0.25}
-          />
+          <Layer width={0.2} height={0.2} backgroundColor="#333333" borderRadius={0.25} />
         </Layer>
       </Example>
       <ViewCode pathname="padding" />

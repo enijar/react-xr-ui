@@ -12,16 +12,7 @@ type Props = {
   optimizedRendering?: boolean;
 };
 
-export default function Button({
-  textContent,
-  selected,
-  onClick,
-  fontSize,
-  width,
-  height,
-  fontFamily = "system-ui, sans-serif",
-  optimizedRendering = false,
-}: Props) {
+export default function Button({ textContent, selected, onClick, fontSize, width, height }: Props) {
   const [pointerOver, setPointerOver] = React.useState(false);
 
   return (
@@ -42,14 +33,12 @@ export default function Button({
       <Layer
         width={width}
         height={height}
-        backgroundColor={pointerOver || selected ? "white" : "#111111"}
-        color={pointerOver || selected ? "#111111" : "white"}
+        backgroundColor={pointerOver || selected ? "#ffffff" : "#111111"}
+        color={pointerOver || selected ? "#111111" : "#ffffff"}
         textContent={textContent}
-        fontFamily={fontFamily}
         fontSize={fontSize}
         textAlign="center"
         verticalAlign="middle"
-        optimizedRendering={optimizedRendering}
       />
     </Interaction>
   );

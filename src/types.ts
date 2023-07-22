@@ -1,7 +1,9 @@
+import React from "react";
 import * as THREE from "three";
 import { GroupProps } from "@react-three/fiber";
-import { align, vAlign } from "canvas-txt";
-import React from "react";
+import { Text } from "@react-three/drei";
+
+type TextProps = (typeof Text)["defaultProps"];
 
 export type Child = {
   width: number;
@@ -25,17 +27,11 @@ export type Size = {
   height: number;
 };
 
-export type ValueArray = [
-  topLeft?: number,
-  topRight?: number,
-  bottomRight?: number,
-  bottomLeft?: number
-];
+export type ValueArray = [topLeft?: number, topRight?: number, bottomRight?: number, bottomLeft?: number];
 
 export type LayerProps = GroupProps & {
   depthTest?: boolean;
   depthWrite?: boolean;
-  optimizedRendering?: boolean;
   zIndex?: number;
   visible?: boolean;
   autoLayout?: boolean;
@@ -43,7 +39,6 @@ export type LayerProps = GroupProps & {
   resolution?: number;
   width?: number | string;
   height?: number | string;
-  alphaTest?: number;
   aspectRatio?: number;
   opacity?: number;
   backgroundColor?: string;
@@ -56,32 +51,19 @@ export type LayerProps = GroupProps & {
   borderColor?: string;
   flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
   alignItems?: "start" | "center" | "end";
-  justifyContent?:
-    | "start"
-    | "center"
-    | "end"
-    | "space-between"
-    | "space-around";
+  justifyContent?: "start" | "center" | "end" | "space-between" | "space-around";
   gap?: number;
   textContent?: string;
-  textAlign?: typeof align;
+  textAlign?: TextProps["anchorX"];
   justifyText?: boolean;
-  verticalAlign?: typeof vAlign;
+  verticalAlign?: TextProps["anchorY"];
   color?: string;
   fontFamily?: string;
   fontSize?: number | `${number}px`;
   fontWeight?: string;
   lineHeight?: number;
   childIndex?: number;
-  imageRendering?: "crisp-edges" | "pixelated" | string;
-  imageSmoothingEnabled?: boolean;
-  textRendering?:
-    | "auto"
-    | "optimizeSpeed"
-    | "optimizeLegibility"
-    | "geometricPrecision"
-    | "inherit";
-  dpr?: number;
+  detail?: number;
   onLayout?: () => void;
 };
 
@@ -98,10 +80,7 @@ export type LayerRef = {
 };
 
 export type XrUiContextType = {
-  layerResolution: number;
   fontFamily: string;
-  optimizedRendering: boolean;
-  alphaTest: number;
   depthTest: boolean;
   premultiplyAlpha: boolean;
 };

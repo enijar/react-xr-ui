@@ -53,12 +53,7 @@ export default function Interactions() {
             });
           }}
         >
-          <Layer
-            backgroundColor="crimson"
-            textContent="Interact with me"
-            verticalAlign="middle"
-            textAlign="center"
-          />
+          <Layer backgroundColor="crimson" textContent="Interact with me" verticalAlign="middle" textAlign="center" />
         </Interaction>
       </Example>
       <ViewCode pathname="interactions" />

@@ -14,16 +14,10 @@ root.render(
         <Route path="/examples">
           {examples.map((example, index) => {
             const Component = example.component;
-            return (
-              <Route
-                key={index}
-                path={example.pathname}
-                element={<Component />}
-              />
-            );
+            return <Route key={index} path={example.pathname} element={<Component />} />;
           })}
         </Route>
       </Routes>
     </React.Suspense>
-  </Router>
+  </Router>,
 );

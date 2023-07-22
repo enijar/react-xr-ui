@@ -10,11 +10,7 @@ function hex2rgb(hex: string): [r: number, g: number, b: number] {
   if (result === null) {
     return [0, 0, 0];
   }
-  return [
-    parseInt(result[1], 16),
-    parseInt(result[2], 16),
-    parseInt(result[3], 16),
-  ];
+  return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
 }
 
 function rgbToHex([r, g, b]: [r: number, g: number, b: number]): string {

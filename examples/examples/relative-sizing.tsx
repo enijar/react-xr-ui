@@ -45,11 +45,7 @@ export default function RelativeSizing() {
           />
         </Layer>
         <Layer gap={0.1} backgroundColor="crimson">
-          <Layer
-            width={sizes[size]}
-            height={sizes[size]}
-            backgroundColor="#333333"
-          />
+          <Layer width={sizes[size]} height={sizes[size]} backgroundColor="#333333" />
         </Layer>
       </Example>
       <ViewCode pathname="relative-sizing" />

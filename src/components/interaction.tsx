@@ -15,15 +15,7 @@ type Props = {
   enabled?: boolean;
 };
 
-export default function Interaction({
-  children,
-  onMove,
-  onOver,
-  onOut,
-  onDown,
-  onUp,
-  enabled = true,
-}: Props) {
+export default function Interaction({ children, onMove, onOver, onOut, onDown, onUp, enabled = true }: Props) {
   const isPresenting = useXR((state) => state.isPresenting);
 
   const handleVrInteraction = React.useCallback(
@@ -32,10 +24,13 @@ export default function Interaction({
         if (!isPresenting) return;
         if (!enabled) return;
         if (!fn) return;
-        fn(event.intersection, event.intersections);
+        const intersection = event.intersections.find((intersection) => {
+          return intersection.object.name === "react-xr-ui-layer-mesh";
+        });
+        fn(intersection, event.intersections);
       };
     },
-    [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut]
+    [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut],
   );
 
   const handleWebInteraction = React.useCallback(
@@ -44,11 +39,13 @@ export default function Interaction({
         if (isPresenting) return;
         if (!enabled) return;
         if (!fn) return;
-        event.stopPropagation();
-        fn(event.intersections[0], event.intersections);
+        const intersection = event.intersections.find((intersection) => {
+          return intersection.object.name === "react-xr-ui-layer-mesh";
+        });
+        fn(intersection, event.intersections);
       };
     },
-    [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut]
+    [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut],
   );
 
   return (
