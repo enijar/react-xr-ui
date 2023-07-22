@@ -17,7 +17,9 @@ const LayerContext = React.createContext<LayerContextType>({
 
 const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 
-const CACHED_IMAGES = new Map<string, HTMLImageElement>();
+const CACHED_TEXTURES = new Map<string, THREE.Texture>();
+
+const textureLoader = new THREE.TextureLoader();
 
 function Layer(
   {
@@ -92,12 +94,12 @@ function Layer(
   }, [fontFamily, xrUiContext.fontFamily]);
 
   const groupRef = React.useRef<THREE.Group>(null);
-  const meshRef = React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>(null);
-  const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
+  const backgroundColorMaterialRef = React.useRef<THREE.MeshBasicMaterial>(null);
+  const backgroundImageMaterialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
 
   React.useEffect(() => {
-    const material = materialRef.current;
+    const material = backgroundColorMaterialRef.current;
     if (material === null) return;
     material.blending = THREE.CustomBlending;
   }, []);
@@ -105,8 +107,7 @@ function Layer(
   React.useImperativeHandle(ref, (): LayerRef => {
     return {
       group: groupRef.current,
-      mesh: meshRef.current,
-      material: materialRef.current,
+      material: backgroundColorMaterialRef.current,
       setAttrs: setAttrs,
     };
   });
@@ -199,23 +200,6 @@ function Layer(
       mountedRef.current = false;
     };
   }, []);
-
-  // Set source for background image
-  React.useMemo(() => {
-    if (!backgroundImage) return;
-    if (!CACHED_IMAGES.has(backgroundImage)) {
-      const image = new Image();
-      image.onload = () => {
-        if (!mountedRef.current) return;
-        setShouldRenderKey((shouldRenderKey) => {
-          return (shouldRenderKey + 1) % 1000;
-        });
-      };
-      image.src = backgroundImage;
-      CACHED_IMAGES.set(backgroundImage, image);
-    }
-    images.backgroundImage = CACHED_IMAGES.get(backgroundImage);
-  }, [images.backgroundImage, backgroundImage]);
 
   const [currentChildren, setCurrentChildren] = React.useState<LayerContextType["currentChildren"]>([]);
 
@@ -401,26 +385,111 @@ function Layer(
     textMaterial.needsUpdate = true;
   }, [textMaterial, color, depthTest, depthWrite, xrUiContext.depthTest]);
 
+  const [backgroundImageSize, setBackgroundImageSize] = React.useState(() => {
+    return { ...size };
+  });
+
+  React.useEffect(() => {
+    const material = backgroundImageMaterialRef.current;
+    if (material === null) return;
+    if (backgroundImage === undefined) {
+      material.map = undefined;
+      material.needsUpdate = true;
+      return;
+    }
+
+    function resizeBackground(texture: THREE.Texture) {
+      const imageAspectRatioX = texture.image.width / texture.image.height;
+      const imageAspectRatioY = texture.image.height / texture.image.width;
+      let width = size.width;
+      let height = size.height;
+      if (backgroundSize === "contain") {
+        if (imageAspectRatioX >= imageAspectRatioY) {
+          width = size.width;
+          height = width * imageAspectRatioY;
+        } else {
+          height = size.height;
+          width = height * imageAspectRatioX;
+        }
+      }
+      if (backgroundSize === "cover") {
+        if (imageAspectRatioX >= imageAspectRatioY) {
+          height = size.height;
+          width = height * imageAspectRatioX;
+        } else {
+          width = size.width;
+          height = width * imageAspectRatioY;
+        }
+      }
+      setBackgroundImageSize({ width, height });
+      material.map = texture;
+      material.needsUpdate = true;
+    }
+
+    let texture = CACHED_TEXTURES.get(backgroundImage);
+    if (texture === undefined) {
+      textureLoader
+        .loadAsync(backgroundImage)
+        .then((texture) => {
+          CACHED_TEXTURES.set(backgroundImage, texture);
+          resizeBackground(texture);
+        })
+        .catch(console.error);
+      CACHED_TEXTURES.set(backgroundImage, texture);
+    } else {
+      resizeBackground(texture);
+    }
+  }, [backgroundImage, backgroundSize, size]);
+
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
-        <mesh
-          ref={meshRef}
-          renderOrder={renderOrder + zIndex}
-          visible={backgroundColor !== "transparent"}
-          name="react-xr-ui-layer-mesh"
-        >
+        <mesh renderOrder={renderOrder + zIndex} visible={false} name="react-xr-ui-layer-mesh">
           <shapeGeometry args={[roundedPlane, detail]} />
-          <meshBasicMaterial
-            ref={materialRef}
-            side={THREE.FrontSide}
-            opacity={attrs.opacity}
-            color={backgroundColor === "transparent" ? undefined : backgroundColor}
-            transparent={true}
-            depthTest={depthTest ?? xrUiContext.depthTest}
-            depthWrite={depthWrite}
-          />
         </mesh>
+        {backgroundColor !== "transparent" && (
+          <mesh renderOrder={renderOrder + zIndex}>
+            <planeGeometry args={[size.width, size.height]} />
+            <meshBasicMaterial
+              ref={backgroundColorMaterialRef}
+              side={THREE.FrontSide}
+              opacity={attrs.opacity}
+              color={backgroundColor === "transparent" ? undefined : backgroundColor}
+              transparent={true}
+              depthTest={depthTest ?? xrUiContext.depthTest}
+              depthWrite={depthWrite}
+            />
+          </mesh>
+        )}
+        {backgroundImage !== undefined && (
+          <mesh
+            renderOrder={renderOrder + zIndex + 1}
+            position-x={THREE.MathUtils.mapLinear(
+              backgroundPosition[0],
+              0,
+              1,
+              backgroundImageSize.width - size.width + backgroundImageSize.width / 2,
+              size.width - backgroundImageSize.width - backgroundImageSize.width / 2,
+            )}
+            position-y={THREE.MathUtils.mapLinear(
+              backgroundPosition[1],
+              0,
+              1,
+              backgroundImageSize.height / -2 + size.height / 2,
+              backgroundImageSize.height / 2 - size.height / 2,
+            )}
+          >
+            <planeGeometry args={[backgroundImageSize.width, backgroundImageSize.height]} />
+            <meshBasicMaterial
+              ref={backgroundImageMaterialRef}
+              side={THREE.FrontSide}
+              opacity={attrs.opacity}
+              transparent={true}
+              depthTest={depthTest ?? xrUiContext.depthTest}
+              depthWrite={depthWrite}
+            />
+          </mesh>
+        )}
         {textContent !== undefined && (
           <Text
             name="react-xr-ui-layer-text"
@@ -434,7 +503,7 @@ function Layer(
             {textContent}
           </Text>
         )}
-        <group renderOrder={renderOrder + zIndex + 1} ref={childrenGroupRef}>
+        <group renderOrder={renderOrder + zIndex + 2} ref={childrenGroupRef}>
           {React.Children.map(childs, (child, childIndex) => {
             return (
               <group key={childIndex} ref={childGroupRefs[childIndex]}>

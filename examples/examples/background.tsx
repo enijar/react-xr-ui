@@ -10,6 +10,7 @@ export default function Background() {
         <Layer
           width={1}
           height={1}
+          backgroundColor="crimson"
           backgroundImage="./assets/images/robot.png"
           backgroundSize="cover"
           borderRadius={0.1}

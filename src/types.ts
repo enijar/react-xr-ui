@@ -74,7 +74,6 @@ export type Attrs = Partial<{
 
 export type LayerRef = {
   group: THREE.Group;
-  mesh: THREE.Mesh;
   material: THREE.MeshBasicMaterial;
   setAttrs: React.Dispatch<React.SetStateAction<Attrs>>;
 };
