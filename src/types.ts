@@ -2,6 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { GroupProps } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
+import { Intersection } from "three";
 
 type TextProps = (typeof Text)["defaultProps"];
 
@@ -28,6 +29,8 @@ export type Size = {
 };
 
 export type ValueArray = [topLeft?: number, topRight?: number, bottomRight?: number, bottomLeft?: number];
+
+export type Fn = (intersection: Intersection, intersections: Intersection[]) => void;
 
 export type LayerProps = GroupProps & {
   depthTest?: boolean;
@@ -65,6 +68,11 @@ export type LayerProps = GroupProps & {
   childIndex?: number;
   detail?: number;
   onLayout?: () => void;
+  onMove?: Fn;
+  onOver?: Fn;
+  onOut?: Fn;
+  onDown?: Fn;
+  onUp?: Fn;
 };
 
 export type Attrs = Partial<{
@@ -74,8 +82,6 @@ export type Attrs = Partial<{
 
 export type LayerRef = {
   group: THREE.Group;
-  material: THREE.MeshBasicMaterial;
-  setAttrs: React.Dispatch<React.SetStateAction<Attrs>>;
 };
 
 export type XrUiContextType = {

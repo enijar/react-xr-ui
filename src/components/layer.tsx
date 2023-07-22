@@ -1,10 +1,11 @@
 import React from "react";
 import * as THREE from "three";
-import layout from "../services/layout";
-import { Attrs, LayerContextType, LayerProps, LayerRef } from "../types";
-import { XrUiContext } from "./xr-ui";
+import { XRInteractionEvent } from "@react-three/xr";
+import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import { Mask, Text, useMask } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
+import layout from "../services/layout";
+import type { LayerContextType, LayerProps, LayerRef, Fn } from "../types";
+import { XrUiContext } from "./xr-ui";
 import Scroller from "./scroller";
 
 const LayerContext = React.createContext<LayerContextType>({
@@ -48,7 +49,7 @@ function Layer(
     alignItems = "center",
     justifyContent = "center",
     gap = 0,
-    overflow = "hidden",
+    overflow = "visible",
     textContent,
     textAlign = "left",
     justifyText = false,
@@ -67,30 +68,16 @@ function Layer(
     onPointerUp,
     detail = 32,
     onLayout,
+    onMove,
+    onOver,
+    onOut,
+    onDown,
+    onUp,
     ...props
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>,
 ) {
   const layerContext = React.useContext(LayerContext);
-
-  const [attrs, setAttrs] = React.useState<Attrs>(() => {
-    return {
-      opacity,
-      backgroundColor,
-    };
-  });
-
-  React.useEffect(() => {
-    setAttrs((attrs) => {
-      return { ...attrs, opacity };
-    });
-  }, [opacity]);
-
-  React.useEffect(() => {
-    setAttrs((attrs) => {
-      return { ...attrs, backgroundColor };
-    });
-  }, [backgroundColor]);
 
   const xrUiContext = React.useContext(XrUiContext);
 
@@ -103,17 +90,9 @@ function Layer(
   const backgroundImageMaterialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
 
-  React.useEffect(() => {
-    const material = backgroundColorMaterialRef.current;
-    if (material === null) return;
-    material.blending = THREE.CustomBlending;
-  }, []);
-
   React.useImperativeHandle(ref, (): LayerRef => {
     return {
       group: groupRef.current,
-      material: backgroundColorMaterialRef.current,
-      setAttrs: setAttrs,
     };
   });
 
@@ -189,6 +168,13 @@ function Layer(
   }, [onPointerMove, onPointerOver, onPointerOut, onPointerDown, onPointerUp]);
 
   const [currentChildren, setCurrentChildren] = React.useState<LayerContextType["currentChildren"]>([]);
+
+  const childs = React.useMemo(() => {
+    if (Array.isArray(children)) {
+      return children.filter((child) => React.isValidElement(child));
+    }
+    return React.isValidElement(children) ? children : [];
+  }, [children]);
 
   const childGroupRefs = React.useMemo(() => {
     return currentChildren.map(() => React.createRef<THREE.Group>());
@@ -274,34 +260,32 @@ function Layer(
     };
   }, [currentChildren, uuid, size, renderOrder]);
 
-  React.useEffect(() => {
-    const childrenGroup = childrenGroupRef.current;
-    if (childrenGroup === null) return;
-    childrenGroup.traverse((object) => {
-      if (object instanceof THREE.Mesh && object.material instanceof THREE.Material) {
-        object.material.transparent = true;
-        object.material.opacity = attrs.opacity;
-        object.material.needsUpdate = true;
-      }
-    });
-  }, [attrs.opacity]);
-
-  const childs = React.useMemo(() => {
-    if (Array.isArray(children)) {
-      return children.filter((child) => React.isValidElement(child));
-    }
-    return React.isValidElement(children) ? children : [];
-  }, [children]);
-
   const roundedPlane = React.useMemo(() => {
     const shape = new THREE.Shape();
     const br = borderRadius;
-    const radiusTopLeft = typeof br === "number" ? br : br[0];
-    const radiusTopRight = typeof br === "number" ? br : br[1];
-    const radiusBottomRight = typeof br === "number" ? br : br[2];
-    const radiusBottomLeft = typeof br === "number" ? br : br[3];
     const width = size.width;
     const height = size.height;
+    const maxRadius = Math.min(width, height) / 2;
+    const radiusTopLeft = THREE.MathUtils.clamp(
+      typeof br === "number" ? br * maxRadius : br[0] * maxRadius,
+      0,
+      maxRadius,
+    );
+    const radiusTopRight = THREE.MathUtils.clamp(
+      typeof br === "number" ? br * maxRadius : br[1] * maxRadius,
+      0,
+      maxRadius,
+    );
+    const radiusBottomRight = THREE.MathUtils.clamp(
+      typeof br === "number" ? br * maxRadius : br[2] * maxRadius,
+      0,
+      maxRadius,
+    );
+    const radiusBottomLeft = THREE.MathUtils.clamp(
+      typeof br === "number" ? br * maxRadius : br[3] * maxRadius,
+      0,
+      maxRadius,
+    );
     shape.moveTo(-width / 2 + radiusTopLeft, height / 2);
     // Top-right corner
     shape.lineTo(width / 2 - radiusTopRight, height / 2);
@@ -341,13 +325,13 @@ function Layer(
   }, []);
 
   useFrame(() => {
-    const group = groupRef.current;
-    if (group === null) return;
-    groupWorldPositionVector.copy(group.position);
-    const distanceFromCamera = camera.worldToLocal(groupWorldPositionVector);
-    if (distanceFromCamera.z !== groupZ) {
-      setGroupZ(distanceFromCamera.z);
-    }
+    // const group = groupRef.current;
+    // if (group === null) return;
+    // groupWorldPositionVector.copy(group.position);
+    // const distanceFromCamera = camera.worldToLocal(groupWorldPositionVector);
+    // if (distanceFromCamera.z !== groupZ) {
+    //   setGroupZ(distanceFromCamera.z);
+    // }
   });
 
   const realFontSize = React.useMemo(() => {
@@ -426,7 +410,7 @@ function Layer(
     return new THREE.MeshBasicMaterial();
   }, []);
 
-  React.useMemo(() => {
+  React.useEffect(() => {
     textMaterial.opacity = color === "transparent" ? 0 : 1;
     textMaterial.depthTest = depthTest ?? xrUiContext.depthTest;
     textMaterial.depthWrite = depthWrite;
@@ -438,13 +422,26 @@ function Layer(
     textMaterial.stencilZFail = overflowMask.stencilZFail;
     textMaterial.stencilZPass = overflowMask.stencilZPass;
     textMaterial.needsUpdate = true;
-    textMaterial.needsUpdate = true;
   }, [textMaterial, color, overflowMask, depthTest, depthWrite, xrUiContext.depthTest]);
+
+  type PointerState = "out" | "over" | "down" | "up";
+
+  const pointerStateRef = React.useRef<PointerState>("out");
 
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
-        <Mask id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
+        <Mask
+          id={maskId}
+          renderOrder={renderOrder + zIndex}
+          name="react-xr-ui-layer-mesh"
+          onPointerOver={(event) => {
+            if (pointerStateRef.current !== "out") return;
+            pointerStateRef.current = "over";
+            event.stopPropagation();
+            console.log("?");
+          }}
+        >
           <shapeGeometry args={[roundedPlane, detail]} />
         </Mask>
         {backgroundColor !== "transparent" && (
@@ -453,7 +450,6 @@ function Layer(
             <meshBasicMaterial
               ref={backgroundColorMaterialRef}
               side={THREE.FrontSide}
-              opacity={attrs.opacity}
               color={backgroundColor === "transparent" ? undefined : backgroundColor}
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
@@ -469,7 +465,7 @@ function Layer(
         )}
         {backgroundImage !== undefined && (
           <mesh
-            renderOrder={renderOrder + zIndex + 1}
+            renderOrder={renderOrder + zIndex}
             position-x={THREE.MathUtils.mapLinear(
               backgroundPosition[0],
               0,
@@ -489,7 +485,6 @@ function Layer(
             <meshBasicMaterial
               ref={backgroundImageMaterialRef}
               side={THREE.FrontSide}
-              opacity={attrs.opacity}
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
@@ -499,6 +494,7 @@ function Layer(
               stencilWrite={overflowMask.stencilWrite}
               stencilZFail={overflowMask.stencilZFail}
               stencilZPass={overflowMask.stencilZPass}
+              blending={THREE.CustomBlending}
             />
           </mesh>
         )}
@@ -517,7 +513,7 @@ function Layer(
           </Text>
         )}
         <Scroller maskId={maskId} overflow={overflow}>
-          <group renderOrder={renderOrder + zIndex + 2} ref={childrenGroupRef}>
+          <group renderOrder={renderOrder + zIndex + 1} ref={childrenGroupRef}>
             {React.Children.map(childs, (child, childIndex) => {
               return (
                 <group key={childIndex} ref={childGroupRefs[childIndex]}>

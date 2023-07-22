@@ -65,14 +65,14 @@ function Scene() {
             autoLayout={false}
             width={0.3}
             height={0.3}
-            backgroundColor="rgba(0, 0, 0, 0.5)"
             borderRadius={0.5}
-            textContent={`😏`}
+            textContent="Click Me!"
+            backgroundColor="#666666"
             textAlign="center"
             verticalAlign="middle"
-            color="#000000"
+            color="#ffffff"
             fontWeight="bold"
-            fontSize={0.5}
+            fontSize={0.2}
             lineHeight={1.2}
           />
         </Interaction>

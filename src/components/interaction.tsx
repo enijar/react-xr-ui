@@ -21,7 +21,6 @@ export default function Interaction({ children, onMove, onOver, onOut, onDown, o
   const handleVrInteraction = React.useCallback(
     (fn?: Fn) => {
       return (event: XRInteractionEvent) => {
-        if (!isPresenting) return;
         if (!enabled) return;
         if (!fn) return;
         const intersection = event.intersections.find((intersection) => {
@@ -30,13 +29,13 @@ export default function Interaction({ children, onMove, onOver, onOut, onDown, o
         fn(intersection, event.intersections);
       };
     },
-    [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut],
+    [enabled, onDown, onUp, onMove, onOver, onOut],
   );
 
   const handleWebInteraction = React.useCallback(
     (fn?: Fn) => {
       return (event: ThreeEvent<PointerEvent>) => {
-        if (isPresenting) return;
+        event.stopPropagation();
         if (!enabled) return;
         if (!fn) return;
         const intersection = event.intersections.find((intersection) => {
@@ -45,26 +44,32 @@ export default function Interaction({ children, onMove, onOver, onOut, onDown, o
         fn(intersection, event.intersections);
       };
     },
-    [isPresenting, enabled, onDown, onUp, onMove, onOver, onOut],
+    [enabled, onDown, onUp, onMove, onOver, onOut],
   );
 
-  return (
-    <Interactive
-      onSelectStart={handleVrInteraction(onDown)}
-      onSelectEnd={handleVrInteraction(onUp)}
-      onMove={handleVrInteraction(onMove)}
-      onHover={handleVrInteraction(onOver)}
-      onBlur={handleVrInteraction(onOut)}
-    >
-      <group
-        onPointerDown={handleWebInteraction(onDown)}
-        onPointerUp={handleWebInteraction(onUp)}
-        onPointerMove={handleWebInteraction(onMove)}
-        onPointerOver={handleWebInteraction(onOver)}
-        onPointerOut={handleWebInteraction(onOut)}
+  if (isPresenting) {
+    return (
+      <Interactive
+        onSelectStart={handleVrInteraction(onDown)}
+        onSelectEnd={handleVrInteraction(onUp)}
+        onMove={handleVrInteraction(onMove)}
+        onHover={handleVrInteraction(onOver)}
+        onBlur={handleVrInteraction(onOut)}
       >
         {children}
-      </group>
-    </Interactive>
+      </Interactive>
+    );
+  }
+
+  return (
+    <group
+      onPointerDown={handleWebInteraction(onDown)}
+      onPointerUp={handleWebInteraction(onUp)}
+      onPointerMove={handleWebInteraction(onMove)}
+      onPointerOver={handleWebInteraction(onOver)}
+      onPointerOut={handleWebInteraction(onOut)}
+    >
+      {children}
+    </group>
   );
 }

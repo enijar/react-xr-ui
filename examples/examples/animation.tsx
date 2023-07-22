@@ -35,7 +35,6 @@ function AnimatedBorders() {
     const speed = 0.001;
     const delta = (1 + Math.sin(now * speed)) / 2;
     layer.group.position.x = mapLinear(delta, 0, 1, -0.5, 0.5);
-    layer.material.needsUpdate = true;
 
     const diff: [r: number, g: number, b: number] = [
       Math.abs(colors[0][0] * (1 - delta) - colors[1][0] * delta),

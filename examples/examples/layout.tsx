@@ -119,9 +119,9 @@ export default function Layout() {
         <Layer
           width={1}
           height={1}
-          borderWidth={0.025}
-          borderColor="#222222"
-          borderRadius={0.05}
+          // borderWidth={0.025}
+          // borderColor="#222222"
+          // borderRadius={0.05}
           backgroundColor="#444444"
           flexDirection={flexDirection}
           alignItems={alignItems}
