@@ -3,7 +3,7 @@ import * as THREE from "three";
 import layout from "../services/layout";
 import { Attrs, LayerContextType, LayerProps, LayerRef } from "../types";
 import { XrUiContext } from "./xr-ui";
-import { Text } from "@react-three/drei";
+import { Mask, Text, useMask } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 
 const LayerContext = React.createContext<LayerContextType>({
@@ -11,9 +11,12 @@ const LayerContext = React.createContext<LayerContextType>({
   parentSize: { width: 1, height: 1 },
   currentChildren: [],
   renderOrder: 0,
+  maskId: 0,
   addChild() {},
   removeChild() {},
 });
+
+let lastMaskId = 0;
 
 const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 
@@ -24,7 +27,6 @@ const textureLoader = new THREE.TextureLoader();
 function Layer(
   {
     zIndex = 0,
-    resolution,
     visible = true,
     autoLayout = true,
     premultiplyAlpha,
@@ -46,6 +48,7 @@ function Layer(
     alignItems = "center",
     justifyContent = "center",
     gap = 0,
+    overflow = "hidden",
     textContent,
     textAlign = "left",
     justifyText = false,
@@ -185,22 +188,6 @@ function Layer(
     pointerRefs.current.onPointerUp = onPointerUp;
   }, [onPointerMove, onPointerOver, onPointerOut, onPointerDown, onPointerUp]);
 
-  const images = React.useMemo(() => {
-    const backgroundImage = new Image();
-    return { backgroundImage };
-  }, []);
-
-  const [shouldRenderKey, setShouldRenderKey] = React.useState(0);
-
-  const mountedRef = React.useRef(false);
-
-  React.useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
   const [currentChildren, setCurrentChildren] = React.useState<LayerContextType["currentChildren"]>([]);
 
   const childGroupRefs = React.useMemo(() => {
@@ -253,12 +240,17 @@ function Layer(
     return layerContext.renderOrder + zIndex + 1;
   }, [layerContext.parentUuid, layerContext.renderOrder, zIndex]);
 
+  const maskId = React.useMemo(() => {
+    return ++lastMaskId;
+  }, []);
+
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
       currentChildren,
       parentSize: size,
       parentUuid: uuid,
       renderOrder,
+      maskId,
       addChild(child) {
         setCurrentChildren((currentChildren) => {
           const nextCurrentChildren = [...currentChildren];
@@ -281,7 +273,7 @@ function Layer(
         });
       },
     };
-  }, [currentChildren, uuid, size, renderOrder]);
+  }, [currentChildren, uuid, size, renderOrder, maskId]);
 
   React.useEffect(() => {
     const childrenGroup = childrenGroupRef.current;
@@ -373,18 +365,6 @@ function Layer(
     }
   }, [fontSize, size, camera, groupZ]);
 
-  const textMaterial = React.useMemo(() => {
-    return new THREE.MeshBasicMaterial({});
-  }, []);
-
-  React.useMemo(() => {
-    textMaterial.opacity = color === "transparent" ? 0 : 1;
-    textMaterial.depthTest = depthTest ?? xrUiContext.depthTest;
-    textMaterial.depthWrite = depthWrite;
-    textMaterial.transparent = true;
-    textMaterial.needsUpdate = true;
-  }, [textMaterial, color, depthTest, depthWrite, xrUiContext.depthTest]);
-
   const [backgroundImageSize, setBackgroundImageSize] = React.useState(() => {
     return { ...size };
   });
@@ -441,12 +421,42 @@ function Layer(
     }
   }, [backgroundImage, backgroundSize, size]);
 
+  const maskEnabled = React.useMemo(() => {
+    return ["hidden", "auto"].includes(overflow);
+  }, [overflow]);
+
+  const overflowMask = useMask(maskEnabled ? layerProviderValue.maskId : 0);
+
+  const textMaterial = React.useMemo(() => {
+    return new THREE.MeshBasicMaterial();
+  }, []);
+
+  React.useMemo(() => {
+    textMaterial.opacity = color === "transparent" ? 0 : 1;
+    textMaterial.depthTest = depthTest ?? xrUiContext.depthTest;
+    textMaterial.depthWrite = depthWrite;
+    textMaterial.transparent = true;
+    textMaterial.stencilFail = overflowMask.stencilFail;
+    textMaterial.stencilFunc = overflowMask.stencilFunc;
+    textMaterial.stencilRef = overflowMask.stencilRef;
+    textMaterial.stencilWrite = overflowMask.stencilWrite;
+    textMaterial.stencilZFail = overflowMask.stencilZFail;
+    textMaterial.stencilZPass = overflowMask.stencilZPass;
+    textMaterial.needsUpdate = true;
+    textMaterial.needsUpdate = true;
+  }, [textMaterial, color, overflowMask, depthTest, depthWrite, xrUiContext.depthTest]);
+
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
-        <mesh renderOrder={renderOrder + zIndex} visible={false} name="react-xr-ui-layer-mesh">
+        <Mask
+          id={layerProviderValue.maskId}
+          renderOrder={renderOrder + zIndex}
+          name="react-xr-ui-layer-mesh"
+          visible={maskEnabled}
+        >
           <shapeGeometry args={[roundedPlane, detail]} />
-        </mesh>
+        </Mask>
         {backgroundColor !== "transparent" && (
           <mesh renderOrder={renderOrder + zIndex}>
             <planeGeometry args={[size.width, size.height]} />
@@ -458,6 +468,12 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
+              stencilFail={overflowMask.stencilFail}
+              stencilFunc={overflowMask.stencilFunc}
+              stencilRef={overflowMask.stencilRef}
+              stencilWrite={overflowMask.stencilWrite}
+              stencilZFail={overflowMask.stencilZFail}
+              stencilZPass={overflowMask.stencilZPass}
             />
           </mesh>
         )}
@@ -487,6 +503,12 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
+              stencilFail={overflowMask.stencilFail}
+              stencilFunc={overflowMask.stencilFunc}
+              stencilRef={overflowMask.stencilRef}
+              stencilWrite={overflowMask.stencilWrite}
+              stencilZFail={overflowMask.stencilZFail}
+              stencilZPass={overflowMask.stencilZPass}
             />
           </mesh>
         )}
@@ -499,6 +521,7 @@ function Layer(
             font={font}
             fontSize={realFontSize}
             color={color === "transparent" ? undefined : color}
+            material={textMaterial}
           >
             {textContent}
           </Text>

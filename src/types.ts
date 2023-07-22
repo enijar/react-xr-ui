@@ -18,6 +18,7 @@ export type LayerContextType = {
   parentSize: Size;
   currentChildren: Child[];
   renderOrder: number;
+  maskId: number;
   addChild: (child: Child) => void;
   removeChild: (uuid: Child["uuid"]) => void;
 };
@@ -36,7 +37,6 @@ export type LayerProps = GroupProps & {
   visible?: boolean;
   autoLayout?: boolean;
   premultiplyAlpha?: boolean;
-  resolution?: number;
   width?: number | string;
   height?: number | string;
   aspectRatio?: number;
@@ -53,6 +53,7 @@ export type LayerProps = GroupProps & {
   alignItems?: "start" | "center" | "end";
   justifyContent?: "start" | "center" | "end" | "space-between" | "space-around";
   gap?: number;
+  overflow?: "hidden" | "auto" | "visible";
   textContent?: string;
   textAlign?: TextProps["anchorX"];
   justifyText?: boolean;
