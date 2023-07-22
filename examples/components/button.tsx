@@ -9,7 +9,6 @@ type Props = {
   width: number;
   height: number;
   fontFamily?: string;
-  optimizedRendering?: boolean;
 };
 
 export default function Button({ textContent, selected, onClick, fontSize, width, height }: Props) {

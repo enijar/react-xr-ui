@@ -1,19 +1,21 @@
 import React from "react";
 import * as THREE from "three";
+import { useMask } from "@react-three/drei";
+import { LayerProps } from "react-xr-ui";
 
 type Props = {
   children: React.ReactNode;
-  mask: {
-    stencilWrite: boolean;
-    stencilRef: number;
-    stencilFunc: THREE.StencilFunc;
-    stencilFail: THREE.StencilOp;
-    stencilZFail: THREE.StencilOp;
-    stencilZPass: THREE.StencilOp;
-  };
+  overflow: LayerProps["overflow"];
+  maskId: number;
 };
 
-export default function Scroller({ children, mask }: Props) {
+export default function Scroller({ children, overflow, maskId }: Props) {
+  const maskEnabled = React.useMemo(() => {
+    return ["hidden", "auto"].includes(overflow);
+  }, [overflow]);
+
+  const overflowMask = useMask(maskEnabled ? maskId : 0);
+
   const groupRef = React.useRef<THREE.Group>(null);
 
   React.useEffect(() => {
@@ -22,15 +24,15 @@ export default function Scroller({ children, mask }: Props) {
     group.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
       if (!(child.material instanceof THREE.Material)) return;
-      child.material.stencilFail = mask.stencilFail;
-      child.material.stencilFunc = mask.stencilFunc;
-      child.material.stencilRef = mask.stencilRef;
-      child.material.stencilWrite = mask.stencilWrite;
-      child.material.stencilZFail = mask.stencilZFail;
-      child.material.stencilZPass = mask.stencilZPass;
+      child.material.stencilWrite = maskEnabled ? overflowMask.stencilWrite : false;
+      child.material.stencilFail = overflowMask.stencilFail;
+      child.material.stencilFunc = overflowMask.stencilFunc;
+      child.material.stencilRef = overflowMask.stencilRef;
+      child.material.stencilZFail = overflowMask.stencilZFail;
+      child.material.stencilZPass = overflowMask.stencilZPass;
       child.material.needsUpdate = true;
     });
-  }, [mask]);
+  }, [overflowMask, maskEnabled]);
 
   return <group ref={groupRef}>{children}</group>;
 }

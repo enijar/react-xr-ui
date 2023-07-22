@@ -38,7 +38,7 @@ export default function Basic() {
         </Layer>
 
         <Layer width={1.2} height={0.6} overflow={overflow} backgroundColor="#111111" borderRadius={0.1}>
-          <Layer width="50%" height="110%" backgroundColor="crimson" />
+          <Layer width="50%" height="110%" backgroundColor="crimson" borderRadius={0.1} />
         </Layer>
       </Example>
       <ViewCode pathname="basic" />

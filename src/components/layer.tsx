@@ -244,10 +244,6 @@ function Layer(
     return ++lastMaskId;
   }, []);
 
-  const maskEnabled = React.useMemo(() => {
-    return ["hidden", "auto"].includes(overflow);
-  }, [overflow, maskId]);
-
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
       currentChildren,
@@ -276,7 +272,7 @@ function Layer(
         });
       },
     };
-  }, [currentChildren, uuid, size, renderOrder, maskEnabled]);
+  }, [currentChildren, uuid, size, renderOrder]);
 
   React.useEffect(() => {
     const childrenGroup = childrenGroupRef.current;
@@ -448,7 +444,7 @@ function Layer(
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
-        <Mask id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh" visible={maskEnabled}>
+        <Mask id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
           <shapeGeometry args={[roundedPlane, detail]} />
         </Mask>
         {backgroundColor !== "transparent" && (
@@ -520,7 +516,7 @@ function Layer(
             {textContent}
           </Text>
         )}
-        <Scroller mask={overflowMask}>
+        <Scroller maskId={maskId} overflow={overflow}>
           <group renderOrder={renderOrder + zIndex + 2} ref={childrenGroupRef}>
             {React.Children.map(childs, (child, childIndex) => {
               return (
