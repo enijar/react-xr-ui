@@ -88,12 +88,7 @@ export default function Example({ children }: Props) {
         }}
         mode="VR"
         sessionInit={{
-          optionalFeatures: [
-            "local-floor",
-            "bounded-floor",
-            "hand-tracking",
-            "layers",
-          ],
+          optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking", "layers"],
         }}
       >
         Enter Immersive VR
@@ -111,7 +106,7 @@ export default function Example({ children }: Props) {
 - [x] `zIndex`
 - [x] borders (radius, color, width, image)
 - [x] automatic children sizing
-- [ ] overflow: auto (scroll), hidden
+- [x] overflow: auto, hidden, visible
 - [x] interactive controls for VR
 - [x] typography
 - [x] flexbox

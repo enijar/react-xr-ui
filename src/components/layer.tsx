@@ -5,13 +5,13 @@ import { Attrs, LayerContextType, LayerProps, LayerRef } from "../types";
 import { XrUiContext } from "./xr-ui";
 import { Mask, Text, useMask } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
+import Scroller from "./scroller";
 
 const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,
   parentSize: { width: 1, height: 1 },
   currentChildren: [],
   renderOrder: 0,
-  maskId: 0,
   addChild() {},
   removeChild() {},
 });
@@ -71,6 +71,8 @@ function Layer(
   }: LayerProps,
   ref: React.ForwardedRef<LayerRef>,
 ) {
+  const layerContext = React.useContext(LayerContext);
+
   const [attrs, setAttrs] = React.useState<Attrs>(() => {
     return {
       opacity,
@@ -114,8 +116,6 @@ function Layer(
       setAttrs: setAttrs,
     };
   });
-
-  const layerContext = React.useContext(LayerContext);
 
   const size = React.useMemo<{ width: number; height: number }>(() => {
     const size: { width: number; height: number } = { width: 1, height: 1 };
@@ -244,13 +244,16 @@ function Layer(
     return ++lastMaskId;
   }, []);
 
+  const maskEnabled = React.useMemo(() => {
+    return ["hidden", "auto"].includes(overflow);
+  }, [overflow, maskId]);
+
   const layerProviderValue = React.useMemo<LayerContextType>(() => {
     return {
       currentChildren,
       parentSize: size,
       parentUuid: uuid,
       renderOrder,
-      maskId,
       addChild(child) {
         setCurrentChildren((currentChildren) => {
           const nextCurrentChildren = [...currentChildren];
@@ -273,7 +276,7 @@ function Layer(
         });
       },
     };
-  }, [currentChildren, uuid, size, renderOrder, maskId]);
+  }, [currentChildren, uuid, size, renderOrder, maskEnabled]);
 
   React.useEffect(() => {
     const childrenGroup = childrenGroupRef.current;
@@ -421,11 +424,7 @@ function Layer(
     }
   }, [backgroundImage, backgroundSize, size]);
 
-  const maskEnabled = React.useMemo(() => {
-    return ["hidden", "auto"].includes(overflow);
-  }, [overflow]);
-
-  const overflowMask = useMask(maskEnabled ? layerProviderValue.maskId : 0);
+  const overflowMask = useMask(maskId);
 
   const textMaterial = React.useMemo(() => {
     return new THREE.MeshBasicMaterial();
@@ -449,12 +448,7 @@ function Layer(
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
-        <Mask
-          id={layerProviderValue.maskId}
-          renderOrder={renderOrder + zIndex}
-          name="react-xr-ui-layer-mesh"
-          visible={maskEnabled}
-        >
+        <Mask id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh" visible={maskEnabled}>
           <shapeGeometry args={[roundedPlane, detail]} />
         </Mask>
         {backgroundColor !== "transparent" && (
@@ -526,15 +520,17 @@ function Layer(
             {textContent}
           </Text>
         )}
-        <group renderOrder={renderOrder + zIndex + 2} ref={childrenGroupRef}>
-          {React.Children.map(childs, (child, childIndex) => {
-            return (
-              <group key={childIndex} ref={childGroupRefs[childIndex]}>
-                {React.cloneElement(child, { ...child.props, childIndex })}
-              </group>
-            );
-          })}
-        </group>
+        <Scroller mask={overflowMask}>
+          <group renderOrder={renderOrder + zIndex + 2} ref={childrenGroupRef}>
+            {React.Children.map(childs, (child, childIndex) => {
+              return (
+                <group key={childIndex} ref={childGroupRefs[childIndex]}>
+                  {React.cloneElement(child, { ...child.props, childIndex })}
+                </group>
+              );
+            })}
+          </group>
+        </Scroller>
       </group>
     </LayerContext.Provider>
   );

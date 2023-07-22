@@ -72,6 +72,11 @@ const examples: Example[] = [
     pathname: "input",
     component: React.lazy(() => import("@/examples/input")),
   },
+  {
+    title: "Overflow",
+    pathname: "overflow",
+    component: React.lazy(() => import("@/examples/overflow")),
+  },
 ];
 
 export default examples;
