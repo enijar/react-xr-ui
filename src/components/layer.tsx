@@ -59,7 +59,7 @@ function Layer(
     fontFamily,
     fontSize = "16px",
     fontWeight = "normal",
-    lineHeight = null,
+    lineHeight,
     childIndex,
     children,
     onPointerMove,
@@ -339,7 +339,7 @@ function Layer(
   const overflowMask = useMask(maskId);
 
   const textMaterial = React.useMemo(() => {
-    return new THREE.MeshBasicMaterial();
+    return new THREE.MeshBasicMaterial({});
   }, []);
 
   React.useEffect(() => {
@@ -476,8 +476,10 @@ function Layer(
             overflowWrap={overflowWrap}
             name="react-xr-ui-layer-text"
             renderOrder={renderOrder + zIndex}
-            anchorX={textAlign}
+            textAlign={textAlign}
+            // anchorX={size.width / 2 - borderWidth / 2}
             anchorY={verticalAlign}
+            lineHeight={lineHeight}
             font={font}
             fontSize={realFontSize}
             color={color === "transparent" ? undefined : color}

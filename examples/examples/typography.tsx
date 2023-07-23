@@ -78,8 +78,11 @@ export default function Typography() {
             backgroundColor="#888888"
             fontFamily={fontFamily.url}
             fontSize={0.12}
-            textContent={`Hello there,\nHere's a new line.`}
+            textContent={`Hello there,\nHere's a new line\nwith custom line height of 1.5.`}
+            lineHeight={1.5}
             textAlign="center"
+            alignItems="start"
+            justifyContent="start"
             verticalAlign="middle"
             color="white"
           />
@@ -94,7 +97,7 @@ export default function Typography() {
             fontSize={0.12}
             overflowWrap="break-word"
             textContent={`Here's some automatic wrapping:\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ultrices in nulla ornare maximus. Proin vulputate libero ac enim volutpat volutpat. Etiam porta nulla interdum orci semper, in malesuada magna vulputate.`}
-            textAlign="center"
+            textAlign="left"
             verticalAlign="middle"
             color="white"
           />
