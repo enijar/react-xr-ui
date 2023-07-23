@@ -1,6 +1,5 @@
 import React from "react";
 import * as THREE from "three";
-import { MeshLineGeometry, MeshLineMaterial } from "meshline";
 import { useThree } from "@react-three/fiber";
 import { Mask, Text, useMask } from "@react-three/drei";
 import layout from "../services/layout";
