@@ -366,19 +366,16 @@ function Layer(
     const bottomRight = THREE.MathUtils.clamp(typeof br === "number" ? br * r : br[2] * r, 0, r);
     const bottomLeft = THREE.MathUtils.clamp(typeof br === "number" ? br * r : br[3] * r, 0, r);
 
-    const outerThickness = borderWidth;
-    const innerThickness = borderWidth / 2;
-
     function createShape(scale = 1, thickness = 0) {
       const w = width * scale;
       const h = height * scale;
       const x = w / -2;
       const y = h / -2;
 
-      const topLeftRadius = topLeft * scale - thickness;
-      const topRightRadius = topRight * scale - thickness;
-      const bottomRightRadius = bottomRight * scale - thickness;
-      const bottomLeftRadius = bottomLeft * scale - thickness;
+      const topLeftRadius = topLeft - (topLeft < borderWidth ? 0 : thickness * scale);
+      const topRightRadius = topRight - (topRight < borderWidth ? 0 : thickness * scale);
+      const bottomRightRadius = bottomRight - (bottomRight < borderWidth ? 0 : thickness * scale);
+      const bottomLeftRadius = bottomLeft - (bottomLeft < borderWidth ? 0 : thickness * scale);
 
       const shape = new THREE.Shape();
       shape.moveTo(x + topLeftRadius, y);
@@ -394,8 +391,8 @@ function Layer(
       return shape;
     }
 
-    const borderShape = createShape(1, outerThickness);
-    const backgroundShape = createShape((width - borderWidth) / width, innerThickness);
+    const borderShape = createShape(1);
+    const backgroundShape = createShape((width - borderWidth) / width, borderWidth / 2);
     if (borderWidth > 0) {
       borderShape.holes.push(backgroundShape);
     }
