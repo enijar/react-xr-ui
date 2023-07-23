@@ -36,11 +36,6 @@ export default function Button({ textContent, selected, onClick, fontSize, width
         onClick();
         setPointerOver(false);
       }}
-      // onMove={() => console.log("onMove")}
-      // onOver={() => console.log("onOver")}
-      // onOut={() => console.log("onOut")}
-      // onDown={() => console.log("onDown")}
-      // onUp={() => console.log("onUp")}
     />
   );
 

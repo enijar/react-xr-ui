@@ -29,7 +29,6 @@ function Layer(
     zIndex = 0,
     visible = true,
     autoLayout = true,
-    premultiplyAlpha,
     depthTest,
     depthWrite = false,
     width,
@@ -85,6 +84,7 @@ function Layer(
   }, [fontFamily, xrUiContext.fontFamily]);
 
   const groupRef = React.useRef<THREE.Group>(null);
+  const maskRef = React.useRef<THREE.Mesh>(null);
   const backgroundColorMaterialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const backgroundImageMaterialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
@@ -317,8 +317,55 @@ function Layer(
 
   const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
 
-  useFrame(() => {
-    //
+  const pointerOverFiredRef = React.useRef(false);
+  const pointerOutFiredRef = React.useRef(false);
+  const pointerDownFiredRef = React.useRef(false);
+  const pointerUpFiredRef = React.useRef(false);
+  const pointerMovePositionRef = React.useRef(new THREE.Vector2());
+
+  useFrame(({ camera, raycaster }) => {
+    const group = groupRef.current;
+    const mask = maskRef.current;
+    if (group === null) return;
+    if (mask === null) return;
+    raycaster.setFromCamera(xrUiContext.pointer.vector, camera);
+    const intersections = raycaster.intersectObject(mask, true);
+    const hit = intersections.length > 0;
+    // Pointer over event
+    if (hit && !pointerOverFiredRef.current) {
+      pointerOverFiredRef.current = true;
+      pointerOutFiredRef.current = false;
+      onOver?.(group, intersections);
+    }
+    // Pointer down event
+    if (hit && !pointerDownFiredRef.current && xrUiContext.pointer.down) {
+      pointerDownFiredRef.current = true;
+      pointerUpFiredRef.current = false;
+      onDown?.(group, intersections);
+    }
+    // Pointer up event
+    if (hit && !pointerUpFiredRef.current && pointerDownFiredRef.current && !xrUiContext.pointer.down) {
+      pointerUpFiredRef.current = true;
+      pointerDownFiredRef.current = false;
+      onUp?.(group, intersections);
+    }
+    // Pointer out event
+    if (!hit && pointerOverFiredRef.current && !pointerOutFiredRef.current) {
+      pointerOutFiredRef.current = true;
+      pointerOverFiredRef.current = false;
+      onOut?.(group, intersections);
+    }
+    function diff() {
+      return (
+        xrUiContext.pointer.vector.x !== pointerMovePositionRef.current.x ||
+        xrUiContext.pointer.vector.y !== pointerMovePositionRef.current.y
+      );
+    }
+    // Pointer move event
+    if (hit && diff()) {
+      pointerMovePositionRef.current.copy(xrUiContext.pointer.vector);
+      onMove?.(group, intersections);
+    }
   });
 
   const realFontSize = React.useMemo(() => {
@@ -414,7 +461,7 @@ function Layer(
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
-        <Mask id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
+        <Mask ref={maskRef} id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
           <shapeGeometry args={[roundedPlane, detail]} />
         </Mask>
         {backgroundColor !== "transparent" && (

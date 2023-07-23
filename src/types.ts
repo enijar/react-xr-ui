@@ -1,4 +1,3 @@
-import React from "react";
 import * as THREE from "three";
 import { GroupProps } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
@@ -30,7 +29,7 @@ export type Size = {
 
 export type ValueArray = [topLeft?: number, topRight?: number, bottomRight?: number, bottomLeft?: number];
 
-export type Fn = (intersection: Intersection, intersections: Intersection[]) => void;
+export type Fn = (mesh: THREE.Group, intersections: Intersection[]) => void;
 
 export type LayerProps = GroupProps & {
   depthTest?: boolean;
@@ -38,7 +37,6 @@ export type LayerProps = GroupProps & {
   zIndex?: number;
   visible?: boolean;
   autoLayout?: boolean;
-  premultiplyAlpha?: boolean;
   width?: number | string;
   height?: number | string;
   aspectRatio?: number;
@@ -75,11 +73,6 @@ export type LayerProps = GroupProps & {
   onUp?: Fn;
 };
 
-export type Attrs = Partial<{
-  opacity: number;
-  backgroundColor: string;
-}>;
-
 export type LayerRef = {
   group: THREE.Group;
 };
@@ -87,5 +80,8 @@ export type LayerRef = {
 export type XrUiContextType = {
   fontFamily: string;
   depthTest: boolean;
-  premultiplyAlpha: boolean;
+  pointer: {
+    down: boolean;
+    vector: THREE.Vector2;
+  };
 };
