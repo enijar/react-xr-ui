@@ -7,8 +7,8 @@ import ViewCode from "@/components/view-code";
 export default function Typography() {
   const [fontFamily, setFontFamily] = React.useState(() => {
     return {
-      name: "Robot",
-      url: "http://themes.googleusercontent.com/static/fonts/roboto/v9/zN7GBFwfMP4uA6AR0HCoLQ.ttf",
+      name: "Roboto",
+      url: "https://themes.googleusercontent.com/static/fonts/roboto/v9/zN7GBFwfMP4uA6AR0HCoLQ.ttf",
     };
   });
 
@@ -17,9 +17,9 @@ export default function Typography() {
       <Example>
         <Layer width={1} height={0.1} gap={0.05} position-y={0.6}>
           <Button
-            textContent="Robot"
+            textContent="Roboto"
             fontFamily="https://themes.googleusercontent.com/static/fonts/roboto/v9/zN7GBFwfMP4uA6AR0HCoLQ.ttf"
-            selected={fontFamily.name === "Robot"}
+            selected={fontFamily.name === "Roboto"}
             onClick={() =>
               setFontFamily({
                 name: "Roboto",

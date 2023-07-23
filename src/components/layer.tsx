@@ -6,6 +6,7 @@ import layout from "../services/layout";
 import type { LayerContextType, LayerProps, LayerRef } from "../types";
 import { XrUiContext } from "./xr-ui";
 import Scroller from "./scroller";
+import usePointerEvents from "../hooks/use-pointer-events";
 
 const LayerContext = React.createContext<LayerContextType>({
   parentUuid: null,
@@ -94,6 +95,8 @@ function Layer(
       group: groupRef.current,
     };
   });
+
+  usePointerEvents(maskRef.current, onMove, onOver, onOut, onDown, onUp);
 
   const size = React.useMemo<{ width: number; height: number }>(() => {
     const size: { width: number; height: number } = { width: 1, height: 1 };
@@ -316,57 +319,6 @@ function Layer(
   }, [size.width, size.height, borderRadius]);
 
   const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
-
-  const pointerOverFiredRef = React.useRef(false);
-  const pointerOutFiredRef = React.useRef(false);
-  const pointerDownFiredRef = React.useRef(false);
-  const pointerUpFiredRef = React.useRef(false);
-  const pointerMovePositionRef = React.useRef(new THREE.Vector2());
-
-  useFrame(({ camera, raycaster }) => {
-    const group = groupRef.current;
-    const mask = maskRef.current;
-    if (group === null) return;
-    if (mask === null) return;
-    raycaster.setFromCamera(xrUiContext.pointer.vector, camera);
-    const intersections = raycaster.intersectObject(mask, true);
-    const hit = intersections.length > 0;
-    // Pointer over event
-    if (hit && !pointerOverFiredRef.current) {
-      pointerOverFiredRef.current = true;
-      pointerOutFiredRef.current = false;
-      onOver?.(intersections[0], intersections);
-    }
-    // Pointer down event
-    if (hit && !pointerDownFiredRef.current && xrUiContext.pointer.down) {
-      pointerDownFiredRef.current = true;
-      pointerUpFiredRef.current = false;
-      onDown?.(intersections[0], intersections);
-    }
-    // Pointer up event
-    if (hit && !pointerUpFiredRef.current && pointerDownFiredRef.current && !xrUiContext.pointer.down) {
-      pointerUpFiredRef.current = true;
-      pointerDownFiredRef.current = false;
-      onUp?.(intersections[0], intersections);
-    }
-    // Pointer out event
-    if (!hit && pointerOverFiredRef.current && !pointerOutFiredRef.current) {
-      pointerOutFiredRef.current = true;
-      pointerOverFiredRef.current = false;
-      onOut?.();
-    }
-    function diff() {
-      return (
-        xrUiContext.pointer.vector.x !== pointerMovePositionRef.current.x ||
-        xrUiContext.pointer.vector.y !== pointerMovePositionRef.current.y
-      );
-    }
-    // Pointer move event
-    if (hit && diff()) {
-      pointerMovePositionRef.current.copy(xrUiContext.pointer.vector);
-      onMove?.(intersections[0], intersections);
-    }
-  });
 
   const realFontSize = React.useMemo(() => {
     if (typeof fontSize === "string") {
