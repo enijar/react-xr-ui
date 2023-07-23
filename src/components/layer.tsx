@@ -407,7 +407,7 @@ function Layer(
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
         <Mask ref={maskRef} id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
-          <shapeGeometry args={[borderShape, detail]} />
+          <shapeGeometry args={[backgroundShape, detail]} />
         </Mask>
         {/* backgroundColor */}
         {backgroundColor !== "transparent" && (
@@ -420,12 +420,6 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
-              // stencilFail={overflowMask.stencilFail}
-              // stencilFunc={overflowMask.stencilFunc}
-              // stencilRef={overflowMask.stencilRef}
-              // stencilWrite={overflowMask.stencilWrite}
-              // stencilZFail={overflowMask.stencilZFail}
-              // stencilZPass={overflowMask.stencilZPass}
             />
           </mesh>
         )}
@@ -455,12 +449,6 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
-              // stencilFail={overflowMask.stencilFail}
-              // stencilFunc={overflowMask.stencilFunc}
-              // stencilRef={overflowMask.stencilRef}
-              // stencilWrite={overflowMask.stencilWrite}
-              // stencilZFail={overflowMask.stencilZFail}
-              // stencilZPass={overflowMask.stencilZPass}
               blending={THREE.CustomBlending}
             />
           </mesh>
@@ -476,12 +464,6 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
-              // stencilFail={overflowMask.stencilFail}
-              // stencilFunc={overflowMask.stencilFunc}
-              // stencilRef={overflowMask.stencilRef}
-              // stencilWrite={overflowMask.stencilWrite}
-              // stencilZFail={overflowMask.stencilZFail}
-              // stencilZPass={overflowMask.stencilZPass}
             />
           </mesh>
         )}
