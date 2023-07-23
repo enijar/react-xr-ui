@@ -15,13 +15,10 @@ export default function Borders() {
           borderWidth={0.05}
           borderColor="crimson"
           overflow="hidden"
+          alignItems="start"
+          justifyContent="start"
         >
-          <Layer
-            width="50%"
-            aspectRatio={1}
-            backgroundColor="pink"
-            borderRadius={1}
-          />
+          <Layer width="50%" aspectRatio={1} backgroundColor="pink" borderRadius={1} />
         </Layer>
       </Example>
       <ViewCode pathname="background" />

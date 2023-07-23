@@ -195,8 +195,8 @@ function Layer(
     const res = Math.min(newSize.width, newSize.height);
     const paddingX = Array.isArray(padding) ? (padding[1] ?? 0) + (padding[3] ?? 0) : padding;
     const paddingY = Array.isArray(padding) ? (padding[0] ?? 0) + (padding[2] ?? 0) : padding;
-    newSize.width -= res * borderWidth * 2;
-    newSize.height -= res * borderWidth * 2;
+    newSize.width -= res * borderWidth;
+    newSize.height -= res * borderWidth;
     newSize.width -= res * paddingX * 2;
     newSize.height -= res * paddingY * 2;
     childGroupRefs.forEach((childGroupRef, index) => {
@@ -446,6 +446,12 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
+              stencilFail={overflowMask.stencilFail}
+              stencilFunc={overflowMask.stencilFunc}
+              stencilRef={overflowMask.stencilRef}
+              stencilWrite={overflowMask.stencilWrite}
+              stencilZFail={overflowMask.stencilZFail}
+              stencilZPass={overflowMask.stencilZPass}
               blending={THREE.CustomBlending}
             />
           </mesh>
@@ -466,7 +472,7 @@ function Layer(
         )}
         {textContent !== undefined && (
           <Text
-            maxWidth={size.width}
+            maxWidth={size.width - borderWidth}
             overflowWrap={overflowWrap}
             name="react-xr-ui-layer-text"
             renderOrder={renderOrder + zIndex}
