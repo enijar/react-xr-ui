@@ -47,18 +47,58 @@ export default function Typography() {
         <Layer
           position-x={-0.55}
           width={1}
-          height={0.25}
+          height={1}
           borderWidth={0.025}
           borderColor="#222222"
           borderRadius={0.05}
           backgroundColor="#444444"
-          fontFamily={fontFamily.url}
-          fontSize={0.12}
-          textContent={`This font will scale to 12% the size of the smallest dimension of this layer`}
-          textAlign="center"
-          verticalAlign="middle"
-          color="crimson"
-        />
+          flexDirection="column"
+          justifyContent="space-around"
+        >
+          <Layer
+            width="100%"
+            aspectRatio={1 / 4}
+            borderWidth={0.025}
+            borderColor="#222222"
+            borderRadius={0.05}
+            backgroundColor="#666666"
+            fontFamily={fontFamily.url}
+            fontSize={0.12}
+            textContent={`This font will scale to 12% of the smallest dimension in this layer`}
+            textAlign="center"
+            verticalAlign="middle"
+            color="white"
+          />
+          <Layer
+            width="100%"
+            aspectRatio={1 / 4}
+            borderWidth={0.025}
+            borderColor="#222222"
+            borderRadius={0.05}
+            backgroundColor="#888888"
+            fontFamily={fontFamily.url}
+            fontSize={0.12}
+            textContent={`Hello there,\nHere's a new line.`}
+            textAlign="center"
+            verticalAlign="middle"
+            color="white"
+          />
+          <Layer
+            width="100%"
+            aspectRatio={1 / 4}
+            borderWidth={0.025}
+            borderColor="#222222"
+            borderRadius={0.05}
+            backgroundColor="#888888"
+            fontFamily={fontFamily.url}
+            fontSize={0.12}
+            overflowWrap="break-word"
+            textContent={`Here's some automatic wrapping:\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ultrices in nulla ornare maximus. Proin vulputate libero ac enim volutpat volutpat. Etiam porta nulla interdum orci semper, in malesuada magna vulputate.`}
+            textAlign="center"
+            verticalAlign="middle"
+            color="white"
+          />
+        </Layer>
         <Layer
           position-x={0.55}
           width={1}

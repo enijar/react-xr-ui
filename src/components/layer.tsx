@@ -50,6 +50,7 @@ function Layer(
     gap = 0,
     overflow = "visible",
     textContent,
+    overflowWrap = "normal",
     textAlign = "left",
     justifyText = false,
     verticalAlign = "top",
@@ -472,6 +473,8 @@ function Layer(
         )}
         {textContent !== undefined && (
           <Text
+            maxWidth={size.width}
+            overflowWrap={overflowWrap}
             name="react-xr-ui-layer-text"
             renderOrder={renderOrder + zIndex}
             anchorX={textAlign}

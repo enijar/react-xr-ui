@@ -55,6 +55,7 @@ export type LayerProps = GroupProps & {
   gap?: number;
   overflow?: "hidden" | "auto" | "visible";
   textContent?: string;
+  overflowWrap?: TextProps["overflowWrap"];
   textAlign?: TextProps["anchorX"];
   justifyText?: boolean;
   verticalAlign?: TextProps["anchorY"];
