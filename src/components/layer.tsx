@@ -335,25 +335,25 @@ function Layer(
     if (hit && !pointerOverFiredRef.current) {
       pointerOverFiredRef.current = true;
       pointerOutFiredRef.current = false;
-      onOver?.(group, intersections);
+      onOver?.(intersections[0], intersections);
     }
     // Pointer down event
     if (hit && !pointerDownFiredRef.current && xrUiContext.pointer.down) {
       pointerDownFiredRef.current = true;
       pointerUpFiredRef.current = false;
-      onDown?.(group, intersections);
+      onDown?.(intersections[0], intersections);
     }
     // Pointer up event
     if (hit && !pointerUpFiredRef.current && pointerDownFiredRef.current && !xrUiContext.pointer.down) {
       pointerUpFiredRef.current = true;
       pointerDownFiredRef.current = false;
-      onUp?.(group, intersections);
+      onUp?.(intersections[0], intersections);
     }
     // Pointer out event
     if (!hit && pointerOverFiredRef.current && !pointerOutFiredRef.current) {
       pointerOutFiredRef.current = true;
       pointerOverFiredRef.current = false;
-      onOut?.(group, intersections);
+      onOut?.();
     }
     function diff() {
       return (
@@ -364,7 +364,7 @@ function Layer(
     // Pointer move event
     if (hit && diff()) {
       pointerMovePositionRef.current.copy(xrUiContext.pointer.vector);
-      onMove?.(group, intersections);
+      onMove?.(intersections[0], intersections);
     }
   });
 

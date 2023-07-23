@@ -3,7 +3,6 @@ import type { Intersection } from "three";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import Layer from "./layer";
-import Interaction from "./interaction";
 
 type Props = {
   onChange?: (value: string) => void;
@@ -357,21 +356,29 @@ export default function Keyboard({
     mesh.material.map.needsUpdate = true;
   });
 
-  const setPointer = React.useCallback((intersection: Intersection) => {
-    stateRef.current.pointer.x = intersection.uv.x;
-    stateRef.current.pointer.y = 1 - intersection.uv.y;
-  }, []);
+  const setPointer = React.useCallback(
+    (intersection: Intersection) => {
+      if (!enabled) return;
+      stateRef.current.pointer.x = intersection.uv.x;
+      stateRef.current.pointer.y = 1 - intersection.uv.y;
+    },
+    [enabled],
+  );
 
   return (
-    <Interaction
-      enabled={enabled}
+    <Layer
+      width={settings.width}
+      height={settings.height}
+      visible={enabled}
       onOver={setPointer}
       onMove={setPointer}
       onOut={() => {
+        if (!enabled) return;
         stateRef.current.pointer.x = -1;
         stateRef.current.pointer.y = -1;
       }}
       onDown={(intersection) => {
+        if (!enabled) return;
         setPointer(intersection);
         if (stateRef.current.hitKey === null) return;
         if (stateRef.current.hitKey.value !== undefined) {
@@ -394,14 +401,12 @@ export default function Keyboard({
         }
       }}
     >
-      <Layer width={settings.width} height={settings.height} visible={enabled}>
-        <mesh ref={meshRef} scale={settings.scale} renderOrder={999999}>
-          <planeGeometry args={[settings.width, settings.height]} />
-          <meshBasicMaterial depthWrite={false}>
-            <canvasTexture attach="map" image={ctx.canvas} anisotropy={anisotropy} />
-          </meshBasicMaterial>
-        </mesh>
-      </Layer>
-    </Interaction>
+      <mesh ref={meshRef} scale={settings.scale} renderOrder={999999}>
+        <planeGeometry args={[settings.width, settings.height]} />
+        <meshBasicMaterial depthWrite={false}>
+          <canvasTexture attach="map" image={ctx.canvas} anisotropy={anisotropy} />
+        </meshBasicMaterial>
+      </mesh>
+    </Layer>
   );
 }

@@ -29,7 +29,7 @@ export type Size = {
 
 export type ValueArray = [topLeft?: number, topRight?: number, bottomRight?: number, bottomLeft?: number];
 
-export type Fn = (mesh: THREE.Group, intersections: Intersection[]) => void;
+export type Fn = (intersection: THREE.Intersection, intersections: Intersection[]) => void;
 
 export type LayerProps = GroupProps & {
   depthTest?: boolean;
@@ -68,7 +68,7 @@ export type LayerProps = GroupProps & {
   onLayout?: () => void;
   onMove?: Fn;
   onOver?: Fn;
-  onOut?: Fn;
+  onOut?: () => void;
   onDown?: Fn;
   onUp?: Fn;
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Interaction, Layer } from "react-xr-ui";
+import { Layer } from "react-xr-ui";
 
 type Props = {
   textContent: string;

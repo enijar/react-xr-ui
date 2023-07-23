@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import Example from "@/components/example";
-import { Interaction, Layer, LayerRef } from "react-xr-ui";
+import { Layer, LayerRef } from "react-xr-ui";
 import ViewCode from "@/components/view-code";
 
 function Scene() {
@@ -59,23 +59,22 @@ function Scene() {
           verticalAlign="middle"
           fontSize={0.35}
         />
-        <Interaction onDown={() => setScore((score) => score + 1)}>
-          <Layer
-            ref={targetRef}
-            autoLayout={false}
-            width={0.3}
-            height={0.3}
-            borderRadius={0.5}
-            textContent="Click Me!"
-            backgroundColor="#666666"
-            textAlign="center"
-            verticalAlign="middle"
-            color="#ffffff"
-            fontWeight="bold"
-            fontSize={0.2}
-            lineHeight={1.2}
-          />
-        </Interaction>
+        <Layer
+          ref={targetRef}
+          autoLayout={false}
+          width={0.3}
+          height={0.3}
+          borderRadius={0.5}
+          textContent="Click Me!"
+          backgroundColor="#666666"
+          textAlign="center"
+          verticalAlign="middle"
+          color="#ffffff"
+          fontWeight="bold"
+          fontSize={0.2}
+          lineHeight={1.2}
+          onDown={() => setScore((score) => score + 1)}
+        />
       </Layer>
     </>
   );

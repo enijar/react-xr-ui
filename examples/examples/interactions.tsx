@@ -1,5 +1,5 @@
 import React from "react";
-import { Interaction, Layer } from "react-xr-ui";
+import { Layer } from "react-xr-ui";
 import Example from "@/components/example";
 import ViewCode from "@/components/view-code";
 
@@ -41,7 +41,11 @@ export default function Interactions() {
           />
         </Layer>
 
-        <Interaction
+        <Layer
+          backgroundColor="crimson"
+          textContent="Interact with me"
+          verticalAlign="middle"
+          textAlign="center"
           onOver={() => setOver(true)}
           onOut={() => setOver(false)}
           onDown={() => setDown(true)}
@@ -52,9 +56,7 @@ export default function Interactions() {
               y: parseFloat(intersection.uv.y.toFixed(2)),
             });
           }}
-        >
-          <Layer backgroundColor="crimson" textContent="Interact with me" verticalAlign="middle" textAlign="center" />
-        </Interaction>
+        />
       </Example>
       <ViewCode pathname="interactions" />
     </>
