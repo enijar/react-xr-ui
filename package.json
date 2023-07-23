@@ -70,5 +70,8 @@
     "react-dom": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "meshline": "^3.1.6"
   }
 }

@@ -73,9 +73,9 @@ const examples: Example[] = [
     component: React.lazy(() => import("@/examples/overflow")),
   },
   {
-    title: "Test",
-    pathname: "test",
-    component: React.lazy(() => import("@/examples/test")),
+    title: "Borders",
+    pathname: "borders",
+    component: React.lazy(() => import("@/examples/borders")),
   },
 ];
 

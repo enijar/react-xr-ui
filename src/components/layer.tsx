@@ -1,5 +1,6 @@
 import React from "react";
 import * as THREE from "three";
+import { MeshLineGeometry, MeshLineMaterial } from "meshline";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Mask, Text, useMask } from "@react-three/drei";
 import layout from "../services/layout";
@@ -339,6 +340,20 @@ function Layer(
     return { ...size };
   });
 
+  const meshLineGeometry = React.useMemo(() => {
+    const line = new MeshLineGeometry();
+    line.setPoints(roundedPlane.getPoints());
+    return line;
+  }, [roundedPlane]);
+
+  const meshLineMaterial = React.useMemo(() => {
+    return new MeshLineMaterial({
+      color: "crimson",
+      lineWidth: 0.03,
+      resolution: new THREE.Vector2(1024, 1024),
+    });
+  }, []);
+
   React.useEffect(() => {
     const material = backgroundImageMaterialRef.current;
     if (material === null) return;
@@ -417,6 +432,27 @@ function Layer(
         <Mask ref={maskRef} id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
           <shapeGeometry args={[roundedPlane, detail]} />
         </Mask>
+        {/* border */}
+        {borderWidth > 0 && (
+          <mesh renderOrder={renderOrder + zIndex}>
+            <shapeGeometry args={[roundedPlane, detail]} />
+            <meshBasicMaterial
+              ref={backgroundColorMaterialRef}
+              side={THREE.FrontSide}
+              color={backgroundColor === "transparent" ? undefined : backgroundColor}
+              transparent={true}
+              depthTest={depthTest ?? xrUiContext.depthTest}
+              depthWrite={depthWrite}
+              stencilFail={overflowMask.stencilFail}
+              stencilFunc={overflowMask.stencilFunc}
+              stencilRef={overflowMask.stencilRef}
+              stencilWrite={overflowMask.stencilWrite}
+              stencilZFail={overflowMask.stencilZFail}
+              stencilZPass={overflowMask.stencilZPass}
+            />
+          </mesh>
+        )}
+        {/* backgroundColor */}
         {backgroundColor !== "transparent" && (
           <mesh renderOrder={renderOrder + zIndex}>
             <planeGeometry args={[size.width, size.height]} />
@@ -436,6 +472,7 @@ function Layer(
             />
           </mesh>
         )}
+        {/* backgroundImage */}
         {backgroundImage !== undefined && (
           <mesh
             renderOrder={renderOrder + zIndex}
@@ -471,6 +508,10 @@ function Layer(
             />
           </mesh>
         )}
+        <mesh>
+          <primitive attach="geometry" object={meshLineGeometry} />
+          <primitive attach="material" object={meshLineMaterial} />
+        </mesh>
         {textContent !== undefined && (
           <Text
             maxWidth={size.width}
