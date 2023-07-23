@@ -264,62 +264,6 @@ function Layer(
     };
   }, [currentChildren, uuid, size, renderOrder]);
 
-  const roundedPlane = React.useMemo(() => {
-    const shape = new THREE.Shape();
-    const br = borderRadius;
-    const width = size.width;
-    const height = size.height;
-    const maxRadius = Math.min(width, height) / 2;
-    const radiusTopLeft = THREE.MathUtils.clamp(
-      typeof br === "number" ? br * maxRadius : br[0] * maxRadius,
-      0,
-      maxRadius,
-    );
-    const radiusTopRight = THREE.MathUtils.clamp(
-      typeof br === "number" ? br * maxRadius : br[1] * maxRadius,
-      0,
-      maxRadius,
-    );
-    const radiusBottomRight = THREE.MathUtils.clamp(
-      typeof br === "number" ? br * maxRadius : br[2] * maxRadius,
-      0,
-      maxRadius,
-    );
-    const radiusBottomLeft = THREE.MathUtils.clamp(
-      typeof br === "number" ? br * maxRadius : br[3] * maxRadius,
-      0,
-      maxRadius,
-    );
-    shape.moveTo(-width / 2 + radiusTopLeft, height / 2);
-    // Top-right corner
-    shape.lineTo(width / 2 - radiusTopRight, height / 2);
-    shape.absarc(width / 2 - radiusTopRight, height / 2 - radiusTopRight, radiusTopRight, Math.PI * 1.5, 0, true);
-    // Bottom-right corner
-    shape.lineTo(width / 2, -height / 2 + radiusBottomRight);
-    shape.absarc(
-      width / 2 - radiusBottomRight,
-      -height / 2 + radiusBottomRight,
-      radiusBottomRight,
-      0,
-      Math.PI * 1.5,
-      true,
-    );
-    // Bottom-left corner
-    shape.lineTo(-width / 2 + radiusBottomLeft, -height / 2);
-    shape.absarc(
-      -width / 2 + radiusBottomLeft,
-      -height / 2 + radiusBottomLeft,
-      radiusBottomLeft,
-      Math.PI * 0.5,
-      Math.PI,
-      true,
-    );
-    // Top-left corner
-    shape.lineTo(-width / 2, height / 2 - radiusTopLeft);
-    shape.absarc(-width / 2 + radiusTopLeft, height / 2 - radiusTopLeft, radiusTopLeft, Math.PI, Math.PI * 1.5, true);
-    return shape;
-  }, [size.width, size.height, borderRadius]);
-
   const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
 
   const realFontSize = React.useMemo(() => {
@@ -463,7 +407,7 @@ function Layer(
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
         <Mask ref={maskRef} id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
-          <shapeGeometry args={[roundedPlane, detail]} />
+          <shapeGeometry args={[borderShape, detail]} />
         </Mask>
         {/* backgroundColor */}
         {backgroundColor !== "transparent" && (
@@ -476,12 +420,12 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
-              stencilFail={overflowMask.stencilFail}
-              stencilFunc={overflowMask.stencilFunc}
-              stencilRef={overflowMask.stencilRef}
-              stencilWrite={overflowMask.stencilWrite}
-              stencilZFail={overflowMask.stencilZFail}
-              stencilZPass={overflowMask.stencilZPass}
+              // stencilFail={overflowMask.stencilFail}
+              // stencilFunc={overflowMask.stencilFunc}
+              // stencilRef={overflowMask.stencilRef}
+              // stencilWrite={overflowMask.stencilWrite}
+              // stencilZFail={overflowMask.stencilZFail}
+              // stencilZPass={overflowMask.stencilZPass}
             />
           </mesh>
         )}
@@ -511,12 +455,12 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
-              stencilFail={overflowMask.stencilFail}
-              stencilFunc={overflowMask.stencilFunc}
-              stencilRef={overflowMask.stencilRef}
-              stencilWrite={overflowMask.stencilWrite}
-              stencilZFail={overflowMask.stencilZFail}
-              stencilZPass={overflowMask.stencilZPass}
+              // stencilFail={overflowMask.stencilFail}
+              // stencilFunc={overflowMask.stencilFunc}
+              // stencilRef={overflowMask.stencilRef}
+              // stencilWrite={overflowMask.stencilWrite}
+              // stencilZFail={overflowMask.stencilZFail}
+              // stencilZPass={overflowMask.stencilZPass}
               blending={THREE.CustomBlending}
             />
           </mesh>
@@ -532,12 +476,12 @@ function Layer(
               transparent={true}
               depthTest={depthTest ?? xrUiContext.depthTest}
               depthWrite={depthWrite}
-              stencilFail={overflowMask.stencilFail}
-              stencilFunc={overflowMask.stencilFunc}
-              stencilRef={overflowMask.stencilRef}
-              stencilWrite={overflowMask.stencilWrite}
-              stencilZFail={overflowMask.stencilZFail}
-              stencilZPass={overflowMask.stencilZPass}
+              // stencilFail={overflowMask.stencilFail}
+              // stencilFunc={overflowMask.stencilFunc}
+              // stencilRef={overflowMask.stencilRef}
+              // stencilWrite={overflowMask.stencilWrite}
+              // stencilZFail={overflowMask.stencilZFail}
+              // stencilZPass={overflowMask.stencilZPass}
             />
           </mesh>
         )}

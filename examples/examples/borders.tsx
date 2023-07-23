@@ -14,8 +14,9 @@ export default function Borders() {
           borderRadius={0.2}
           borderWidth={0.1}
           borderColor="crimson"
+          overflow="hidden"
         >
-          <Layer width="50%" aspectRatio={1} backgroundColor="pink" borderRadius={1} />
+          <Layer width="50%" aspectRatio={1} backgroundColor="pink" borderRadius={1} position-y={0.5} />
         </Layer>
       </Example>
       <ViewCode pathname="background" />
