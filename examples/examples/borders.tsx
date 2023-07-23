@@ -10,12 +10,12 @@ export default function Borders() {
         <Layer
           width={1}
           aspectRatio={1}
-          backgroundColor="#111111"
+          backgroundColor="#555555"
           borderRadius={0.2}
           borderWidth={0.1}
           borderColor="crimson"
         >
-          {/*<Layer width="50%" aspectRatio={1} backgroundColor="crimson" borderRadius={0.5} />*/}
+          <Layer width="50%" aspectRatio={1} backgroundColor="pink" borderRadius={1} />
         </Layer>
       </Example>
       <ViewCode pathname="background" />

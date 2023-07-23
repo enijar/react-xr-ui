@@ -1,7 +1,7 @@
 import React from "react";
 import * as THREE from "three";
 import { MeshLineGeometry, MeshLineMaterial } from "meshline";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useThree } from "@react-three/fiber";
 import { Mask, Text, useMask } from "@react-three/drei";
 import layout from "../services/layout";
 import type { LayerContextType, LayerProps, LayerRef } from "../types";
@@ -340,20 +340,6 @@ function Layer(
     return { ...size };
   });
 
-  const meshLineGeometry = React.useMemo(() => {
-    const line = new MeshLineGeometry();
-    line.setPoints(roundedPlane.getPoints());
-    return line;
-  }, [roundedPlane]);
-
-  const meshLineMaterial = React.useMemo(() => {
-    return new MeshLineMaterial({
-      color: "crimson",
-      lineWidth: 0.03,
-      resolution: new THREE.Vector2(1024, 1024),
-    });
-  }, []);
-
   React.useEffect(() => {
     const material = backgroundImageMaterialRef.current;
     if (material === null) return;
@@ -426,36 +412,63 @@ function Layer(
     textMaterial.needsUpdate = true;
   }, [textMaterial, color, overflowMask, depthTest, depthWrite, xrUiContext.depthTest]);
 
+  const [borderShape, backgroundShape] = React.useMemo(() => {
+    const width = size.width;
+    const height = size.height;
+    const br = borderRadius;
+    const r = Math.min(width, height) / 2;
+    const topLeft = THREE.MathUtils.clamp(typeof br === "number" ? br * r : br[0] * r, 0, r);
+    const topRight = THREE.MathUtils.clamp(typeof br === "number" ? br * r : br[1] * r, 0, r);
+    const bottomRight = THREE.MathUtils.clamp(typeof br === "number" ? br * r : br[2] * r, 0, r);
+    const bottomLeft = THREE.MathUtils.clamp(typeof br === "number" ? br * r : br[3] * r, 0, r);
+
+    const outerThickness = borderWidth;
+    const innerThickness = borderWidth / 2;
+
+    function createShape(scale = 1, thickness = 0) {
+      const w = width * scale;
+      const h = height * scale;
+      const x = w / -2;
+      const y = h / -2;
+
+      const topLeftRadius = topLeft * scale - thickness;
+      const topRightRadius = topRight * scale - thickness;
+      const bottomRightRadius = bottomRight * scale - thickness;
+      const bottomLeftRadius = bottomLeft * scale - thickness;
+
+      const shape = new THREE.Shape();
+      shape.moveTo(x + topLeftRadius, y);
+      shape.lineTo(x + w - topRightRadius, y);
+      shape.absarc(x + w - topRightRadius, y + topRightRadius, topRightRadius, Math.PI * 1.5, Math.PI * 2, false);
+      shape.lineTo(x + w, y + h - bottomRight);
+      shape.absarc(x + w - bottomRightRadius, y + h - bottomRightRadius, bottomRightRadius, 0, Math.PI * 0.5, false);
+      shape.lineTo(x + bottomLeftRadius, y + h);
+      shape.absarc(x + bottomLeftRadius, y + h - bottomLeftRadius, bottomLeftRadius, Math.PI * 0.5, Math.PI, false);
+      shape.lineTo(x, y + topLeftRadius);
+      shape.absarc(x + topLeftRadius, y + topLeftRadius, topLeftRadius, Math.PI, Math.PI * 1.5, false);
+      shape.closePath();
+      return shape;
+    }
+
+    const borderShape = createShape(1, outerThickness);
+    const backgroundShape = createShape((width - borderWidth) / width, innerThickness);
+    if (borderWidth > 0) {
+      borderShape.holes.push(backgroundShape);
+    }
+
+    return [borderShape, backgroundShape];
+  }, [size, borderRadius, detail, borderWidth]);
+
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
         <Mask ref={maskRef} id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
           <shapeGeometry args={[roundedPlane, detail]} />
         </Mask>
-        {/* border */}
-        {borderWidth > 0 && (
-          <mesh renderOrder={renderOrder + zIndex}>
-            <shapeGeometry args={[roundedPlane, detail]} />
-            <meshBasicMaterial
-              ref={backgroundColorMaterialRef}
-              side={THREE.FrontSide}
-              color={backgroundColor === "transparent" ? undefined : backgroundColor}
-              transparent={true}
-              depthTest={depthTest ?? xrUiContext.depthTest}
-              depthWrite={depthWrite}
-              stencilFail={overflowMask.stencilFail}
-              stencilFunc={overflowMask.stencilFunc}
-              stencilRef={overflowMask.stencilRef}
-              stencilWrite={overflowMask.stencilWrite}
-              stencilZFail={overflowMask.stencilZFail}
-              stencilZPass={overflowMask.stencilZPass}
-            />
-          </mesh>
-        )}
         {/* backgroundColor */}
         {backgroundColor !== "transparent" && (
           <mesh renderOrder={renderOrder + zIndex}>
-            <planeGeometry args={[size.width, size.height]} />
+            <shapeGeometry args={[backgroundShape, detail]} />
             <meshBasicMaterial
               ref={backgroundColorMaterialRef}
               side={THREE.FrontSide}
@@ -508,10 +521,26 @@ function Layer(
             />
           </mesh>
         )}
-        <mesh>
-          <primitive attach="geometry" object={meshLineGeometry} />
-          <primitive attach="material" object={meshLineMaterial} />
-        </mesh>
+        {/* border */}
+        {borderWidth > 0 && (
+          <mesh renderOrder={renderOrder + zIndex}>
+            <shapeGeometry args={[borderShape, detail]} />
+            <meshBasicMaterial
+              ref={backgroundColorMaterialRef}
+              side={THREE.FrontSide}
+              color={borderColor === "transparent" ? undefined : borderColor}
+              transparent={true}
+              depthTest={depthTest ?? xrUiContext.depthTest}
+              depthWrite={depthWrite}
+              stencilFail={overflowMask.stencilFail}
+              stencilFunc={overflowMask.stencilFunc}
+              stencilRef={overflowMask.stencilRef}
+              stencilWrite={overflowMask.stencilWrite}
+              stencilZFail={overflowMask.stencilZFail}
+              stencilZPass={overflowMask.stencilZPass}
+            />
+          </mesh>
+        )}
         {textContent !== undefined && (
           <Text
             maxWidth={size.width}
