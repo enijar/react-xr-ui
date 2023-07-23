@@ -2,7 +2,7 @@ import React from "react";
 import { XrUiContextType } from "../types";
 
 export const XrUiContext = React.createContext<XrUiContextType>({
-  fontFamily: "https://drei.pmnd.rs/sb-common-assets/nunito-sans-regular.woff2",
+  fontFamily: "https://themes.googleusercontent.com/static/fonts/roboto/v9/zN7GBFwfMP4uA6AR0HCoLQ.ttf",
   depthTest: true,
   premultiplyAlpha: true,
 });

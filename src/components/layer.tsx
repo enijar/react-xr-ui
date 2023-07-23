@@ -1,10 +1,9 @@
 import React from "react";
 import * as THREE from "three";
-import { XRInteractionEvent } from "@react-three/xr";
-import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Mask, Text, useMask } from "@react-three/drei";
 import layout from "../services/layout";
-import type { LayerContextType, LayerProps, LayerRef, Fn } from "../types";
+import type { LayerContextType, LayerProps, LayerRef } from "../types";
 import { XrUiContext } from "./xr-ui";
 import Scroller from "./scroller";
 
@@ -318,20 +317,8 @@ function Layer(
 
   const camera = useThree((state) => state.camera) as THREE.PerspectiveCamera;
 
-  const [groupZ, setGroupZ] = React.useState(5);
-
-  const groupWorldPositionVector = React.useMemo(() => {
-    return new THREE.Vector3(0, 0, 0);
-  }, []);
-
   useFrame(() => {
-    // const group = groupRef.current;
-    // if (group === null) return;
-    // groupWorldPositionVector.copy(group.position);
-    // const distanceFromCamera = camera.worldToLocal(groupWorldPositionVector);
-    // if (distanceFromCamera.z !== groupZ) {
-    //   setGroupZ(distanceFromCamera.z);
-    // }
+    //
   });
 
   const realFontSize = React.useMemo(() => {
@@ -341,12 +328,12 @@ function Layer(
         px = 16;
       }
       const fovInRadians = (camera.fov * Math.PI) / 180;
-      const heightAtDistance = 2 * Math.tan(fovInRadians / 2) * groupZ;
+      const heightAtDistance = 2 * Math.tan(fovInRadians / 2) * 5;
       return (px / window.innerHeight) * heightAtDistance;
     } else {
       return fontSize * Math.min(size.width, size.height);
     }
-  }, [fontSize, size, camera, groupZ]);
+  }, [fontSize, size, camera]);
 
   const [backgroundImageSize, setBackgroundImageSize] = React.useState(() => {
     return { ...size };
@@ -424,24 +411,10 @@ function Layer(
     textMaterial.needsUpdate = true;
   }, [textMaterial, color, overflowMask, depthTest, depthWrite, xrUiContext.depthTest]);
 
-  type PointerState = "out" | "over" | "down" | "up";
-
-  const pointerStateRef = React.useRef<PointerState>("out");
-
   return (
     <LayerContext.Provider value={layerProviderValue}>
       <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer-group">
-        <Mask
-          id={maskId}
-          renderOrder={renderOrder + zIndex}
-          name="react-xr-ui-layer-mesh"
-          onPointerOver={(event) => {
-            if (pointerStateRef.current !== "out") return;
-            pointerStateRef.current = "over";
-            event.stopPropagation();
-            console.log("?");
-          }}
-        >
+        <Mask id={maskId} renderOrder={renderOrder + zIndex} name="react-xr-ui-layer-mesh">
           <shapeGeometry args={[roundedPlane, detail]} />
         </Mask>
         {backgroundColor !== "transparent" && (
