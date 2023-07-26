@@ -1,15 +1,9 @@
 import React from "react";
 import * as THREE from "three";
-import canvasTxt from "canvas-txt";
+import { drawText } from "../services/text";
 import { useFrame } from "@react-three/fiber";
 import layout from "../services/layout";
-import {
-  Attrs,
-  LayerContextType,
-  LayerProps,
-  LayerRef,
-  ValueArray,
-} from "../types";
+import { Attrs, LayerContextType, LayerProps, LayerRef, ValueArray } from "../types";
 import { XrUiContext } from "./xr-ui";
 
 const LayerContext = React.createContext<LayerContextType>({
@@ -25,58 +19,7 @@ const DEFAULT_BACKGROUND_POSITION: LayerProps["backgroundPosition"] = [0, 0];
 
 const CACHED_IMAGES = new Map<string, HTMLImageElement>();
 
-function Layer(
-  {
-    optimizedRendering,
-    zIndex = 0,
-    resolution,
-    visible = true,
-    autoLayout = true,
-    premultiplyAlpha,
-    depthTest,
-    depthWrite = false,
-    width,
-    height,
-    aspectRatio,
-    opacity = 1,
-    backgroundColor = "transparent",
-    backgroundImage,
-    backgroundSize,
-    backgroundPosition = DEFAULT_BACKGROUND_POSITION,
-    alphaTest = 0,
-    padding = 0,
-    borderRadius = 0,
-    borderWidth = 0,
-    borderColor = "transparent",
-    flexDirection = "row",
-    alignItems = "center",
-    justifyContent = "center",
-    gap = 0,
-    textContent,
-    textAlign = "left",
-    justifyText = false,
-    verticalAlign = "top",
-    color = "white",
-    fontFamily,
-    fontSize = "16px",
-    fontWeight = "normal",
-    lineHeight = null,
-    childIndex,
-    children,
-    onPointerMove,
-    onPointerOver,
-    onPointerOut,
-    onPointerDown,
-    onPointerUp,
-    imageRendering = "crisp-edges",
-    imageSmoothingEnabled = true,
-    textRendering = "auto",
-    dpr,
-    onLayout,
-    ...props
-  }: LayerProps,
-  ref: React.ForwardedRef<LayerRef>
-) {
+function Layer({ optimizedRendering, zIndex = 0, resolution, visible = true, autoLayout = true, premultiplyAlpha, depthTest, depthWrite = false, width, height, aspectRatio, opacity = 1, backgroundColor = "transparent", backgroundImage, backgroundSize, backgroundPosition = DEFAULT_BACKGROUND_POSITION, alphaTest = 0, padding = 0, borderRadius = 0, borderWidth = 0, borderColor = "transparent", flexDirection = "row", alignItems = "center", justifyContent = "center", gap = 0, textContent, textAlign = "left", justifyText = false, verticalAlign = "top", color = "white", fontFamily, fontSize = "16px", fontWeight = "normal", lineHeight = null, childIndex, children, onPointerMove, onPointerOver, onPointerOut, onPointerDown, onPointerUp, imageRendering = "crisp-edges", imageSmoothingEnabled = true, textRendering = "auto", dpr, onLayout, ...props }: LayerProps, ref: React.ForwardedRef<LayerRef>) {
   const shouldRenderRef = React.useRef(true);
 
   const [attrs, setAttrs] = React.useState<Attrs>(() => {
@@ -113,10 +56,7 @@ function Layer(
   }, [optimizedRendering, xrUiContext.optimizedRendering]);
 
   const groupRef = React.useRef<THREE.Group>(null);
-  const meshRef =
-    React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>(
-      null
-    );
+  const meshRef = React.useRef<THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>(null);
   const materialRef = React.useRef<THREE.MeshBasicMaterial>(null);
   const childrenGroupRef = React.useRef<THREE.Group>(null);
 
@@ -172,13 +112,7 @@ function Layer(
       }
     }
     return size;
-  }, [
-    width,
-    height,
-    layerContext.parentUuid,
-    layerContext.parentSize,
-    aspectRatio,
-  ]);
+  }, [width, height, layerContext.parentUuid, layerContext.parentSize, aspectRatio]);
 
   const uuid = React.useMemo(() => {
     return THREE.MathUtils.generateUUID();
@@ -215,14 +149,7 @@ function Layer(
   }, [onPointerMove, onPointerOver, onPointerOut, onPointerDown, onPointerUp]);
 
   const layoutOnly = React.useMemo<boolean>(() => {
-    const props = [
-      attrs.backgroundColor === "transparent"
-        ? undefined
-        : attrs.backgroundColor,
-      backgroundImage,
-      borderColor === "transparent" ? undefined : borderColor,
-      textContent,
-    ];
+    const props = [attrs.backgroundColor === "transparent" ? undefined : attrs.backgroundColor, backgroundImage, borderColor === "transparent" ? undefined : borderColor, textContent];
     return props.filter((prop) => prop !== undefined).length === 0;
   }, [attrs.backgroundColor, backgroundImage, borderColor, textContent]);
 
@@ -275,8 +202,7 @@ function Layer(
 
   React.useEffect(() => {
     if (canvasTexture === null) return;
-    canvasTexture.premultiplyAlpha =
-      premultiplyAlpha ?? xrUiContext.premultiplyAlpha;
+    canvasTexture.premultiplyAlpha = premultiplyAlpha ?? xrUiContext.premultiplyAlpha;
   }, [canvasTexture, premultiplyAlpha, xrUiContext.premultiplyAlpha]);
 
   const images = React.useMemo(() => {
@@ -312,9 +238,7 @@ function Layer(
     images.backgroundImage = CACHED_IMAGES.get(backgroundImage);
   }, [images.backgroundImage, backgroundImage]);
 
-  const [currentChildren, setCurrentChildren] = React.useState<
-    LayerContextType["currentChildren"]
-  >([]);
+  const [currentChildren, setCurrentChildren] = React.useState<LayerContextType["currentChildren"]>([]);
 
   // Only render once if in optimizedRendering mode, else render @ 60FPS
   React.useEffect(() => {
@@ -325,38 +249,16 @@ function Layer(
         frames.push(
           requestAnimationFrame(() => {
             shouldRenderRef.current = !optimized;
-          })
+          }),
         );
-      })
+      }),
     );
     return () => {
       frames.forEach((frame) => {
         cancelAnimationFrame(frame);
       });
     };
-  }, [
-    shouldRenderKey,
-    currentChildren,
-    optimized,
-    ctx,
-    size,
-    res,
-    borderRadius,
-    borderColor,
-    attrs,
-    images,
-    backgroundPosition,
-    backgroundSize,
-    font,
-    fontSize,
-    lineHeight,
-    textAlign,
-    verticalAlign,
-    justifyText,
-    fontWeight,
-    color,
-    textContent,
-  ]);
+  }, [shouldRenderKey, currentChildren, optimized, ctx, size, res, borderRadius, borderColor, attrs, images, backgroundPosition, backgroundSize, font, fontSize, lineHeight, textAlign, verticalAlign, justifyText, fontWeight, color, textContent]);
 
   useFrame(() => {
     if (shouldRenderRef.current && ctx !== null) {
@@ -376,9 +278,7 @@ function Layer(
         const isArray = Array.isArray(borderRadius);
         const array = borderRadius as ValueArray;
         const number = borderRadius as number;
-        let [tl = 0, tr = 0, br = 0, bl = 0] = isArray
-          ? array
-          : [number, number, number, number];
+        let [tl = 0, tr = 0, br = 0, bl = 0] = isArray ? array : [number, number, number, number];
         tl *= res;
         tr *= res;
         br *= res;
@@ -452,7 +352,7 @@ function Layer(
 
       // Typography
       if (textContent !== undefined) {
-        canvasTxt.font = font;
+        // canvasTxt.font = font;
         let actualFontSize = 0;
         if (typeof fontSize === "string") {
           let px = parseFloat(fontSize);
@@ -463,15 +363,21 @@ function Layer(
         } else {
           actualFontSize = fontSize * Math.min(w, h);
         }
-        canvasTxt.fontSize = actualFontSize;
-        canvasTxt.lineHeight = lineHeight * canvasTxt.fontSize;
-        canvasTxt.align = textAlign;
-        canvasTxt.vAlign = verticalAlign;
-        canvasTxt.justify = justifyText;
-        canvasTxt.fontWeight = fontWeight;
         ctx.textBaseline = "bottom";
         ctx.fillStyle = color;
-        canvasTxt.drawText(ctx, textContent, ox, oy, w - ox * 2, h - oy * 2);
+        drawText(ctx, textContent, {
+          x: ox,
+          y: oy,
+          width: w - ox * 2,
+          height: h - oy * 2,
+          font: font,
+          fontSize: actualFontSize,
+          lineHeight: lineHeight * actualFontSize,
+          align: textAlign,
+          vAlign: verticalAlign,
+          justify: justifyText,
+          fontWeight: fontWeight,
+        });
       }
 
       // Fixes antialiasing issue
@@ -506,12 +412,8 @@ function Layer(
   React.useEffect(() => {
     const newSize = { ...size };
     const res = Math.min(newSize.width, newSize.height);
-    const paddingX = Array.isArray(padding)
-      ? (padding[1] ?? 0) + (padding[3] ?? 0)
-      : padding;
-    const paddingY = Array.isArray(padding)
-      ? (padding[0] ?? 0) + (padding[2] ?? 0)
-      : padding;
+    const paddingX = Array.isArray(padding) ? (padding[1] ?? 0) + (padding[3] ?? 0) : padding;
+    const paddingY = Array.isArray(padding) ? (padding[0] ?? 0) + (padding[2] ?? 0) : padding;
     newSize.width -= res * borderWidth * 2;
     newSize.height -= res * borderWidth * 2;
     newSize.width -= res * paddingX * 2;
@@ -538,17 +440,7 @@ function Layer(
     if (onLayoutRef.current) {
       onLayoutRef.current();
     }
-  }, [
-    childGroupRefs,
-    currentChildren,
-    size,
-    flexDirection,
-    alignItems,
-    justifyContent,
-    borderWidth,
-    padding,
-    gap,
-  ]);
+  }, [childGroupRefs, currentChildren, size, flexDirection, alignItems, justifyContent, borderWidth, padding, gap]);
 
   const renderOrder = React.useMemo(() => {
     if (layerContext.parentUuid === null) {
@@ -595,10 +487,7 @@ function Layer(
     const childrenGroup = childrenGroupRef.current;
     if (childrenGroup === null) return;
     childrenGroup.traverse((object) => {
-      if (
-        object instanceof THREE.Mesh &&
-        object.material instanceof THREE.Material
-      ) {
+      if (object instanceof THREE.Mesh && object.material instanceof THREE.Material) {
         object.material.transparent = true;
         object.material.opacity = attrs.opacity;
         object.material.needsUpdate = true;
@@ -623,28 +512,10 @@ function Layer(
 
   return (
     <LayerContext.Provider value={layerProviderValue}>
-      <group
-        ref={groupRef}
-        {...props}
-        visible={visible}
-        name="react-xr-ui-layer"
-      >
-        <mesh
-          ref={meshRef}
-          renderOrder={renderOrder + zIndex}
-          visible={canvasTexture !== null}
-        >
+      <group ref={groupRef} {...props} visible={visible} name="react-xr-ui-layer">
+        <mesh ref={meshRef} renderOrder={renderOrder + zIndex} visible={canvasTexture !== null}>
           <planeGeometry args={[size.width, size.height]} />
-          <meshBasicMaterial
-            ref={materialRef}
-            side={THREE.FrontSide}
-            opacity={attrs.opacity}
-            transparent={true}
-            depthTest={depthTest ?? xrUiContext.depthTest}
-            depthWrite={depthWrite}
-            alphaTest={alpha}
-            map={canvasTexture ?? undefined}
-          />
+          <meshBasicMaterial ref={materialRef} side={THREE.FrontSide} opacity={attrs.opacity} transparent={true} depthTest={depthTest ?? xrUiContext.depthTest} depthWrite={depthWrite} alphaTest={alpha} map={canvasTexture ?? undefined} />
         </mesh>
         <group renderOrder={renderOrder + zIndex + 1} ref={childrenGroupRef}>
           {React.Children.map(childs, (child, childIndex) => {

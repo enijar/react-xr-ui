@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GroupProps } from "@react-three/fiber";
-import { align, vAlign } from "canvas-txt";
+import type { Align, VAlign } from "./services/text";
 import React from "react";
 
 export type Child = {
@@ -25,12 +25,7 @@ export type Size = {
   height: number;
 };
 
-export type ValueArray = [
-  topLeft?: number,
-  topRight?: number,
-  bottomRight?: number,
-  bottomLeft?: number
-];
+export type ValueArray = [topLeft?: number, topRight?: number, bottomRight?: number, bottomLeft?: number];
 
 export type LayerProps = GroupProps & {
   depthTest?: boolean;
@@ -56,17 +51,12 @@ export type LayerProps = GroupProps & {
   borderColor?: string;
   flexDirection?: "row" | "column" | "row-reverse" | "column-reverse";
   alignItems?: "start" | "center" | "end";
-  justifyContent?:
-    | "start"
-    | "center"
-    | "end"
-    | "space-between"
-    | "space-around";
+  justifyContent?: "start" | "center" | "end" | "space-between" | "space-around";
   gap?: number;
   textContent?: string;
-  textAlign?: typeof align;
+  textAlign?: Align;
   justifyText?: boolean;
-  verticalAlign?: typeof vAlign;
+  verticalAlign?: VAlign;
   color?: string;
   fontFamily?: string;
   fontSize?: number | `${number}px`;
@@ -75,12 +65,7 @@ export type LayerProps = GroupProps & {
   childIndex?: number;
   imageRendering?: "crisp-edges" | "pixelated" | string;
   imageSmoothingEnabled?: boolean;
-  textRendering?:
-    | "auto"
-    | "optimizeSpeed"
-    | "optimizeLegibility"
-    | "geometricPrecision"
-    | "inherit";
+  textRendering?: "auto" | "optimizeSpeed" | "optimizeLegibility" | "geometricPrecision" | "inherit";
   dpr?: number;
   onLayout?: () => void;
 };
