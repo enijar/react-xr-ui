@@ -7,6 +7,8 @@ Build UIs with React that work in VR, AR and web contexts.
 > We've been using this package for various WebXR projects at [Finer Vision](https://github.com/finer-vision). We think it's a good
 > library, so we've open sourced it. If you want more features added or bugs fix please open a pull request or issue
 
+> If you're looking for a library that has more features, we'd highly recommend checkout out [@coconut-xr/koestlich](https://github.com/coconut-xr/koestlich)
+
 ### Install
 
 ```shell
