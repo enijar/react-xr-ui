@@ -207,6 +207,7 @@ function Layer({ optimizedRendering, zIndex = 0, resolution, visible = true, aut
 
   const images = React.useMemo(() => {
     const backgroundImage = new Image();
+    backgroundImage.crossOrigin = "Anonymous";
     return { backgroundImage };
   }, []);
 
@@ -226,6 +227,7 @@ function Layer({ optimizedRendering, zIndex = 0, resolution, visible = true, aut
     if (!backgroundImage) return;
     if (!CACHED_IMAGES.has(backgroundImage)) {
       const image = new Image();
+      image.crossOrigin = "Anonymous";
       image.onload = () => {
         if (!mountedRef.current) return;
         setShouldRenderKey((shouldRenderKey) => {
